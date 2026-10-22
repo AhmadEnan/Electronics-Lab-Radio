@@ -1,0 +1,52 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>M1 model and mobile checks</title>
+<style>body{margin:0;background:#eee2d0;font:14px system-ui;display:flex;gap:24px;padding:15px}iframe{width:390px;height:844px;border:1px solid #b8a68d;flex:none}pre{white-space:pre-wrap;max-width:650px}canvas{display:none}</style>
+<iframe id="mobile" src="../index.html?step=detector" title="390 pixel mobile preview"></iframe>
+<main><h1>M1 verification</h1><pre id="results">Running real WebGL geometry checks…</pre><canvas id="testCanvas"></canvas></main>
+<script type="module">
+import * as THREE from '../vendor/three.module.js';
+import {Bench} from '../src/models.js';
+const results=[];
+function check(name,condition){results.push({name,pass:!!condition});}
+try {
+ const renderer=new THREE.WebGLRenderer({canvas:document.querySelector('#testCanvas')});
+ const b=new Bench(renderer);
+ const camera=new THREE.PerspectiveCamera(32,1,.2,180);camera.position.set(20,20,30);camera.lookAt(0,3,0);
+ check('All component materials exist',Object.values(b.m).every(Boolean));
+ check('Coil: 75 turns, 0.30 mm wire, smooth helix',b.coilGeo.parameters.tubularSegments===75*64 && b.coilGeo.parameters.radius===.015);
+ check('Coil turns do not intersect',b.coilGeo.parameters.radius*2<2.5/75);
+ check('Pipe: 50 mm diameter, open ends',b.pipeGroup.children[0].geometry.parameters.radiusTop===2.5 && b.pipeGroup.children[0].geometry.parameters.openEnded);
+ check('No solid end caps',!b.pipeGroup.children.some(o=>o.geometry?.type==='CircleGeometry'));
+ for(let i=0;i<9;i++){
+   b.setStep(i,true);renderer.render(b.scene,camera);
+   check(`Step ${i+1}: renders with finite geometry`,b.root.children.every(o=>Number.isFinite(o.position.x+o.position.y+o.position.z)));
+   check(`Step ${i+1}: detector, links and loop follow build order`,b.detectorGroup.visible===(i>=4) && b.boardLinks.visible===(i>=5) && b.loopGroup.visible===(i>=6));
+   b.setStep(i);b.animation.elapsed=1;b._animateStep();
+   check(`Step ${i+1}: replay starts at its own baseline`,i!==1||b.revealProgress.coil===0);
+   b.animation.elapsed=8;b._animateStep();
+   check(`Step ${i+1}: replay settles`,i!==1||b.revealProgress.coil===1);
+ }
+ b.setStep(4,true);b.root.updateMatrixWorld(true);
+ const d=b.detectorParts[0],end=d.localToWorld(new THREE.Vector3(1.95,-.83,0));
+ check('Diode cathode lead lands on d17',Math.abs(end.x-(4.6+b.pinX(16)))<1e-5 && Math.abs(end.y-1.08)<1e-5 && Math.abs(end.z-.46)<1e-5);
+ const c=b.detectorParts[2];
+ for(const sign of [-1,1]){
+  const point=c.localToWorld(new THREE.Vector3(0,-.95,sign*.74));
+  check(`Capacitor ${sign<0?'TP3':'GND'} lead lands on strip 25`,Math.abs(point.x-(4.6+b.pinX(24)))<1e-5 && Math.abs(point.y-1.08)<1e-5);
+ }
+ b.setStep(8,true);b.setTuning(129.5);check('Response near unity at 819 kHz',b._response()>.999);
+ b.setTuning(20);check('Detuned tank attenuates 819 kHz',b._response()<.02);
+ b.setStep(1);b.paused=true;const elapsed=b.animation.elapsed;b.update(.1);check('Pause freezes assembly timeline',b.animation.elapsed===elapsed);
+ for(const step of [8,1,6,2,4,0,7,5,3]) {b.setStep(step,true);b.update(.1);}
+ check('Random navigation leaves no queued transitions',b.tweens.length===0);
+ renderer.dispose();
+}catch(error){results.push({name:'Runtime error',pass:false,error:String(error.stack)});}
+const frame=document.querySelector('iframe');
+await new Promise(resolve=>frame.contentDocument?.readyState==='complete'?resolve():frame.addEventListener('load',resolve,{once:true}));
+await new Promise(resolve=>setTimeout(resolve,1000));
+const doc=frame.contentDocument;
+check('Mobile viewport has no horizontal page overflow',doc.documentElement.scrollWidth<=390);
+check('Mobile canvas is visible and at least 250px tall',doc.querySelector('canvas').clientHeight>=250);
+check('Mobile notes remain visible',getComputedStyle(doc.querySelector('.callout')).display!=='none');
+check('Mobile guide has all nine step controls',doc.querySelectorAll('[data-step]').length===9);
+document.querySelector('#results').textContent=JSON.stringify({passed:results.filter(r=>r.pass).length,total:results.length,results},null,2);
+</script></html>

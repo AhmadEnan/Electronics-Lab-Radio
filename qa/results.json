@@ -1,0 +1,214 @@
+{
+  "passed": 52,
+  "total": 52,
+  "results": [
+    {
+      "name": "All component materials exist",
+      "pass": true
+    },
+    {
+      "name": "Coil: 75 turns, 0.30 mm wire, smooth helix",
+      "pass": true
+    },
+    {
+      "name": "Coil turns do not intersect",
+      "pass": true
+    },
+    {
+      "name": "Pipe: 50 mm diameter, open ends",
+      "pass": true
+    },
+    {
+      "name": "No solid end caps",
+      "pass": true
+    },
+    {
+      "name": "Step 1: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 1: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 1: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 1: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Step 2: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 2: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 2: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 2: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Step 3: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 3: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 3: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 3: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Step 4: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 4: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 4: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 4: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Step 5: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 5: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 5: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 5: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Step 6: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 6: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 6: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 6: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Step 7: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 7: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 7: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 7: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Step 8: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 8: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 8: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 8: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Step 9: renders with finite geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 9: detector, links and loop follow build order",
+      "pass": true
+    },
+    {
+      "name": "Step 9: replay starts at its own baseline",
+      "pass": true
+    },
+    {
+      "name": "Step 9: replay settles",
+      "pass": true
+    },
+    {
+      "name": "Diode cathode lead lands on d17",
+      "pass": true
+    },
+    {
+      "name": "Capacitor TP3 lead lands on strip 25",
+      "pass": true
+    },
+    {
+      "name": "Capacitor GND lead lands on strip 25",
+      "pass": true
+    },
+    {
+      "name": "Response near unity at 819 kHz",
+      "pass": true
+    },
+    {
+      "name": "Detuned tank attenuates 819 kHz",
+      "pass": true
+    },
+    {
+      "name": "Pause freezes assembly timeline",
+      "pass": true
+    },
+    {
+      "name": "Random navigation leaves no queued transitions",
+      "pass": true
+    },
+    {
+      "name": "Mobile viewport has no horizontal page overflow",
+      "pass": true
+    },
+    {
+      "name": "Mobile canvas is visible and at least 250px tall",
+      "pass": true
+    },
+    {
+      "name": "Mobile notes remain visible",
+      "pass": true
+    },
+    {
+      "name": "Mobile guide has all nine step controls",
+      "pass": true
+    }
+  ]
+}
