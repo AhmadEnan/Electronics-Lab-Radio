@@ -1,0 +1,73 @@
+import {LESSONS} from './m2-lessons.js';
+import {RadioScene} from './scene.js';
+import {wiringSVG,highlightNode,wiringDescription} from './m2-wiring.js';
+import {M2Lab,renderRecords} from './m2-lab.js';
+import {M2Bench,BOXES,LABELS} from './m2-models.js';
+import {COMPONENTS,NODES,available,component,location} from './m2-circuit.js';
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],pad=n=>String(n).padStart(2,'0');
+let scene=null,index=0,tab='assembly',node='all',selectedPart=null,section='all',sceneFailed=false;
+const lab=new M2Lab();
+
+// Shared trace controls make the 2D and 3D views describe the same circuit.
+const tools=document.createElement('div');tools.className='circuit-tools';tools.innerHTML=`<label for="trace-node">Trace a node<select id="trace-node"><option value="all">All connections</option>${Object.entries(NODES).map(([id,n])=>`<option value="${id}">${n.name}</option>`).join('')}</select></label><button id="clear-trace">Show all parts</button><p id="trace-help">Select a labelled component or trace an electrical node.</p>`;
+$('.view-tabs').after(tools);
+$('.node-select').innerHTML=`<label for="map-section">Board section<select id="map-section"><option value="all">Whole board</option><option value="supply">Supply & input</option><option value="q1">Q1 stage</option><option value="q2">Q2 stage</option><option value="detector">Detector & OUT</option><option value="tank">Tank & six-turn link</option></select></label><button data-drawing-zoom aria-pressed="false">Enlarge</button>`;
+const coilControls=document.createElement('div');coilControls.className='coil-controls';coilControls.hidden=true;coilControls.innerHTML='<span><i class="coil-key primary"></i>L1 · 75 copper turns <i class="coil-key secondary"></i>L2 · 6 blue turns</span><div role="group" aria-label="Coil arrangement"><button data-coils="separate" aria-pressed="true">Separate windings</button><button data-coils="wound" aria-pressed="false">As wound</button></div><p id="coil-arrangement-note">Separated for clarity. In the build, wind L2 over L1’s grounded end.</p>';
+$('#assembly-timeline').after(coilControls);
+const detailActions=document.createElement('div');detailActions.className='detail-actions';detailActions.hidden=true;detailActions.innerHTML='<button id="show-in-3d">Locate in 3D →</button><button id="show-on-map">Trace on breadboard →</button>';
+$('#part-detail').after(detailActions);
+$('#wiring-description').setAttribute('aria-live','polite');
+
+function renderNav(){let group='';$('#step-nav').innerHTML=LESSONS.map((l,i)=>{const heading=l.group===group?'':`<p class="step-group">${l.group}</p>`;group=l.group;return `${heading}<button class="step-link" data-step="${i}" ${i===index?'aria-current="step"':''}><span>${pad(i+1)}</span><span>${l.name}</span></button>`;}).join('');}
+function partsForStep(){return available(LESSONS[index].scene);}
+function renderParts(){const focused=document.activeElement?.closest('#part-buttons [data-part]')?.dataset.part;const parts=partsForStep();$('#part-buttons').innerHTML=`<button data-part="board" aria-pressed="${selectedPart==='board'}">Board</button>`+parts.map(c=>`<button data-part="${c.id}" aria-pressed="${selectedPart===c.id}" aria-controls="part-detail"><span>${c.ref}</span> ${c.value}</button>`).join('');if(focused)$(`#part-buttons [data-part="${focused}"]`)?.focus({preventScroll:true});}
+function setStep(next,{historyMode='push',scroll=false}={}){
+ index=Math.max(0,Math.min(LESSONS.length-1,next));const l=LESSONS[index];selectedPart=null;node='all';section=l.scene===2?'supply':l.scene===4?'detector':l.scene===5?'tank':'all';
+ const content={'lesson-number':`Step ${pad(index+1)} / ${pad(LESSONS.length)} · ${l.group}`,'lesson-title':l.title,'lesson-intro':l.intro,'lesson-parts':l.parts,'lesson-why':l.why,'lesson-check':l.check,'lesson-caution':l.caution,'figure-label':`${pad(index+1)} / ${l.name}`,'model-footnote':l.scene===5||l.scene===8?'Blue L2 shown separated · select As wound for the actual overlap':l.note,'figure-number':`FIG. ${pad(index+1)}`,'page-count':`${pad(index+1)} / ${pad(LESSONS.length)}`,'record-prompt':l.record};
+ for(const [id,value] of Object.entries(content))document.getElementById(id).textContent=value;
+ $('#lesson-steps').replaceChildren(...l.steps.map(t=>{const li=document.createElement('li');li.textContent=t;return li;}));$('#prev-step').disabled=index===0;$('#next-step').textContent=index===LESSONS.length-1?'Lab record →':'Next →';
+ $$('[data-step]').forEach(b=>{if(+b.dataset.step===index)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current');});scrollActiveStep();
+ $('#part-detail').hidden=true;detailActions.hidden=true;$('#trace-node').value='all';$('#map-section').value=section;$('#trace-help').textContent='Select a labelled component or trace an electrical node.';
+ scene?.setStep(l.scene);renderParts();drawWiring();updateCaption();updateCoilControls();if(l.scene===5&&scene)inspect('coil',{toggle:false});
+ const fittedNodes=new Set(available(l.scene===1?4:l.scene).flatMap(c=>c.terminals.map(t=>t.node)));for(const option of $('#trace-node').options)option.disabled=option.value!=='all'&&!fittedNodes.has(option.value);
+ for(const option of $('#map-section').options)option.disabled=(option.value==='tank'&&l.scene<5)||(l.scene===2&&!['all','supply'].includes(option.value));
+ if(tab==='signal')lab.draw();
+ if(historyMode!=='none'){const url=new URL(window.location.href);url.searchParams.set('step',l.id);try{history[historyMode==='replace'?'replaceState':'pushState']({},'',url);}catch{}}
+ if(scroll){$('.lesson-workspace').scrollIntoView({block:'start'});$('#lesson-title').tabIndex=-1;$('#lesson-title').focus({preventScroll:true});}
+}
+function scrollActiveStep(){const active=$(`[data-step="${index}"]`);if(innerWidth<992&&active)$('#step-nav').scrollTo({left:active.offsetLeft-$('#step-nav').offsetLeft-20,behavior:'instant'});}
+function updateCaption(){$('#figure-caption').textContent=tab==='assembly'?'Select any labelled part to see its reference, value and terminal destinations. Coloured leads match the node trace and interactive breadboard.':tab==='wiring'?'Click a component to trace its terminals. Change board section for a close view, or follow the same part in 3D.':'Change the assumed rail, transistor gain or generator voltage. These are hand predictions; measured and Qucs-S results belong in the record.';}
+function drawWiring(){$('#wiring-drawing').innerHTML=wiringSVG(LESSONS[index].scene,{section,selected:selectedPart});highlightNode(node,selectedPart);$('#wiring-description').textContent=wiringDescription(LESSONS[index].scene,node,selectedPart);}
+function showDetail(id){const c=component(id);$('#part-detail').hidden=false;detailActions.hidden=id==='board';
+ if(!c){$('#part-detail').innerHTML='<h3>Breadboard strips</h3><p>Same-number a–e holes are connected; f–j are a separate strip. Each coloured endpoint marks an occupied hole. Check and bridge actual rail breaks before power.</p>';return;}
+ $('#part-detail').innerHTML=`<h3>${c.ref} · ${c.value}<span>${c.section}</span></h3><p>${c.why}</p><ul class="terminal-list">${c.terminals.map(t=>`<li><i style="background:${NODES[t.node].color}"></i><strong>${t.name}</strong><span>${NODES[t.node].name}<small>${t.p?location(t.p):'M1 primary winding'}</small></span></li>`).join('')}</ul>`;
+ $('#trace-help').textContent=`${c.ref} · ${c.value} — ${c.terminals.map(t=>`${t.name} → ${NODES[t.node].name}`).join(' / ')}`;
+}
+function inspect(id,{toggle=true,focus=true}={}){
+ if(id!=='board'&&!component(id))return;if(toggle&&selectedPart===id){clearTrace();return;}selectedPart=id;node='all';$('#trace-node').value='all';
+ const c=component(id);if(c?.type==='coil')section='tank';showDetail(id);renderParts();drawWiring();$('#map-section').value=section;
+ if(tab==='assembly'&&scene){if(focus)scene.focusPart(id);else{scene.bench.inspect(id);scene.makeLabels(scene.bench.annotationsFor(id));scene.invalidate();}}
+}
+function traceNode(id){node=id;selectedPart=null;$('#trace-node').value=id;$('#part-detail').hidden=true;detailActions.hidden=true;renderParts();drawWiring();scene?.bench.highlightNode(id);scene?.makeLabels();scene?.invalidate();$('#trace-help').textContent=id==='all'?'Select a labelled component or trace an electrical node.':`${NODES[id].name} — ${NODES[id].description}`;}
+function clearTrace(){selectedPart=null;node='all';$('#trace-node').value='all';$('#part-detail').hidden=true;detailActions.hidden=true;scene?.resetView();renderParts();drawWiring();$('#trace-help').textContent='Select a labelled component or trace an electrical node.';}
+function selectTab(name){tab=name;$$('[data-tab]').forEach(b=>{const active=b.dataset.tab===name;b.setAttribute('aria-selected',active);b.tabIndex=active?0:-1;document.getElementById(b.getAttribute('aria-controls')).hidden=!active;});$('#assembly-timeline').hidden=name!=='assembly'||sceneFailed;$('.part-inspection').hidden=name==='signal';tools.hidden=name==='signal';$('#part-detail').hidden=!selectedPart||name==='signal';detailActions.hidden=!selectedPart||selectedPart==='board'||name==='signal';scene?.setEnabled(name==='assembly');
+ if(name==='assembly'){if(selectedPart)scene?.focusPart(selectedPart);else scene?.bench.highlightNode(node);scene?.invalidate();}if(name==='signal')lab.draw();updateCoilControls();updateCaption();}
+function updateCoilControls(){coilControls.hidden=tab!=='assembly'||LESSONS[index].scene<5;}
+function updateProgress(p,playing){$('#assembly-progress').value=p*100;$('#assembly-position').textContent=`${Math.round(p*100)}%`;$('#play-assembly').textContent=playing?'Ⅱ Pause':p>=1?'▶ Replay':'▶ Play';$('#play-assembly').setAttribute('aria-pressed',String(playing));}
+renderNav();const initial=()=>Math.max(0,LESSONS.findIndex(l=>l.id===new URLSearchParams(window.location.search).get('step')));setStep(initial(),{historyMode:'replace'});
+$('#step-nav').addEventListener('click',e=>{const b=e.target.closest('[data-step]');if(b)setStep(+b.dataset.step);});
+$('#part-buttons').addEventListener('click',e=>{const b=e.target.closest('[data-part]');if(b)inspect(b.dataset.part);});
+$('#wiring-drawing').addEventListener('click',e=>{const p=e.target.closest('[data-map-part]');if(p)inspect(p.dataset.mapPart);});
+$('#wiring-drawing').addEventListener('keydown',e=>{const p=e.target.closest('[data-map-part]');if(p&&['Enter',' '].includes(e.key)){e.preventDefault();inspect(p.dataset.mapPart,{toggle:false});$(`#wiring-drawing [data-map-part="${p.dataset.mapPart}"]`)?.focus({preventScroll:true});}});
+$('#trace-node').addEventListener('change',e=>traceNode(e.target.value));$('#clear-trace').addEventListener('click',clearTrace);
+$('#map-section').addEventListener('change',e=>{section=e.target.value;drawWiring();});$('[data-drawing-zoom]').addEventListener('click',e=>{const zoomed=$('#wiring-drawing').classList.toggle('is-enlarged');e.target.setAttribute('aria-pressed',String(zoomed));e.target.textContent=zoomed?'Fit drawing':'Enlarge';});
+$('#show-in-3d').addEventListener('click',()=>{const c=component(selectedPart);if(c&&c.from>LESSONS[index].scene){const id=c.id;setStep(c.from-1);selectedPart=id;showDetail(id);renderParts();}selectTab('assembly');$('#assembly-view').scrollIntoView({block:'nearest'});});
+$('#show-on-map').addEventListener('click',()=>{const c=component(selectedPart);section=c?.type==='coil'?'tank':c?.section==='Supply'||c?.section==='Input'?'supply':c?.section==='Q1'?'q1':c?.section==='Q2'?'q2':'detector';$('#map-section').value=section;selectTab('wiring');drawWiring();$('#wiring-view').scrollIntoView({block:'nearest'});});
+$$('[data-coils]').forEach(b=>b.addEventListener('click',()=>{const separated=b.dataset.coils==='separate';scene?.bench.setCoilsSeparated(separated);$$('[data-coils]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('#coil-arrangement-note').textContent=separated?'Separated for clarity. In the build, wind L2 over L1’s grounded end.':'Actual winding position: six blue insulated turns over the grounded end of the copper primary.';$('#model-footnote').textContent=separated?'Separated teaching view · actual L2 wraps over L1’s GND end':'As wound · distinct blue insulation over L1’s GND end';if(scene){scene.makeLabels(selectedPart?scene.bench.annotationsFor(selectedPart):scene.bench.annotationsFor('coil'));scene.invalidate();}}));
+$$('[data-tab]').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.tab)));$('.view-tabs').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const tabs=$$('[data-tab]'),current=tabs.indexOf(document.activeElement),next=e.key==='Home'?0:e.key==='End'?2:(current+(e.key==='ArrowRight'?1:2))%3;tabs[next].focus();selectTab(tabs[next].dataset.tab);});
+$$('[data-plot]').forEach(b=>b.addEventListener('click',()=>lab.setMode(b.dataset.plot)));$('#prev-step').addEventListener('click',()=>setStep(index-1,{scroll:true}));$('#next-step').addEventListener('click',()=>index===LESSONS.length-1?$('#record').scrollIntoView():setStep(index+1,{scroll:true}));
+$('#assembly-progress').addEventListener('input',e=>{selectedPart=null;scene?.scrub(+e.target.value/100);});$('#play-assembly').addEventListener('click',()=>scene?.togglePlay());
+$$('[data-camera]').forEach(b=>b.addEventListener('click',()=>{const a=b.dataset.camera;if(a==='labels'){const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);scene?.setLabels(on);}else if(a==='in'||a==='out')scene?.zoom(a==='in'?.8:1.25);else{clearTrace();scene?.resetView(a==='top');}}));
+$('[data-open-wiring]').addEventListener('click',()=>selectTab('wiring'));window.addEventListener('popstate',()=>setStep(initial(),{historyMode:'none'}));window.addEventListener('resize',scrollActiveStep);new ResizeObserver(()=>{if(tab==='signal')lab.draw();}).observe($('#plot'));
+document.fonts.ready.then(()=>{try{scene=new RadioScene($('#scene-canvas'),{BenchClass:M2Bench,boxes:BOXES,labels:LABELS,onPart:inspect,onReady:()=>{$('#scene-loading').hidden=true;},onProgress:updateProgress});scene.setStep(LESSONS[index].scene);scene.setEnabled(tab==='assembly');if(LESSONS[index].scene===5)inspect('coil',{toggle:false});if(new URLSearchParams(window.location.search).has('debug'))window.__radio={get scene(){return scene;},lab,lessons:LESSONS,setStep,selectTab,inspect,traceNode};}catch(error){sceneFailed=true;console.error('Assembly unavailable:',error);$('#scene-loading').hidden=true;$('#scene-error').hidden=false;$('#assembly-timeline').hidden=true;$$('[data-camera]').forEach(b=>b.disabled=true);}});
+renderRecords();

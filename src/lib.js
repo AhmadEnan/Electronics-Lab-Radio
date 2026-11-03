@@ -13,8 +13,8 @@ export const PALETTE = {
   brass: 0xb88948,
   brassLight: 0xd4ae6d,
   silver: 0xc8c4ba,
-  teal: 0x168f8d,
-  tealDeep: 0x0b6e70,
+  teal: 0xa44d29,
+  tealDeep: 0x7d3d26,
   red: 0xa84938,
   blue: 0x2e6f96,
   amber: 0xd79b3e,
@@ -188,8 +188,8 @@ export function createMaterials() {
     woodDark: std(0x9f7c4c, { roughness: 0.88 }),
     copper: new THREE.MeshStandardMaterial({
       color: PALETTE.copper,
-      metalness: 0.72,
-      roughness: 0.28,
+      metalness: 0.55,
+      roughness: 0.48,
     }),
     copperMatte: new THREE.MeshStandardMaterial({
       color: 0xaa6a38,

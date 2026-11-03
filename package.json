@@ -1,0 +1,16 @@
+{
+  "name": "radio-lab-notebook",
+  "private": true,
+  "scripts": {
+    "build": "esbuild src/main.js --bundle --format=iife --outfile=app.js",
+    "test": "node qa/physics.test.cjs",
+    "test:browser": "node qa/browser.test.cjs",
+    "build:m2": "esbuild src/m2-main.js --bundle --format=iife --outfile=m2-app.js",
+    "test:m2": "node qa/m2.test.cjs",
+    "test:m2:connections": "node qa/m2-connections.test.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "playwright": "1.62.1"
+  }
+}

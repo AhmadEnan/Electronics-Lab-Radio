@@ -74,9 +74,9 @@ export class Bench {
 
   /* ------------------------------------------------------------------ setup */
   _lights() {
-    this.scene.add(new THREE.HemisphereLight(0xfff8e9, 0x9b8b75, 0.85));
+    this.scene.add(new THREE.HemisphereLight(0xf4f5ef, 0x9b9c94, 1.25));
 
-    const key = new THREE.DirectionalLight(0xfff3db, 1.95);
+    const key = new THREE.DirectionalLight(0xf5f4ed, 2.4);
     key.position.set(15, 25, 17);
     key.target.position.set(0, 2.5, 0);
     key.castShadow = true;
@@ -92,11 +92,11 @@ export class Bench {
     key.shadow.radius = 5;
     this.scene.add(key, key.target);
 
-    const fill = new THREE.DirectionalLight(0xbce0d9, 0.7);
+    const fill = new THREE.DirectionalLight(0xe0e8ec, 0.9);
     fill.position.set(-18, 12, 9);
     this.scene.add(fill);
 
-    const rim = new THREE.DirectionalLight(0xffe4b6, 0.6);
+    const rim = new THREE.DirectionalLight(0xf1e9da, 0.65);
     rim.position.set(-4, 8, -20);
     this.scene.add(rim);
 
@@ -384,137 +384,70 @@ export class Bench {
 
   /* -------------------------------------------------------------- capacitor */
   _capacitor() {
-    const g = new THREE.Group();
-    this.root.add(g);
-    this.capGroup = g;
-
-    const body = rounded(3.42, 2.5, 1.52, 0.16, this.m.clear, 4);
-    body.castShadow = true;
-    body.userData.noPick = false;
-    g.add(body);
-
-    // open frame edges
-    for (const z of [-0.74, 0.74]) {
-      for (const [x, y, w, h] of [
-        [0, 1.2, 3.36, 0.1],
-        [0, -1.2, 3.36, 0.1],
-        [-1.66, 0, 0.1, 2.3],
-        [1.66, 0, 0.1, 2.3],
-      ]) {
-        const bar = rounded(w, h, 0.1, 0.035, this.m.ivory);
-        bar.position.set(x, y, z);
-        bar.castShadow = false;
-        g.add(bar);
+    // Enclosed polyvaricon, based on the supplied 21 × 21 × 17 mm reference.
+    // Seven terminal tabs are representative positions, NOT an identified pinout.
+    const g = new THREE.Group(); this.root.add(g); this.capGroup = g;
+    const shell = new THREE.MeshPhysicalMaterial({color:0xe5dfbe,roughness:0.3,
+      metalness:0,transparent:true,opacity:0.48,depthWrite:false,side:THREE.DoubleSide});
+    this.capShell = rounded(2.1,2.1,1.7,0.13,shell,5); g.add(this.capShell);
+    const front=rounded(2.06,2.06,0.1,0.1,this.m.ivory,4);front.position.z=0.86;g.add(front);
+    const rear=rounded(2.06,2.06,0.09,0.1,this.m.ivory,4);rear.position.z=-0.86;g.add(rear);
+    // Dielectric-separated sections inside the housing, not exposed air fins.
+    for (const x of [-0.48,0.48]) for(let i=0;i<13;i++) {
+      const plate=cyl(0.42,0.42,0.018,24,this.m.silver);
+      plate.rotation.x=Math.PI/2;plate.position.set(x,0,-0.65+i*0.1);plate.castShadow=false;g.add(plate);
+    }
+    const rotor=new THREE.Group();g.add(rotor);this.capRotor=rotor;
+    const shaft=cyl(0.17,0.17,0.43,6,this.m.brass);
+    shaft.rotation.x=Math.PI/2;shaft.position.z=1.08;rotor.add(shaft);
+    const bore=cyl(0.075,0.075,0.012,20,this.m.black);
+    bore.rotation.x=Math.PI/2;bore.position.z=1.30;rotor.add(bore);
+    const mark=box(0.035,0.12,0.012,this.m.copperDark);mark.position.set(0,0.11,1.305);rotor.add(mark);
+    // No invented large dial. The brass threaded shaft is the tuning control.
+    this.capDial=null;
+    for(const x of [-0.78,0.78]) for(const y of [-0.78,0.78]) {
+      const screw=cyl(0.105,0.105,0.045,20,this.m.silver);
+      screw.rotation.x=Math.PI/2;screw.position.set(x,y,0.94);g.add(screw);
+      const slot=box(0.14,0.018,0.009,this.m.ink);slot.position.set(x,y,0.968);g.add(slot);
+    }
+    for(const x of [-0.59,0.59]) {
+      const rim=new THREE.Mesh(new THREE.TorusGeometry(0.115,0.025,8,24),this.m.brass);
+      rim.position.set(x,-0.27,0.93);g.add(rim);
+      const hole=cyl(0.09,0.09,0.01,18,this.m.black);hole.rotation.x=Math.PI/2;hole.position.set(x,-0.27,0.926);g.add(hole);
+    }
+    // Four rear trimmer screws, visible when orbiting around the component.
+    for(const x of [-0.52,0.52]) for(const y of [-0.5,0.5]) {
+      const trim=cyl(0.20,0.20,0.06,24,this.m.brassLight);
+      trim.rotation.x=Math.PI/2;trim.position.set(x,y,-0.94);g.add(trim);
+      const slot=box(0.27,0.025,0.012,this.m.ink);slot.position.set(x,y,-0.978);g.add(slot);
+    }
+    this.capTerminals=[];
+    for(const [side,xs] of [[-1,[-0.67,0,0.67]],[1,[-0.75,-0.25,0.25,0.75]]]) {
+      for(const x of xs) {
+        const lug=rounded(0.13,0.64,0.045,0.02,this.m.brass,3);
+        lug.position.set(x,side*1.27,-0.47);g.add(lug);this.capTerminals.push(lug);
+        const hole=new THREE.Mesh(new THREE.TorusGeometry(0.028,0.009,6,12),this.m.copperDark);
+        hole.position.set(x,side*1.49,-0.442);g.add(hole);
       }
     }
-
-    // stator plates
-    for (let i = 0; i < 5; i++) {
-      const z = -0.44 + i * 0.19;
-      const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.94, 0.94, 0.022, 40, 1, false, 0, Math.PI), this.m.brass);
-      plate.rotation.x = Math.PI / 2;
-      plate.position.set(0, 0, z);
-      plate.castShadow = false;
-      g.add(plate);
-    }
-
-    // rotor plates and shaft
-    const rotor = new THREE.Group();
-    g.add(rotor);
-    this.capRotor = rotor;
-    for (let i = 0; i < 5; i++) {
-      const z = -0.535 + i * 0.19;
-      const plate = new THREE.Mesh(new THREE.CylinderGeometry(0.88, 0.88, 0.026, 40, 1, false, 0, Math.PI), this.m.brassLight);
-      plate.rotation.x = Math.PI / 2;
-      plate.position.set(0, 0, z);
-      plate.castShadow = false;
-      rotor.add(plate);
-    }
-
-    const shaft = cyl(0.095, 0.095, 1.46, 16, this.m.silver);
-    shaft.rotation.x = Math.PI / 2;
-    shaft.position.z = 0.16;
-    rotor.add(shaft);
-
-    // dial
-    const dial = new THREE.Group();
-    dial.position.z = 0.88;
-    g.add(dial);
-    this.capDial = dial;
-
-    const disc = cyl(0.74, 0.74, 0.09, 40, this.m.ivory);
-    disc.rotation.x = Math.PI / 2;
-    dial.add(disc);
-
-    const dialRing = new THREE.Mesh(
-      new THREE.TorusGeometry(0.62, 0.017, 6, 48),
-      this.m.scopeDark
-    );
-    dialRing.position.z = 0.052;
-    dial.add(dialRing);
-
-    for (let i = 0; i < 12; i++) {
-      const tick = box(0.022, i % 3 === 0 ? 0.15 : 0.09, 0.01, this.m.scopeDark);
-      const a = (i / 12) * Math.PI * 2;
-      tick.position.set(Math.sin(a) * 0.5, Math.cos(a) * 0.5, 0.055);
-      tick.rotation.z = -a;
-      tick.castShadow = false;
-      dial.add(tick);
-    }
-
-    const pointer = box(0.055, 0.47, 0.018, this.m.copperDark);
-    pointer.position.set(0, 0.22, 0.065);
-    pointer.castShadow = false;
-    dial.add(pointer);
-
-    const knob = cyl(0.21, 0.21, 0.22, 24, this.m.whitePlastic);
-    knob.rotation.x = Math.PI / 2;
-    knob.position.z = 0.08;
-    dial.add(knob);
-
-    // lugs
-    for (const x of [-1.2, -0.4, 0.4, 1.2]) {
-      const lug = box(0.24, 0.52, 0.075, this.m.silver);
-      lug.position.set(x, -1.46, 0.18);
-      g.add(lug);
-      const hole = new THREE.Mesh(
-        new THREE.TorusGeometry(0.052, 0.014, 5, 16),
-        this.m.black
-      );
-      hole.position.set(x, -1.61, 0.225);
-      g.add(hole);
-    }
-
-    // mounting pad and tape stay on the pipe
-    const mount = new THREE.Group();
-    this.root.add(mount);
-    this.capMount = mount;
-    const pad = rounded(3.05, 0.4, 0.7, 0.1, this.m.foam);
-    pad.position.set(-7.5, 6.9, -0.95);
-    mount.add(pad);
-    for (const x of [-9.36, -5.64]) {
-      const band = rounded(0.3, 2.75, 1.68, 0.07, this.m.tape);
-      band.position.set(x, 8.32, -0.35);
-      band.castShadow = false;
-      mount.add(band);
-    }
-    mount.visible = false;
-
-    tagPart(g, "capacitor");
-    this._anchor("cap", g, 0, -0.4, 0);
-    this._anchor("capFrame", g, 1.62, -1.05, 0.55);
-    this._anchor("capKnob", g, 0, 0, 1.22);
-    this._anchor("tankTop", g, -1.2, -1.3, 0.1);
-    this._anchor("tankBottom", g, 1.2, -1.3, 0.1);
-
-    this.capTrayPos = V(-6.1, 1.2, 7.75);
-    this.capTrayQuat = new THREE.Quaternion().setFromEuler(
-      new THREE.Euler(-Math.PI / 2, 0, 0.12)
-    );
-    this.capMountedPos = V(-7.5, 8.32, -0.35);
-    this.capMountedQuat = new THREE.Quaternion();
-    g.position.copy(this.capTrayPos);
-    g.quaternion.copy(this.capTrayQuat);
+    // Illustrative AM/common pair. Endpoints are shared by anchors AND wires.
+    this.capAMLocal=V(-0.67,-1.49,-0.47);
+    this.capCommonLocal=V(0,-1.49,-0.47);
+    this.capTrayPos=V(-6.1,1.2,7.75);
+    this.capTrayQuat=new THREE.Quaternion().setFromEuler(new THREE.Euler(-Math.PI/2,0,0.12));
+    this.capMountedPos=V(-7.5,8.32,-0.35);this.capMountedQuat=new THREE.Quaternion();
+    this.capAMWorld=this.capAMLocal.clone().add(this.capMountedPos);
+    this.capCommonWorld=this.capCommonLocal.clone().add(this.capMountedPos);
+    const mount=new THREE.Group();this.root.add(mount);this.capMount=mount;
+    const pad=rounded(1.9,0.32,1.1,0.07,this.m.foam);pad.position.set(-7.5,7.1,-0.15);mount.add(pad);
+    for(const x of [-8.51,-6.49]) {const band=rounded(0.14,2.1,1.72,0.025,this.m.tape);band.position.set(x,8.32,-0.35);mount.add(band);}
+    mount.visible=false;
+    tagPart(g,'capacitor');
+    this._anchor('cap',g,0,0,0);this._anchor('capFrame',g,0.95,0,0.85);
+    this._anchor('capKnob',g,0,0,1.3);
+    this._anchor('tankTop',g,...this.capAMLocal.toArray());
+    this._anchor('tankBottom',g,...this.capCommonLocal.toArray());
+    g.position.copy(this.capTrayPos);g.quaternion.copy(this.capTrayQuat);
   }
 
   _tankLeads() {
@@ -522,8 +455,8 @@ export class Bench {
     this.root.add(g);
     this.tankLeads = g;
 
-    const a = tube([[-8.75,6.716,-1],[-8.95,7.12,-0.8],[-8.85,7.12,-0.35],[-8.7,6.71,-0.17]],0.025,this.m.copper,72,6);
-    const b = tube([[-6.25,6.716,-1],[-6.05,7.12,-0.8],[-6.15,7.12,-0.35],[-6.3,6.71,-0.17]],0.025,this.m.copper,72,6);
+    const a = tube([[-8.75,6.716,-1],[-8.95,7.12,-0.8],[-8.85,7.12,-0.35],this.capAMWorld.toArray()],0.025,this.m.copper,72,6);
+    const b = tube([[-6.25,6.716,-1],[-6.05,7.12,-0.8],[-6.15,7.12,-0.35],this.capCommonWorld.toArray()],0.025,this.m.copper,72,6);
     g.add(a, b);
     this.reveals.tank = [a.geometry, b.geometry];
     tagPart(g, "tank");
@@ -1365,7 +1298,7 @@ export class Bench {
 
     const signal = tube(
       [
-        [-8.7, 6.86, -0.17],
+        this.capAMWorld.toArray(),
         [-8.82, 6.6, 0.35],
         [-8.88, 5.3, 1.55],
         [-8.65, 3.4, 2.45],
@@ -1389,7 +1322,7 @@ export class Bench {
 
     const ground = tube(
       [
-        [-6.3, 6.86, -0.17],
+        this.capCommonWorld.toArray(),
         [-6.25, 6.6, 0.2],
         [-6.2, 5.1, 1.65],
         [-5.7, 2.6, 2.8],
@@ -1518,120 +1451,23 @@ export class Bench {
   }
 
   _drawScope() {
-    if(this.generatorTex) {
-      const ctx=this.generatorTex.image.getContext('2d');
-      ctx.fillStyle='#101a20';ctx.fillRect(18,85,240,30);
-      ctx.fillStyle='#b8a98f';ctx.font='500 17px "JetBrains Mono",monospace';
-      ctx.fillText((2*this.sourceAmplitude).toFixed(2)+' Vpp',22,104);
-      this.generatorTex.needsUpdate=true;
-    }
-    if (!this.scopeCtx) return;
-    const ctx = this.scopeCtx;
-    const w = 640;
-    const h = 360;
-    ctx.clearRect(0, 0, w, h);
-    ctx.fillStyle = "#07151b";
-    ctx.fillRect(0, 0, w, h);
-
-    ctx.strokeStyle = "rgba(84,190,181,.13)";
-    ctx.lineWidth = 1;
-    for (let x = 32; x < w; x += 32) {
-      ctx.beginPath();
-      ctx.moveTo(x, 0);
-      ctx.lineTo(x, h);
-      ctx.stroke();
-    }
-    for (let y = 30; y < h; y += 30) {
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(w, y);
-      ctx.stroke();
-    }
-    ctx.strokeStyle = "rgba(84,190,181,.3)";
-    ctx.beginPath();
-    ctx.moveTo(w / 2, 0);
-    ctx.lineTo(w / 2, h);
-    ctx.moveTo(0, h / 2);
-    ctx.lineTo(w, h / 2);
-    ctx.stroke();
-
-    const ratio = this._response();
-    const amp = this.probeAtTP1 ? this.sourceAmplitude * ratio * 210 : 0;
-    const cy = h / 2 - 8;
-
-    ctx.save();
-    ctx.shadowColor = "rgba(91,224,207,.75)";
-    ctx.shadowBlur = 14;
-    ctx.strokeStyle = "#64e0d5";
-    ctx.lineWidth = 3.2;
-    ctx.beginPath();
-    for (let x = 0; x <= w; x += 2) {
-      const y = cy - Math.sin((x / w) * Math.PI * 8 - this.time * 2.5) * amp;
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.stroke();
-    ctx.restore();
-
-    ctx.fillStyle = "#a5eee4";
-    ctx.font = '500 22px "JetBrains Mono", monospace';
-    ctx.fillText("CH1", 24, 34);
-    ctx.fillStyle = "#7eafa7";
-    ctx.font = '400 18px "JetBrains Mono", monospace';
-    ctx.fillText("DC  ×10", 82, 34);
-    ctx.fillText("500 mV/div", 24, h - 24);
-    ctx.textAlign = "right";
-    ctx.fillText("819.0 kHz", w - 24, h - 24);
-    ctx.fillStyle = ratio > 0.82 ? "#7be1d5" : "#947f63";
-    ctx.font = '600 20px "JetBrains Mono", monospace';
-    ctx.fillText(!this.probeAtTP1 ? "PROBE DISCONNECTED" : ratio > 0.82 ? "RESONANCE" : "DETUNED", w - 24, 36);
-    ctx.textAlign = "left";
-    this.scopeTex.needsUpdate = true;
+    if(!this.scopeCtx) return;
+    const ctx=this.scopeCtx;ctx.fillStyle='#202a29';ctx.fillRect(0,0,640,360);
+    ctx.strokeStyle='#45534f';ctx.lineWidth=1;
+    for(let x=32;x<640;x+=32){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,360);ctx.stroke();}
+    for(let y=30;y<360;y+=30){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(640,y);ctx.stroke();}
+    ctx.strokeStyle='#c2cab9';ctx.lineWidth=3;ctx.beginPath();
+    for(let x=0;x<=640;x+=2){const y=180-(this.probeAtTP1?70:0)*Math.sin(x/640*Math.PI*12);x?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.stroke();
+    ctx.fillStyle='#e2e6dc';ctx.font='22px Barlow,sans-serif';ctx.fillText('CH1  ·  TP1  ·  ×10',22,35);
+    ctx.font='18px Barlow,sans-serif';ctx.fillText('ILLUSTRATIVE TRACE · NOT A READING',22,335);this.scopeTex.needsUpdate=true;
   }
 
   _drawDmm() {
-    if (!this.dmmCtx) return;
-    const ctx = this.dmmCtx;
-    const w = 512;
-    const h = 256;
-    if (!this.dmmOn) {
-      ctx.fillStyle = "#303b34";
-      ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = "rgba(201,219,190,.2)";
-      ctx.font = '500 68px "JetBrains Mono", monospace';
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText("— — —", w / 2, h / 2);
-      this.dmmTex.needsUpdate = true;
-      return;
-    }
-
-    const ratio = this._response();
-    const value = Math.max(0, this.sourceAmplitude * ratio - 0.25);
-    const text = value < 0.001 ? "0.000" : value.toFixed(3);
-
-    ctx.fillStyle = "#d6e2c3";
-    ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = "rgba(63,85,45,.1)";
-    for (let y = 0; y < h; y += 4) ctx.fillRect(0, y, w, 1);
-
-    ctx.fillStyle = "#25331d";
-    ctx.font = '500 84px "JetBrains Mono", monospace';
-    ctx.textAlign = "right";
-    ctx.textBaseline = "alphabetic";
-    ctx.fillText(text, w - 100, 128);
-    ctx.font = '500 30px "JetBrains Mono", monospace';
-    ctx.fillText("V", w - 38, 126);
-    ctx.textAlign = "left";
-    ctx.font = '500 24px "JetBrains Mono", monospace';
-    ctx.fillText("DC", 32, 58);
-    ctx.font = '400 20px "JetBrains Mono", monospace';
-    ctx.fillText("TP3 · ILLUSTRATION", 32, 222);
-    ctx.textAlign = "right";
-    ctx.fillStyle = "rgba(37,51,29,.55)";
-    ctx.fillText("AUTO", w - 30, 222);
-    ctx.textAlign = "left";
-    this.dmmTex.needsUpdate = true;
+    if(!this.dmmCtx) return;
+    const ctx=this.dmmCtx;ctx.fillStyle='#d0d8bd';ctx.fillRect(0,0,512,256);
+    ctx.fillStyle='#303b30';ctx.textAlign='center';ctx.font='70px Barlow,sans-serif';
+    ctx.fillText(this.dmmOn?'TP3':'—',256,132);ctx.font='24px Barlow,sans-serif';ctx.fillText('DC VOLTS · MEASURE ON BENCH',256,213);
+    this.dmmTex.needsUpdate=true;
   }
 
   setTuning(pF) {
@@ -1816,7 +1652,7 @@ export class Bench {
       this._animateStep();
       this._drawScope(); this._drawDmm();
     }
-    if(this.step >= 7 && Math.floor(this.time*12) !== this.lastScreenFrame) {
+    if(false) {
       this.lastScreenFrame = Math.floor(this.time*12);
       this._drawScope(); this._drawDmm();
     }

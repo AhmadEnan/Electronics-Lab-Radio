@@ -1,0 +1,213 @@
+{
+  "checks": [
+    {
+      "name": "Eight lessons",
+      "pass": true
+    },
+    {
+      "name": "Step 1 geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 1 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 2 geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 2 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 3 geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 3 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 4 geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 4 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 5 geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 5 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 6 geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 6 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 7 geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 7 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 8 geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 8 scrub",
+      "pass": true
+    },
+    {
+      "name": "Each fitted component has a specific picker",
+      "pass": true
+    },
+    {
+      "name": "Specific component and terminals in 3D",
+      "pass": true
+    },
+    {
+      "name": "Connected leads remain visible",
+      "pass": true
+    },
+    {
+      "name": "All three transistor terminal labels",
+      "pass": true
+    },
+    {
+      "name": "Cross-view part selection retained",
+      "pass": true
+    },
+    {
+      "name": "Live vector board",
+      "pass": true
+    },
+    {
+      "name": "Map selection reveals band and nodes",
+      "pass": true
+    },
+    {
+      "name": "Map works by keyboard",
+      "pass": true
+    },
+    {
+      "name": "Tracing LEVEL dims unrelated connections",
+      "pass": true
+    },
+    {
+      "name": "Map locates exact 3D component",
+      "pass": true
+    },
+    {
+      "name": "Default windings have visible axial gap",
+      "pass": true
+    },
+    {
+      "name": "Secondary has blue insulation",
+      "pass": true
+    },
+    {
+      "name": "As-wound restores overlap",
+      "pass": true
+    },
+    {
+      "name": "Separated view restored",
+      "pass": true
+    },
+    {
+      "name": "Bias calculation preserved",
+      "pass": true
+    },
+    {
+      "name": "Divider preserved",
+      "pass": true
+    },
+    {
+      "name": "Record persistence",
+      "pass": true
+    },
+    {
+      "name": "No 3D overflow 390",
+      "pass": true
+    },
+    {
+      "name": "No wiring overflow 390",
+      "pass": true
+    },
+    {
+      "name": "Enlargement scroll stays inside diagram 390",
+      "pass": true
+    },
+    {
+      "name": "No 3D overflow 768",
+      "pass": true
+    },
+    {
+      "name": "No wiring overflow 768",
+      "pass": true
+    },
+    {
+      "name": "Enlargement scroll stays inside diagram 768",
+      "pass": true
+    },
+    {
+      "name": "No 3D overflow 992",
+      "pass": true
+    },
+    {
+      "name": "No wiring overflow 992",
+      "pass": true
+    },
+    {
+      "name": "Enlargement scroll stays inside diagram 992",
+      "pass": true
+    },
+    {
+      "name": "No 3D overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "No wiring overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "Enlargement scroll stays inside diagram 1440",
+      "pass": true
+    },
+    {
+      "name": "No 3D overflow 1920",
+      "pass": true
+    },
+    {
+      "name": "No wiring overflow 1920",
+      "pass": true
+    },
+    {
+      "name": "Enlargement scroll stays inside diagram 1920",
+      "pass": true
+    },
+    {
+      "name": "M1 still loads eight steps",
+      "pass": true
+    },
+    {
+      "name": "M1 node controls preserved",
+      "pass": true
+    },
+    {
+      "name": "No runtime errors",
+      "pass": true
+    }
+  ],
+  "errors": []
+}

@@ -1,429 +1,172 @@
-import * as THREE from "../vendor/three.module.js";
-import { OrbitControls } from "../vendor/OrbitControls.js";
-import { Bench } from "./models.js";
-import { STEPS } from "./steps.js";
+import * as THREE from '../vendor/three.module.js';
+import { OrbitControls } from '../vendor/OrbitControls.js';
+import { Bench } from './models.js';
 
-const reduceMotion =
-  typeof window !== "undefined" &&
-  window.matchMedia &&
-  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const BOXES = {
+  1:[[-10.6,0,-3.6],[-4.4,7.3,1.8]],
+  2:[[-10.5,0,-3.6],[-4.4,10.1,1.8]],
+  3:[[-10.5,0,-3.6],[-4.4,10.1,1.8]],
+  4:[[0.4,0.4,-1.6],[8.8,3,4]],
+  5:[[-11,0,-4],[9,10,5]],
+  6:[[-19,0,-5],[9,10,8]],
+  7:[[-19,0,-9],[15,10,8]],
+  8:[[-19,0,-9],[15,10,11]],
+};
+const LABELS = {
+  1:[['coil','75 turns / 25 mm'],['coil','Ø 50 mm former']],
+  2:[['capKnob','Threaded tuning shaft'],['tankTop','AM pair: verify on part']],
+  3:[['tankTop','TP1 / example AM lug'],['tankBottom','GND / example common']],
+  4:[['diodeBand','Cathode band → TP3'],['load','15 kΩ ∥ 3.3 nF']],
+  5:[['tp1','TP1 / diode anode'],['groundRail','Receiver GND']],
+  6:[['loop','Source loop / own return'],['coil','Receiver / isolated']],
+  7:[['probeTip','×10 tip → TP1'],['groundRail','Probe ground → GND']],
+  8:[['tp3','TP3 / detector output'],['dmm','DMM / DC volts']],
+};
 
 export class RadioScene {
-  constructor(canvas, options = {}) {
-    this.canvas = canvas;
-    this.stage = canvas.closest(".stage") || canvas.parentElement;
-    this.calloutLayer = document.getElementById("callouts");
-    this.leaderLayer = document.getElementById("leaders");
-    this.onPart = options.onPart || (() => {});
-    this.onReady = options.onReady || (() => {});
-
-    this.renderer = new THREE.WebGLRenderer({
-      canvas,
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
+  constructor(canvas, {onPart=()=>{}, onReady=()=>{}, onProgress=()=>{}, BenchClass=Bench, boxes=BOXES, labels=LABELS}={}) {
+    this.boxes=boxes;this.labelDefinitions=labels;
+    this.canvas=canvas;this.stage=canvas.parentElement;
+    this.onPart=onPart;this.onReady=onReady;this.onProgress=onProgress;
+    this.labels=document.getElementById('callouts');this.leaders=document.getElementById('leaders');
+    this.motionQuery=matchMedia('(prefers-reduced-motion: reduce)');
+    this.renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true,powerPreference:'low-power'});
+    this.renderer.setPixelRatio(Math.min(Math.max(devicePixelRatio||1,1.5),2));
+    this.renderer.outputColorSpace=THREE.SRGBColorSpace;
+    this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=.98;
+    this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+    this.camera=new THREE.PerspectiveCamera(32,1,.1,250);
+    this.controls=new OrbitControls(this.camera,canvas);
+    this.controls.enableDamping=false;this.controls.enablePan=false;
+    this.controls.minDistance=2;this.controls.maxDistance=160;
+    this.controls.minPolarAngle=.01;this.controls.maxPolarAngle=Math.PI*.49;
+    this.controls.rotateSpeed=.7;this.controls.zoomSpeed=.8;
+    this.bench=new BenchClass(this.renderer);
+    this.step=1;this.labelsOn=true;this.playing=false;this.visible=false;this.enabled=true;
+    this.frameCount=0;this.raf=0;this.last=0;this.ready=false;this.top=false;
+    this.controls.addEventListener('change',()=>this.invalidate());
+    this.observer=new IntersectionObserver(entries=>{
+      this.visible=entries[0].isIntersecting;
+      if(this.visible){this.last=0;this.invalidate();}else this.cancelFrame();
+    },{threshold:0});this.observer.observe(this.stage);
+    this.resizeObserver=new ResizeObserver(()=>this.resize());this.resizeObserver.observe(this.stage);
+    document.addEventListener('visibilitychange',()=>{if(document.hidden)this.cancelFrame();else{this.last=0;this.invalidate();}});
+    this.motionQuery.addEventListener('change',()=>{this.playing=false;this.onProgress(this.progress,false);this.invalidate();});
+    this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();
+    canvas.addEventListener('pointerdown',e=>{this.down=[e.clientX,e.clientY];});
+    canvas.addEventListener('pointerup',e=>{
+      if(!this.down||Math.hypot(e.clientX-this.down[0],e.clientY-this.down[1])>5)return;
+      const r=canvas.getBoundingClientRect();this.pointer.set((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2);
+      this.raycaster.setFromCamera(this.pointer,this.camera);
+      const hit=this.raycaster.intersectObjects(this.bench.pickables).find(h=>this.isVisible(h.object));
+      if(hit)this.onPart(hit.object.userData.part);
     });
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-    this.renderer.setClearColor(0x000000, 0);
-    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 1.03;
-    this.renderer.shadowMap.enabled = true;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-    this.camera = new THREE.PerspectiveCamera(32, 1, 0.2, 180);
-    this.controls = new OrbitControls(this.camera, canvas);
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.065;
-    this.controls.enablePan = false;
-    this.controls.minDistance = 9;
-    this.controls.maxDistance = 80;
-    this.controls.minPolarAngle = 0.32;
-    this.controls.maxPolarAngle = 1.41;
-    this.controls.rotateSpeed = 0.72;
-    this.controls.zoomSpeed = 0.8;
-
-    this.bench = new Bench(this.renderer);
-    this.step = 0;
-    this.labelsOn = true;
-    this.callouts = [];
-    this.leaderNodes = [];
-    this.cameraTween = null;
-    this.lastPointer = { x: 0, y: 0 };
-    this.dragging = false;
-    this.raycaster = new THREE.Raycaster();
-    this.pointer = new THREE.Vector2();
-    this.hoverDirty = false;
-    this._firstFrame = true;
-    this._last = performance.now();
-
-    this._bind();
-    this.resize();
-    this._resizeObserver = new ResizeObserver(() => this.resize());
-    this._resizeObserver.observe(this.stage);
-
-    this._applyCamera(0, true);
-    this._loop = this._loop.bind(this);
-    this._raf = requestAnimationFrame(this._loop);
-  }
-
-  _bind() {
-    this.controls.addEventListener("start", () => {
-      this.cameraTween = null;
+    canvas.addEventListener('keydown',e=>{
+      if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown','+','=','-','Home'].includes(e.key))return;
+      e.preventDefault();
+      if(e.key==='Home')return this.resetView();
+      if(['+','=','-'].includes(e.key))return this.zoom(e.key==='-'?1.16:.86);
+      const offset=this.camera.position.clone().sub(this.controls.target),s=new THREE.Spherical().setFromVector3(offset);
+      s.theta+=(e.key==='ArrowLeft'?.12:e.key==='ArrowRight'?-.12:0);
+      s.phi=THREE.MathUtils.clamp(s.phi+(e.key==='ArrowUp'?-.12:e.key==='ArrowDown'?.12:0),.02,1.53);
+      this.camera.position.copy(this.controls.target).add(new THREE.Vector3().setFromSpherical(s));this.controls.update();this.invalidate();
     });
-
-    this.canvas.addEventListener("pointerdown", (e) => {
-      this.dragging = true;
-      this.lastPointer = { x: e.clientX, y: e.clientY };
-    });
-    this.canvas.addEventListener("pointerup", (e) => {
-      const dx = e.clientX - this.lastPointer.x;
-      const dy = e.clientY - this.lastPointer.y;
-      this.dragging = false;
-      if (Math.hypot(dx, dy) > 6) return;
-      const part = this._pick(e);
-      if (part) this.onPart(part);
-    });
-    this.canvas.addEventListener("pointerleave", () => {
-      this.canvas.style.cursor = "grab";
-    });
-    this.canvas.addEventListener("pointermove", (e) => {
-      if (e.buttons) {
-        this.canvas.style.cursor = "grabbing";
-        return;
-      }
-      this.canvas.style.cursor = "grab";
-      this._hover(e);
-    });
+    canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();this.cancelFrame();document.getElementById('scene-error').hidden=false;});
+    canvas.addEventListener('webglcontextrestored',()=>{document.getElementById('scene-error').hidden=true;this.invalidate();});
+    this.setStep(1);this.resize();
   }
-
-  _pointerInfo(e) {
-    const rect = this.canvas.getBoundingClientRect();
-    this.pointer.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-    this.pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  isVisible(object){for(let o=object;o;o=o.parent)if(!o.visible)return false;return true;}
+  get progress(){return Math.min(1,this.bench.animation.elapsed/this.bench.animation.duration);}
+  setStep(step){
+    this.step=step;this.playing=false;this.top=false;
+    this.bench.setStep(step,true);this.bench.paused=true;
+    // Remove unused tools from the close-up, preserving only useful geometry.
+    this.bench.spoolGroup.visible=false;this.bench.toolsGroup.visible=false;
+    this.makeLabels();this.resetView();this.onProgress(1,false);this.invalidate();
   }
-
-  _visibleChain(obj) {
-    let o = obj;
-    while (o) {
-      if (!o.visible) return false;
-      o = o.parent;
-    }
-    return true;
+  resize(){
+    const w=this.canvas.clientWidth,h=this.canvas.clientHeight;if(!w||!h)return;
+    const selected=this.bench.selected,node=this.bench.activeNode;
+    this.renderer.setSize(w,h,false);this.camera.aspect=w/h;this.camera.updateProjectionMatrix();
+    if(selected)this.focusPart(selected);else{this.resetView(this.top);if(node&&node!=='all')this.bench.highlightNode?.(node);}
   }
-
-  _pick(e) {
-    this._pointerInfo(e);
-    this.raycaster.setFromCamera(this.pointer, this.camera);
-    const hits = this.raycaster.intersectObjects(this.bench.pickables, false);
-    for (const hit of hits) {
-      if (!hit.object.userData.part) continue;
-      if (!this._visibleChain(hit.object)) continue;
-      return hit.object.userData.part;
-    }
-    return null;
-  }
-
-  _hover(e) {
-    if (!this._hoverQueued) {
-      this._hoverQueued = true;
-      requestAnimationFrame(() => {
-        this._hoverQueued = false;
-        const part = this._pick(e);
-        this.canvas.style.cursor = part ? "pointer" : "grab";
-      });
-    }
-  }
-
-  resize() {
-    const w = this.canvas.clientWidth;
-    const h = this.canvas.clientHeight;
-    if (!w || !h) return;
-    this.renderer.setSize(w, h, false);
-    this.camera.aspect = w / h;
-    this.camera.updateProjectionMatrix();
-    if (this.bench) this._applyCamera(this.step, true);
-    this._updateCalloutPositions();
-  }
-
-  _responsiveScale() {
-    const a = this.camera.aspect;
-    if (a < 0.95) return 1.42;
-    if (a < 1.25) return 1.2;
-    return 1;
-  }
-
-  _applyCamera(index, instant = false) {
-    const preset = STEPS[index]?.camera;
-    if (!preset) return;
-    const bounds = [
-      [[-19,0,-9],[15,10,11]], [[-10.6,1.6,-3.6],[-4.4,7.3,1.8]],
-      [[-9.5,5.5,-1.6],[-5.5,this.bench.animation.elapsed>=8?9.8:12.8,1.3]], [[-10.2,3,-3.2],[-4.8,9.8,1.5]],
-      [[0.4,0.4,-1.6],[8.8,this.bench.animation.elapsed>=8?2.8:4.6,4]], [[-11,0,-4],[9,10,5]],
-      [[-19,0,-5],[9,10,8]], [[0,0,-9],[15,6,5]],
-      [[0,0,-2],[12,5,11]],
-    ][index];
-    const box = new THREE.Box3(new THREE.Vector3(...bounds[0]),new THREE.Vector3(...bounds[1]));
-    const target = box.getCenter(new THREE.Vector3());
-    const direction = new THREE.Vector3(...(index===4 ? [0.3,1.5,1] : index>=7 ? [0.45,1.1,1.5] : [0.7,0.65,1.4])).normalize();
-    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),direction).normalize();
-    const up = new THREE.Vector3().crossVectors(direction,right);
-    const tanV = Math.tan(THREE.MathUtils.degToRad(this.camera.fov/2));
-    const tanH = tanV*this.camera.aspect;
-    let distance = 0;
-    for(const x of [box.min.x,box.max.x]) for(const y of [box.min.y,box.max.y]) for(const z of [box.min.z,box.max.z]) {
+  fit(box,direction){
+    const target=box.getCenter(new THREE.Vector3());direction.normalize();
+    const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),direction).normalize();
+    const up=new THREE.Vector3().crossVectors(direction,right);
+    const tv=Math.tan(THREE.MathUtils.degToRad(this.camera.fov/2)),th=tv*this.camera.aspect;
+    let distance=0;
+    for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){
       const v=new THREE.Vector3(x,y,z).sub(target);
-      distance=Math.max(distance,Math.abs(v.dot(right))/tanH+v.dot(direction),Math.abs(v.dot(up))/tanV+v.dot(direction));
+      distance=Math.max(distance,Math.abs(v.dot(right))/th+v.dot(direction),Math.abs(v.dot(up))/tv+v.dot(direction));
     }
-    const pos=target.clone().addScaledVector(direction,distance*1.08);
-    this.controls.maxDistance = Math.max(80,distance*1.8);
-
-    if (instant) {
-      this.camera.position.copy(pos);
-      this.controls.target.copy(target);
-      this.controls.update();
-      this.cameraTween = null;
-      return;
-    }
-    this.cameraTween = {
-      fromPos: this.camera.position.clone(),
-      fromTarget: this.controls.target.clone(),
-      toPos: pos,
-      toTarget: target,
-      start: performance.now(),
-      duration: reduceMotion ? 1 : 850,
-    };
+    this.controls.maxDistance=Math.max(160,distance*2);
+    this.camera.position.copy(target).addScaledVector(direction,distance*1.12);
+    this.controls.target.copy(target);this.controls.update();this.invalidate();
   }
-
-  setStep(index, options = {}) {
-    this.step = index;
-    this.bench.setStep(index, !!options.instant || reduceMotion);
-    this._applyCamera(index, !!options.instant);
-    this._buildCallouts();
-    if (options.instant) this._updateCalloutPositions();
+  resetView(top=false){
+    this.bench.clearFocus?.();if(this.annotations)this.makeLabels();this.top=top;const bounds=this.boxes[this.step];
+    const box=new THREE.Box3(new THREE.Vector3(...bounds[0]),new THREE.Vector3(...bounds[1]));
+    if(this.progress<1&&[2,4].includes(this.step))box.max.y+=3;
+    this.fit(box,top?new THREE.Vector3(0,1,.015):new THREE.Vector3(...(this.bench.viewDirection || (this.step===4?[.15,1.7,1]:[.6,.65,1.4]))));
   }
-
-  resetView() {
-    this._applyCamera(this.step, false);
-  }
-
-  focusPart(id) {
+  focusPart(id){
     const b=this.bench;
-    const part={coil:b.coilGroup,pipe:b.pipeGroup,capacitor:b.capGroup,
-      diode:b.detectorParts[0],resistor:b.detectorParts[1],ceramic:b.detectorParts[2],
-      board:b.boardGroup,loop:b.loopGroup,scope:b.scopeGroup,dmm:b.dmmGroup,probe:b.probeGroup,
-      generator:b.generatorGroup,spool:b.spoolGroup,tray:b.trayGroup}[id];
-    if(!part || !this._visibleChain(part)) return;
-    b.animation.elapsed=b.animation.duration;
-    b._animateStep();
-    part.updateWorldMatrix(true,true);
-    const bounds=new THREE.Box3().setFromObject(part);
-    const target=bounds.getCenter(new THREE.Vector3());
-    const size=bounds.getSize(new THREE.Vector3());
-    const radius=Math.max(size.x,size.y,size.z)*0.65;
-    const distance=Math.max(2.6,radius/Math.tan(THREE.MathUtils.degToRad(this.camera.fov/2))/Math.min(1,this.camera.aspect));
-    const dir=new THREE.Vector3(0.3,1.1,1.5).normalize();
-    this.controls.minDistance=1.5;
-    this.cameraTween={fromPos:this.camera.position.clone(),fromTarget:this.controls.target.clone(),
-      toPos:target.clone().addScaledVector(dir,distance),toTarget:target,start:performance.now(),duration:reduceMotion?1:700};
+    const part=b.parts?.[id] || {coil:b.coilGroup,pipe:b.pipeGroup,capacitor:b.capGroup,diode:b.detectorParts[0],resistor:b.detectorParts[1],ceramic:b.detectorParts[2],board:b.boardGroup,loop:b.loopGroup,generator:b.generatorGroup,scope:b.scopeGroup,probe:b.probeGroup,dmm:b.dmmGroup}[id];
+    if(!part||!this.isVisible(part))return;
+    this.scrub(1);b.inspect?.(id);b.root.updateMatrixWorld(true);
+    const custom=b.focusBounds?.(id)||b.focusBoxes?.[id];
+    if(b.annotationsFor)this.makeLabels(b.annotationsFor(id));
+    this.fit(custom?new THREE.Box3(new THREE.Vector3(...custom[0]),new THREE.Vector3(...custom[1])):new THREE.Box3().setFromObject(part),new THREE.Vector3(...(b.focusDirection?.(id)||[.15,1.1,1.5])));
   }
-
-  replay() { this.setStep(this.step); }
-
-  togglePause() {
-    this.bench.paused = !this.bench.paused;
-    return this.bench.paused;
+  zoom(factor){const offset=this.camera.position.clone().sub(this.controls.target);offset.setLength(THREE.MathUtils.clamp(offset.length()*factor,2,this.controls.maxDistance));this.camera.position.copy(this.controls.target).add(offset);this.controls.update();this.invalidate();}
+  setLabels(on){this.bench.setLabels?.(on);this.labelsOn=on;this.labels.hidden=!on;this.leaders.hidden=!on;this.invalidate();}
+  setEnabled(enabled){this.enabled=enabled;if(enabled){this.last=0;this.resize();this.invalidate();}else this.cancelFrame();}
+  scrub(fraction){this.playing=false;this.bench.paused=true;this.bench.animation.elapsed=Math.max(0,Math.min(1,fraction))*this.bench.animation.duration;this.bench._animateStep();this.bench._drawScope();this.bench._drawDmm();this.onProgress(this.progress,false);this.invalidate();}
+  togglePlay(){
+    if(this.playing){this.playing=false;this.onProgress(this.progress,false);return;}
+    if(this.progress>=1)this.scrub(0);
+    this.playing=true;this.last=0;this.resetView(this.top);this.onProgress(this.progress,true);this.invalidate();
   }
-
-  zoom(factor) {
-    const offset = this.camera.position.clone().sub(this.controls.target);
-    const len = offset.length();
-    const next = THREE.MathUtils.clamp(len * factor, this.controls.minDistance, this.controls.maxDistance);
-    offset.setLength(next);
-    this.camera.position.copy(this.controls.target).add(offset);
-    this.controls.update();
-  }
-
-  setLabels(on) {
-    this.labelsOn = on;
-    if (!on) {
-      this.calloutLayer.innerHTML = "";
-      this.leaderLayer.innerHTML = "";
-      this.callouts = [];
-      this.leaderNodes = [];
-      return;
+  cancelFrame(){if(this.raf)cancelAnimationFrame(this.raf);this.raf=0;this.last=0;}
+  invalidate(){if(!this.raf&&this.enabled&&this.visible&&!document.hidden)this.raf=requestAnimationFrame(t=>this.render(t));}
+  render(now){
+    this.raf=0;if(!this.enabled||!this.visible||document.hidden)return;
+    if(this.playing){
+      const dt=this.last?Math.min((now-this.last)/1000,.05):0;this.last=now;
+      this.bench.animation.elapsed=Math.min(this.bench.animation.duration,this.bench.animation.elapsed+dt);
+      this.bench._animateStep();this.playing=this.progress<1;
+      this.onProgress(this.progress,this.playing);
+      if(!this.playing)this.resetView(this.top);
     }
-    this._buildCallouts();
-    this._updateCalloutPositions();
+    this.renderer.render(this.bench.scene,this.camera);this.frameCount++;this.positionLabels();
+    if(!this.ready){this.ready=true;this.onReady();}
+    if(this.playing)this.invalidate();
   }
-
-  setSignal(on) {
-    this.bench.setSignal(on);
-  }
-
-  setTuning(pF) {
-    return this.bench.setTuning(pF);
-  }
-
-  _buildCallouts() {
-    if (!this.labelsOn) return;
-    this.calloutLayer.innerHTML = "";
-    this.leaderLayer.innerHTML = "";
-    this.callouts = [];
-    this.leaderNodes = [];
-
-    const data = STEPS[this.step]?.callouts || [];
-    data.forEach((c, i) => {
-      const el = document.createElement("article");
-      el.className = "callout";
-      el.dataset.slot = c.slot;
-      el.innerHTML = `
-        <span class="callout-num">${String(this.step + 1).padStart(2, "0")} · ${String.fromCharCode(65 + i)}</span>
-        <div class="callout-kicker">${c.kicker}</div>
-        <div class="callout-title">${c.title}</div>
-        <p class="callout-body">${c.body}</p>`;
-      this.calloutLayer.appendChild(el);
-      this.callouts.push({ el, anchor: c.anchor, slot: c.slot });
-
-      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path.setAttribute("fill", "none");
-      path.setAttribute("stroke", "#8b7c66");
-      path.setAttribute("stroke-width", "1");
-      path.setAttribute("stroke-dasharray", "3 4");
-      path.setAttribute("opacity", "0");
-      this.leaderLayer.appendChild(path);
-
-      const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      dot.setAttribute("r", "2.4");
-      dot.setAttribute("fill", "#168f8d");
-      dot.setAttribute("stroke", "#f4ebdb");
-      dot.setAttribute("stroke-width", "1.3");
-      dot.setAttribute("opacity", "0");
-      this.leaderLayer.appendChild(dot);
-
-      this.leaderNodes.push({ path, dot });
-
-      requestAnimationFrame(() => {
-        if (el.isConnected) el.classList.add("is-in");
-        path.setAttribute("opacity", "0.7");
-        dot.setAttribute("opacity", "1");
-      });
-    });
-  }
-
-  _updateCalloutPositions() {
-    if(!this.stage.contains(this.calloutLayer)) return;
-    if (!this.labelsOn || !this.callouts.length) return;
-    const rect = this.stage.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
-    this.leaderLayer.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
-    this.leaderLayer.setAttribute("width", rect.width);
-    this.leaderLayer.setAttribute("height", rect.height);
-
-    const v = new THREE.Vector3();
-    this.callouts.forEach((c, i) => {
-      const anchor = this.bench.anchors[c.anchor];
-      const nodes = this.leaderNodes[i];
-      if (!anchor) {
-        nodes.path.setAttribute("opacity", "0");
-        nodes.dot.setAttribute("opacity", "0");
-        return;
-      }
-      anchor.getWorldPosition(v);
-      v.project(this.camera);
-      const canvasRect = this.canvas.getBoundingClientRect();
-      const x = canvasRect.left-rect.left+(v.x * 0.5 + 0.5) * canvasRect.width;
-      const y = canvasRect.top-rect.top+(-v.y * 0.5 + 0.5) * canvasRect.height;
-      const visible = v.z < 1 && x > -30 && x < rect.width + 30 && y > -20 && y < rect.height + 20;
-      if (!visible) {
-        nodes.path.setAttribute("opacity", "0");
-        nodes.dot.setAttribute("opacity", "0");
-        return;
-      }
-
-      const card = c.el.getBoundingClientRect();
-      const left = card.left - rect.left;
-      const top = card.top - rect.top;
-      const isLeft = c.slot === "tl" || c.slot === "bl";
-      const startX = isLeft ? left + card.width : left;
-      const startY = top + Math.min(card.height * 0.5, 42);
-      const elbowX = startX + (isLeft ? 26 : -26);
-
-      nodes.path.setAttribute(
-        "d",
-        `M ${startX.toFixed(1)} ${startY.toFixed(1)} L ${elbowX.toFixed(1)} ${startY.toFixed(1)} L ${elbowX.toFixed(1)} ${y.toFixed(1)} L ${x.toFixed(1)} ${y.toFixed(1)}`
-      );
-      nodes.path.setAttribute("opacity", "0.68");
-      nodes.dot.setAttribute("cx", x.toFixed(1));
-      nodes.dot.setAttribute("cy", y.toFixed(1));
-      nodes.dot.setAttribute("opacity", "1");
-    });
-  }
-
-  _loop(now) {
-    const dt = Math.min((now - this._last) / 1000, 0.05);
-    this._last = now;
-
-    if (this.cameraTween) {
-      const t = THREE.MathUtils.clamp(
-        (now - this.cameraTween.start) / this.cameraTween.duration,
-        0,
-        1
-      );
-      const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      this.camera.position.lerpVectors(
-        this.cameraTween.fromPos,
-        this.cameraTween.toPos,
-        e
-      );
-      this.controls.target.lerpVectors(
-        this.cameraTween.fromTarget,
-        this.cameraTween.toTarget,
-        e
-      );
-      if (t >= 1) this.cameraTween = null;
+  makeLabels(definitions=this.labelDefinitions[this.step]){
+    this.labels.replaceChildren();this.leaders.replaceChildren();this.annotations=[];
+    for(const [i,[anchor,text]] of definitions.entries()){
+      const el=document.createElement('span');el.className='model-label';el.textContent=text;this.labels.append(el);
+      const path=document.createElementNS('http://www.w3.org/2000/svg','path');path.setAttribute('fill','none');path.setAttribute('stroke','#92988d');path.setAttribute('stroke-width','1');
+      const dot=document.createElementNS('http://www.w3.org/2000/svg','circle');dot.setAttribute('r','2.5');dot.setAttribute('fill','#a44d29');this.leaders.append(path,dot);
+      this.annotations.push({anchor,el,path,dot,i});
     }
-
-    this.controls.update();
-    const wasPlaying=this.bench.animation.elapsed<this.bench.animation.duration;
-    this.bench.update(dt);
-    if(wasPlaying && this.bench.animation.elapsed>=this.bench.animation.duration && [2,4].includes(this.step)) this._applyCamera(this.step);
-    const progress = document.getElementById('animationProgress');
-    const status = document.getElementById('animationStatus');
-    const a = this.bench.animation;
-    if (progress) progress.value = Math.min(100,a.elapsed/a.duration*100);
-    if (status) {
-      const descriptions = ['Inspect the kit · click a component','Winding 75 turns','Lowering the capacitor onto its mount',
-        'Joining the two AM terminals','Inserting diode, resistor, then capacitor','Connecting TP1 and ground',
-        'Aligning the five-turn test loop','Sweeping C past the 819 kHz source','Increasing the six source levels'];
-      status.textContent = this.bench.paused ? 'Animation paused' : a.elapsed>=a.duration ? 'Step complete · replay to watch again' : descriptions[this.step];
-    }
-    if (this.step===7 && a.elapsed<a.duration) {
-      const cap = document.getElementById('tuneRange');
-      const readout = document.getElementById('tuneCap');
-      const frequency = document.getElementById('tuneFreq');
-      if (cap) cap.value=this.bench.tuning;
-      if (readout) readout.textContent=this.bench.tuning.toFixed(1)+' pF';
-      if (frequency) frequency.textContent=(1/(2*Math.PI*Math.sqrt(291.5e-6*this.bench.tuning*1e-12))/1000).toFixed(1)+' kHz';
-    }
-    this._updateLessonReadout();
-    this.renderer.render(this.bench.scene, this.camera);
-    this._updateCalloutPositions();
-
-    if (this._firstFrame) {
-      this._firstFrame = false;
-      this.onReady();
-    }
-    this._raf = requestAnimationFrame(this._loop);
   }
-
-  _updateLessonReadout() {
-    const readout=document.getElementById('liveReadout');
-    if(!readout) return;
-    const b=this.bench, ratio=b._response();
-    readout.hidden=this.step<6;
-    if(this.step===6) readout.textContent='5-turn loop → magnetic field → 75-turn coil · no electrical connection';
-    if(this.step===7) readout.textContent=`Illustration · source 819 kHz · C ${b.tuning.toFixed(1)} pF · TP1 peak ${(b.sourceAmplitude*ratio).toFixed(3)} V`;
-    if(this.step===8) readout.textContent=`Illustration · source ${b.sourceAmplitude.toFixed(2)} V · TP1 peak ${(b.sourceAmplitude*ratio).toFixed(3)} V · TP3 DC ${Math.max(0,b.sourceAmplitude*ratio-0.25).toFixed(3)} V`;
+  positionLabels(){
+    if(!this.labelsOn)return;
+    const rect=this.stage.getBoundingClientRect(),cr=this.canvas.getBoundingClientRect();this.leaders.setAttribute('viewBox',`0 0 ${rect.width} ${rect.height}`);
+    for(const a of this.annotations){
+      const anchor=this.bench.anchors[a.anchor];if(!anchor)continue;
+      const point=anchor.getWorldPosition(new THREE.Vector3());
+      if(!this.bench.annotationsFor&&this.step===1&&a.i===1)point.z+=2.5;
+      point.project(this.camera);
+      const x=cr.left-rect.left+(point.x+1)*cr.width/2,y=cr.top-rect.top+(1-point.y)*cr.height/2;
+      const visible=point.z<1&&x>=0&&x<=rect.width&&y>=0&&y<=rect.height;
+      a.el.hidden=!visible;a.path.style.display=a.dot.style.display=visible?'':'none';if(!visible)continue;
+      const three=this.annotations.length===3,left=a.i===0||(three&&a.i===1)?18:Math.max(18,rect.width-a.el.offsetWidth-18),top=a.i===0||(three&&a.i===2)?58:rect.height-135;
+      a.el.style.left=`${left}px`;a.el.style.top=`${top}px`;
+      const sx=left+a.el.offsetWidth/2,sy=top+(a.i===0?a.el.offsetHeight:0);
+      a.path.setAttribute('d',`M${sx},${sy} L${sx},${(sy+y)/2} L${x},${y}`);a.dot.setAttribute('cx',x);a.dot.setAttribute('cy',y);
+    }
   }
 }

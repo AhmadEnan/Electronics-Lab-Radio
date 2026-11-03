@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="schematic-svg" viewBox="0 0 900 380" role="img" aria-label="M1 circuit: isolated five-turn source loop, parallel LC tank at TP1, diode cathode at TP3, resistor and capacitor in parallel to ground.">
+<g fill="none" stroke="#28302e" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round">
+<circle cx="72" cy="185" r="27"/><path d="M52 185q10-22 20 0t20 0M72 158V100H185V143M185 143c25 0 25 20 0 20c25 0 25 20 0 20c25 0 25 20 0 20c25 0 25 20 0 20v47H72v-58"/>
+<path d="M315 100H470M315 100v43c-25 0-25 20 0 20c-25 0-25 20 0 20c-25 0-25 20 0 20c-25 0-25 20 0 20v47h510M425 100v74m-20 0h40m-40 18h40m-20 0v78M401 153l49 59m-9-2 9 2-1-9"/>
+<path d="M470 100h52m0-20v40l32-20-32-20m32 0v40m0-20h271M650 100v42l-9 7 18 14-18 14 18 14-18 14 18 14-9 7v44M765 100v74m-22 0h44m-44 18h44m-22 0v78M650 270v20m-18 0h36m-30 9h24m-18 9h12"/>
+</g>
+<g fill="#a44d29"><circle cx="425" cy="100" r="5"/><circle cx="650" cy="100" r="5"/><circle cx="765" cy="100" r="5"/><circle cx="650" cy="270" r="5"/><circle cx="765" cy="270" r="5"/></g>
+<g fill="#28302e" font-family="Barlow, sans-serif" font-size="20" text-anchor="middle">
+<text x="72" y="325">Generator</text><text x="175" y="67">5 turns</text><text x="315" y="67">75 turns</text><text x="425" y="67" fill="#a44d29">TP1</text><text x="539" y="62">1N60P</text><text x="700" y="67" fill="#a44d29">TP3</text>
+<text x="470" y="232">20–280 pF</text><text x="588" y="199">15 kΩ</text><text x="815" y="222">3.3 nF</text><text x="540" y="147" font-size="16">band → TP3</text><text x="650" y="337">GND</text>
+</g><path d="M214 187h56" stroke="#a44d29" stroke-width="2" stroke-dasharray="4 5"/><g fill="#a44d29" font-family="Barlow, sans-serif" font-size="16" text-anchor="middle"><text x="244" y="160">a few cm</text><text x="244" y="235">field only</text></g>
+</svg>

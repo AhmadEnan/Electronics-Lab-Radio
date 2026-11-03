@@ -1,483 +1,169 @@
 (() => {
-  // radio-guide/src/steps.js
-  var STEPS = [
-    {
-      id: "kit",
-      kicker: "KIT CHECK",
-      title: "Lay out the two halves.",
-      time: "5 min",
-      icon: "i-tools",
-      dockTitle: "Kit check",
-      dockSub: "12 parts \xB7 no ICs",
-      lede: "Put everything on the bench before you cut a single centimetre of wire. The build has two halves: the tank on the pipe, and the detector on the breadboard. They meet at exactly two wires.",
-      tasks: [
-        "Check the <b>12 m wire spool</b>, the <b>50 mm PVC offcut</b>, and the <b>AM tuning capacitor</b>.",
-        "Find the <b>1N60P</b> (glass, black band), the <b>15 k\u03A9 resistor</b>, and the <b>3.3 nF ceramic</b>.",
-        "Lay out the breadboard, the five-turn test loop, the scope with its \xD710 probe, and the DMM.",
-        "Ask your grader which two lugs on the capacitor are the <b>AM section</b> before you solder anything."
-      ],
-      warn: "The spool is only just long enough. 75 turns on a 50 mm former already use 11.78 m, so every long tail is stolen from the winding.",
-      numbers: [
-        ["Kit", "12", "parts"],
-        ["Silicon", "0", "ICs"],
-        ["Supply", "0", "rails"]
-      ],
-      focus: { part: "coil", name: "75-turn coil", spec: "291.5 \xB5H predicted" },
-      camera: { pos: [29, 25, 34], target: [0, 4.2, 0.5] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "Start here",
-          title: "One spool, one chance.",
-          body: "0.30 mm enamelled copper. 75 close turns will take almost all of it.",
-          anchor: "spool"
-        },
-        {
-          slot: "br",
-          kicker: "Two halves",
-          title: "Tank left. Detector right.",
-          body: "They meet only at TP1 and ground. Everything else stays magnetic.",
-          anchor: "tray"
-        }
-      ]
-    },
+  // src/lessons.js
+  var LESSONS = [
     {
       id: "wind",
-      kicker: "WIND THE COIL",
-      title: "Seventy-five turns. No more.",
-      time: "35 min",
-      icon: "i-coil",
-      dockTitle: "Wind the coil",
-      dockSub: "75 T \xB7 25 mm",
-      lede: "This is the only part of M1 you cannot rush. Count in tens, keep every turn touching its neighbour, and leave two short tails. The winding length sets the inductance.",
-      tasks: [
-        "Tape the wire to the pipe, then wind <b>75 turns</b> over a <b>25 mm</b> band. Count in groups of ten.",
-        "Keep the turns <b>close-wound</b>: no gaps, no overlaps and no crossed wire.",
-        "Anchor the finish with tape and check the count before trimming anything.",
-        "Strip about <b>1 cm</b> of enamel from each tail until the copper shines."
+      scene: 1,
+      name: "Wind the coil",
+      group: "Tank",
+      title: "Wind 75 turns on the former.",
+      intro: "The coil and the variable capacitor will select the incoming frequency. Start with a single, even layer of enamelled copper wire.",
+      parts: "50 mm PVC pipe \xB7 0.30 mm enamelled copper \xB7 tape \xB7 abrasive paper",
+      steps: [
+        "Mark a band approximately 25 mm long on the pipe. Secure the start with tape, leaving a short tail for the capacitor connection.",
+        "Wind 75 turns side by side, with no crossings. Count in groups of ten and keep a written tally. Secure the finish before releasing the tension.",
+        "Scrape about 10 mm of enamel from each end until clean copper is visible. Leave the insulation on the winding intact."
       ],
-      warn: "Do not stretch the finished coil. Tension while winding is fine; pulling afterwards can crack the enamel and loosen the winding.",
-      numbers: [
-        ["Turns", "75", "exact"],
-        ["Wire", "11.78", "m"],
-        ["Length", "25", "mm"]
-      ],
-      focus: { part: "coil", name: "Copper winding", spec: "0.30 mm \xB7 75 turns \xB7 25 mm" },
-      camera: { pos: [2, 10, 16], target: [-7.4, 4.5, -1] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "The winding",
-          title: "75 turns, counted.",
-          body: "A 0.30 mm wire gives 75 turns in about 25 mm. Keep the band tight.",
-          anchor: "coil"
-        },
-        {
-          slot: "br",
-          kicker: "The budget",
-          title: "11.78 m of 12 m.",
-          body: "Two 8 cm tails leave very little spare. Do not add a long leader.",
-          anchor: "coil"
-        }
-      ]
+      why: "More turns increase inductance; spreading the same turns over a longer distance reduces it. The geometry matters as much as the count. Wheeler\u2019s estimate for 75 turns, 50 mm diameter and 25 mm length is 291.5 \xB5H.",
+      check: "Measure resistance between the stripped ends with the coil isolated. Expect a low, finite resistance. An open reading suggests enamel at a contact or a broken wire. This check cannot rule out shorted turns.",
+      caution: "The winding alone needs about 11.78 m of wire, before tails and the wire\u2019s thickness are allowed for. Check the actual spool length before cutting.",
+      note: "75 turns \xB7 \xD8 50 mm \xB7 winding length \u2248 25 mm",
+      inspect: ["coil", "pipe"],
+      record: "Photograph the winding; record turn count, measured diameter, winding length and DC resistance."
     },
     {
       id: "capacitor",
-      kicker: "FIT THE CAPACITOR",
-      title: "Mount the dial.",
-      time: "15 min",
-      icon: "i-capacitor",
-      dockTitle: "Fit capacitor",
-      dockSub: "20\u2013280 pF \xB7 AM pair",
-      lede: "The capacitor is the other half of the tank. Tape its frame \u2014 never its shaft \u2014 to the pipe, with the lugs toward the coil and the dial reachable by a finger.",
-      tasks: [
-        "Confirm the <b>AM lug pair</b> with your grader, then check it in capacitance mode: the reading must sweep roughly <b>20 \u2192 280 pF</b>.",
-        "Tape or glue the <b>frame</b> to the pipe. Leave the shaft and dial completely free.",
-        "Point the lugs toward the coil so both tails can reach without stretching.",
-        "Turn the shaft through its full travel once. Nothing should rub, short or pull."
+      scene: 2,
+      name: "Mount the capacitor",
+      group: "Tank",
+      title: "Identify the AM terminals first.",
+      intro: "The supplied capacitor may have several terminals. The model shows a representative housing; use the AM pair identified for your actual component.",
+      parts: "Variable capacitor, 20\u2013280 pF \xB7 tape or glue \xB7 capacitance meter if available",
+      steps: [
+        "Ask the grader to identify the AM terminals. With the capacitor disconnected, check that rotating the shaft changes the capacitance across that pair.",
+        "Attach the frame to the pipe with tape or glue. Position the terminals close enough for the coil tails to reach without tension.",
+        "Move the shaft through its full travel. Keep adhesive, leads and fingers clear of the moving parts."
       ],
-      warn: "The frame is thin plastic and soft metal. A long soldering dwell will melt it or shift the plates. Tin separately, then make one quick joint \u2014 or ask before soldering.",
-      numbers: [
-        ["Range", "20\u2013280", "pF"],
-        ["Lugs", "AM", "verify pair"],
-        ["Mount", "tape", "frame only"]
-      ],
-      focus: { part: "capacitor", name: "AM tuning capacitor", spec: "20\u2013280 pF \xB7 verify AM pair" },
-      camera: { pos: [0.5, 12, 16], target: [-7.4, 7.2, -0.4] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "The dial",
-          title: "Find the AM pair.",
-          body: "One pair sweeps 20\u2013280 pF. The others are the FM or trimmer section.",
-          anchor: "capKnob"
-        },
-        {
-          slot: "br",
-          kicker: "The mount",
-          title: "Tape the frame, not the shaft.",
-          body: "The shaft must turn freely through the whole band. Keep the lugs accessible.",
-          anchor: "capFrame"
-        }
-      ]
+      why: "Increasing capacitance lowers the resonant frequency. Half the shaft\u2019s travel does not necessarily mean half the capacitance: the relationship depends on the plate shape.",
+      check: "The frame is secure, the shaft rotates freely and the identified AM pair sweeps approximately 20\u2013280 pF. Subtract or zero the meter leads\u2019 capacitance if your meter supports it.",
+      caution: "Terminal positions in the illustration are not a pinout for your capacitor. Confirm the real part before connecting it.",
+      note: "Representative capacitor housing \xB7 verify the actual terminals",
+      inspect: ["capacitor", "coil"],
+      record: "Photograph the AM terminal pair and record the measured minimum and maximum capacitance."
     },
     {
       id: "tank",
-      kicker: "FORM THE TANK",
-      title: "Close the loop.",
-      time: "10 min",
-      icon: "i-schematic",
-      dockTitle: "Form the tank",
-      dockSub: "TP1 \xB7 ground",
-      lede: "Solder one coil tail to each AM lug. The coil and capacitor are now in parallel: one node at the top (TP1), one at the bottom (ground). Polarity does not matter.",
-      tasks: [
-        "Solder or twist one <b>coil tail</b> to each of the two AM lugs. Either tail can go to either lug.",
-        "Keep both leads <b>short</b> and tape them to the pipe so they cannot flex.",
-        "Label the top node <b>TP1</b> and the bottom node <b>GND</b>.",
-        "Check each tail-to-lug joint. The assembled tank reads the coil\u2019s low DC resistance; isolate one capacitor lug to test it separately."
+      scene: 3,
+      name: "Connect the tank",
+      group: "Tank",
+      title: "Put the coil and capacitor in parallel.",
+      intro: "Both components share the same two nodes. Call one TP1 and the other GND. These labels describe electrical connections, not physical height.",
+      parts: "Wound coil \xB7 mounted capacitor \xB7 two short connections",
+      steps: [
+        "Join one stripped coil tail to one AM terminal and the other tail to the second AM terminal. The coil has no required polarity.",
+        "Label one joint TP1 and the other GND. These become the signal and return connections to the detector.",
+        "Make secure joints using the method agreed with your grader. Support the wires so rotating the dial cannot pull on them."
       ],
-      warn: "Long leads add stray inductance and capacitance, and hand capacitance will move the peak. Keep the tank compact and rigid.",
-      numbers: [
-        ["L", "291.5", "\xB5H"],
-        ["C @ 819", "130", "pF"],
-        ["Top", "TP1", "node"]
-      ],
-      focus: { part: "capacitor", name: "Parallel tank", spec: "L \u2225 C \xB7 TP1 to ground" },
-      camera: { pos: [10, 13, 21], target: [-6.4, 5.4, -0.6] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "Top node",
-          title: "TP1 is born.",
-          body: "Coil top and one AM lug. This is the high-impedance node you will probe.",
-          anchor: "tankTop"
-        },
-        {
-          slot: "br",
-          kicker: "Bottom node",
-          title: "Ground is the other half.",
-          body: "Coil bottom and the second AM lug. The tank is now a closed parallel circuit.",
-          anchor: "tankBottom"
-        }
-      ]
+      why: "Energy exchanges between the coil\u2019s magnetic field and the capacitor\u2019s electric field. Near f\u2080 = 1 / (2\u03C0\u221ALC), their reactive currents cancel and the parallel tank\u2019s impedance is largest. Losses keep the voltage finite.",
+      check: "Trace each node: TP1 must touch one end of both L and C; GND must touch the other ends. A resistance meter reads the coil\u2019s low DC resistance across the assembled tank, which is expected.",
+      caution: "Disconnect one capacitor terminal before measuring its capacitance. Measuring across the assembled LC pair does not isolate C.",
+      note: "L \u2225 C \xB7 predicted C at 819 kHz \u2248 129.5 pF",
+      inspect: ["coil", "capacitor"],
+      record: "Save a clear photo of both joints and your inductance and tuning-range predictions."
     },
     {
       id: "detector",
-      kicker: "BUILD THE DETECTOR",
-      title: "Install the one-way door.",
-      time: "20 min",
-      icon: "i-diode",
-      dockTitle: "Install detector",
-      dockSub: "1N60P \xB7 15 k\u03A9 \xB7 3.3 nF",
-      lede: "On the breadboard, the diode runs from TP1 to TP3 with its black band facing TP3. The 15 k\u03A9 resistor and the 3.3 nF capacitor sit in parallel from TP3 to ground.",
-      tasks: [
-        "Insert the <b>1N60P</b> between strips 9 and 17 on the a\u2013e half. Its band faces <b>TP3</b> at strip 17.",
-        "Bridge a\u2013e to f\u2013j with the resistor at strip 17 and the capacitor at strip 25. Link their a\u2013e ends together for <b>TP3</b>; jumper both f\u2013j ends to the blue <b>ground rail</b>.",
-        "Check the band again: cathode (band) \u2192 TP3, anode (no band) \u2192 TP1.",
-        "Diode-test it: about <b>0.2\u20130.3 V</b> one way, open the other, red lead on the anode."
+      scene: 4,
+      name: "Build the detector",
+      group: "Detector",
+      title: "Keep TP1, TP3 and GND distinct.",
+      intro: "The diode connects TP1 to TP3. The resistor and capacitor each connect TP3 to ground. Use the wiring view to trace the breadboard\u2019s internal connections.",
+      parts: "1N60P diode \xB7 15 k\u03A9 resistor \xB7 3.3 nF capacitor (332) \xB7 breadboard",
+      steps: [
+        "Insert the diode from d9 to d17. Put the banded end at d17: this is the cathode, on TP3. The unbanded end at d9 is TP1.",
+        "Place the resistor between e17 and g17, across the centre channel. Place the 3.3 nF capacitor between d25 and g25.",
+        "Jumper b17 to b25 to join the two TP3 strips. Connect i17 and i25 to the same ground rail. The resistor and capacitor are now in parallel."
       ],
-      warn: "A reversed diode can still rectify, but gives a negative output at TP3. The black band must face TP3, away from the tank.",
-      numbers: [
-        ["Diode", "1N60P", "detector"],
-        ["\u03C4", "49.5", "\xB5s"],
-        ["Band", "\u2192 TP3", "cathode"]
-      ],
-      focus: { part: "diode", name: "1N60P detector", spec: "band \u2192 TP3 \xB7 \u22480.25 V drop" },
-      camera: { pos: [14, 12, 17], target: [4.6, 2.2, 1] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "Direction",
-          title: "The band is the cathode.",
-          body: "Black band toward TP3. The unbanded anode faces the tank at TP1.",
-          anchor: "diodeBand"
-        },
-        {
-          slot: "br",
-          kicker: "The load",
-          title: "One leak, one bucket.",
-          body: "15 k\u03A9 \xD7 3.3 nF = 49.5 \xB5s. Both parts run from TP3 to ground, in parallel.",
-          anchor: "load"
-        }
-      ]
+      why: "When TP1 rises enough above TP3, the diode conducts and charges the capacitor. Between peaks the diode stops conducting; the capacitor discharges through 15 k\u03A9. Their time constant is 49.5 \xB5s.",
+      check: "Trace the three nodes in the wiring view. Holes a\u2013e within one numbered strip are connected; f\u2013j form a separate strip. Verify the ground rail\u2019s continuity on your own board.",
+      caution: "Breadboard layouts vary. The listed holes describe this example, while the three-node circuit is the requirement. Isolate a diode lead for a reliable diode test.",
+      note: "Diode band \u2192 TP3 \xB7 15 k\u03A9 \u2225 3.3 nF to GND",
+      inspect: ["diode", "resistor", "ceramic", "board"],
+      record: "Photograph the diode band and record the resistance, capacitance and isolated diode-test reading."
     },
     {
       id: "connect",
-      kicker: "JOIN THE HALVES",
-      title: "Tank to detector.",
-      time: "10 min",
-      icon: "i-board",
-      dockTitle: "Join the halves",
-      dockSub: "TP1 + GND",
-      lede: "Run exactly two links: tank top to TP1, tank bottom to the breadboard ground rail. There is no power wire and no third connection.",
-      tasks: [
-        "Connect the tank's <b>TP1</b> node to the breadboard's TP1 node \u2014 the diode anode side.",
-        "Connect the tank's <b>ground</b> to the breadboard's <b>ground rail</b>.",
-        "Keep the leads short and route them away from the coil. Tape them down.",
-        "Check the three nodes against the wiring map. With the RC load and coil connected, TP1 to TP3 also has a path through ground and 15 k\u03A9; isolate a diode lead for its diode test."
+      scene: 5,
+      name: "Join tank & detector",
+      group: "Detector",
+      title: "Make the two connections.",
+      intro: "Connect the tank\u2019s signal node to the diode anode, and its return node to the detector ground rail.",
+      parts: "Completed tank \xB7 detector \xB7 two short wires",
+      steps: [
+        "Connect tank TP1 to the strip containing the diode\u2019s unbanded end, strip 9 in this example.",
+        "Connect tank GND to the ground rail used by the resistor and capacitor. Verify continuity along the rail rather than assuming it is continuous.",
+        "Keep the links short and secure. Trace the full circuit against the schematic before attaching instruments."
       ],
-      warn: "TP1 and TP3 are different nodes. Their only bridge is the 1N60P. A stray jumper across the breadboard centre channel will destroy the detector.",
-      numbers: [
-        ["Links", "2", "only"],
-        ["TP1", "anode", "side"],
-        ["GND", "rail", "return"]
-      ],
-      focus: { part: "board", name: "TP1 / ground links", spec: "two wires \xB7 no third connection" },
-      camera: { pos: [16, 15, 24], target: [0.8, 3.4, 0.6] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "Signal link",
-          title: "TP1 meets TP1.",
-          body: "Tank top to diode anode. This is the only path the RF takes into the detector.",
-          anchor: "tp1"
-        },
-        {
-          slot: "br",
-          kicker: "Return link",
-          title: "Ground is the way back.",
-          body: "Tank bottom to the breadboard ground rail. Both the resistor and capacitor return here.",
-          anchor: "groundRail"
-        }
-      ]
+      why: "The detector receives the tank voltage between TP1 and GND. A shared return gives both halves the same voltage reference. No separate DC power supply is needed for this passive stage.",
+      check: "TP1 reaches the anode. TP3 reaches the cathode and the top of both load components. GND reaches the other end of both loads and the tank return.",
+      caution: "Do not add a jumper between TP1 and TP3; it would bypass the diode. In-circuit resistance readings can include paths through the coil and load.",
+      note: "Two links: TP1 and GND",
+      inspect: ["board", "diode", "coil"],
+      record: "Save an overall wiring photo with the three nodes labelled."
     },
     {
       id: "loop",
-      kicker: "ADD THE TEST LOOP",
-      title: "Bring in the field.",
-      time: "10 min",
-      icon: "i-loop",
-      dockTitle: "Add test loop",
-      dockSub: "5 T \xB7 magnetic only",
-      lede: "The generator drives a five-turn loop, not the tank. Put the loop on the same axis as the coil, 3\u20135 cm away, and leave both loop terminals isolated from the tank.",
-      tasks: [
-        "Stand the <b>five-turn loop</b> coaxially with the coil, about <b>3\u20135 cm</b> from its end.",
-        "Connect the loop only to the <b>generator output</b>. Never to the tank.",
-        "Set the generator to <b>sine</b>, around <b>819 kHz</b>, and start near 0.5 V.",
-        "Rotate or slide the loop for the largest TP1 signal \u2014 that is the coupling sweet spot."
+      scene: 6,
+      name: "Couple the test signal",
+      group: "Measure",
+      title: "Drive the loop, then align the coils.",
+      intro: "The generator drives a separate five-turn test loop. Its changing magnetic field induces a voltage in the 75-turn receiving coil.",
+      parts: "Five-turn test loop \xB7 RF-capable generator \xB7 oscilloscope and \xD710 probe",
+      steps: [
+        "Connect the generator output and return to the two ends of the test loop. Keep both loop leads separate from the tank.",
+        "Place the loop a few centimetres from the receiving coil, with their axes aligned. Start with a sine near 819 kHz and a modest output.",
+        "Check the generator\u2019s amplitude convention (Vpp, peak or RMS, and 50 \u03A9 or high-impedance setting). Adjust alignment for a visible TP1 signal; keep the position fixed during a sweep."
       ],
-      warn: "There is no electrical connection between loop and tank. Wiring the generator across the tank would load it, detune it and defeat the whole measurement.",
-      numbers: [
-        ["Turns", "5", "loop"],
-        ["Gap", "3\u20135", "cm"],
-        ["Link", "field", "no wire"]
-      ],
-      focus: { part: "loop", name: "Five-turn test loop", spec: "magnetic coupling only" },
-      camera: { pos: [8, 10, 18], target: [-2.4, 4.2, -0.6] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "Coupling",
-          title: "Same axis. No wire.",
-          body: "The loop drives a changing field through the coil. A few centimetres is plenty.",
-          anchor: "loop"
-        },
-        {
-          slot: "br",
-          kicker: "Drive",
-          title: "Sine, 819 kHz.",
-          body: "The generator is a stand-in transmitter. Its output goes to the loop and nowhere else.",
-          anchor: "generator"
-        }
-      ]
+      why: "Magnetic coupling transfers the test signal without directly wiring the generator\u2019s output impedance across the tank. Coupling still loads the resonator: moving the loop changes both amplitude and, potentially, bandwidth.",
+      check: "The source reaches the radio band, the two coils share an axis and the loop has no direct wire to TP1. A computer audio output cannot generate the required 0.56\u20132.1 MHz sine.",
+      caution: "Generator amplitude is not TP1 amplitude. Coil spacing, losses, probe loading and resonance determine the received voltage; measure it.",
+      note: "5-turn source loop \u2192 magnetic coupling \u2192 75-turn tank",
+      inspect: ["loop", "generator", "coil"],
+      record: "Record the source model, output convention, loop diameter, spacing and alignment."
     },
     {
       id: "resonance",
-      kicker: "FIND RESONANCE",
-      title: "Find the peak.",
-      time: "25 min",
-      icon: "i-wave",
-      dockTitle: "Find resonance",
-      dockSub: "TP1 \xB7 \xD710 probe",
-      lede: "Set the capacitor to half travel, put the \xD710 probe on TP1, and sweep the generator. The tank answers with its largest voltage at one frequency: f\u2080.",
-      tasks: [
-        "Set the capacitor to <b>half mechanical travel</b>. Do not hunt for a number yet.",
-        "Scope on <b>CH1, DC, \xD710</b>. Ground clip to tank ground, hook tip to <b>TP1</b>.",
-        "Sweep around 819 kHz and narrow the span until the peak is centred. Record <b>f\u2080</b>.",
-        "Find the two <b>0.707</b> points. Q = f\u2080 / (f<sub>high</sub> \u2212 f<sub>low</sub>)."
+      scene: 7,
+      name: "Measure resonance",
+      group: "Measure",
+      title: "Find the peak and its bandwidth.",
+      intro: "Hold the capacitor and coil spacing fixed while sweeping frequency. Use TP1 amplitude to find resonance and the two half-power frequencies.",
+      parts: "Scope on CH1, DC coupling \xB7 compensated \xD710 probe \xB7 generator",
+      steps: [
+        "Compensate the probe using the scope\u2019s calibration output. Set both the probe and channel to \xD710. Connect the tip to TP1 and a short ground lead to GND.",
+        "Set the capacitor to half mechanical travel. Sweep the source through the band to find the largest TP1 amplitude; record f\u2080 and the peak amplitude.",
+        "Find f_low and f_high where TP1 amplitude is 0.707 times that peak. Calculate Q = f\u2080 / (f_high \u2212 f_low). Then find resonance at both ends of the capacitor\u2019s travel."
       ],
-      warn: "A \xD71 probe adds about 100 pF across the tank \u2014 as much as the tuning capacitor. Use \xD710 and compensate the probe before you trust any reading.",
-      numbers: [
-        ["Probe", "\xD710", "\u224810 pF"],
-        ["\u22123 dB", "0.707", "peak"],
-        ["Band", "0.56\u20132.08", "MHz"]
-      ],
-      focus: { part: "probe", name: "\xD710 scope probe", spec: "CH1 \xB7 DC \xB7 TP1" },
-      camera: { pos: [13, 11, 18], target: [3.2, 3, -0.4] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "The probe",
-          title: "\xD710, not \xD71.",
-          body: "Switch and channel both on \xD710. Compensate on the scope's 1 kHz output first.",
-          anchor: "probeTip"
-        },
-        {
-          slot: "br",
-          kicker: "The answer",
-          title: "Largest TP1 wins.",
-          body: "At resonance the parallel tank is at maximum impedance. That peak is f\u2080.",
-          anchor: "tp1"
-        }
-      ]
+      why: "A narrow response means higher loaded Q. The probe contributes capacitance and resistance, so the measured resonance belongs to the loaded circuit. The signal view lets you compare added probe capacitance.",
+      check: "f_low < f\u2080 < f_high. Use the same amplitude convention and steady source level throughout. If using TP3 DC, its diode nonlinearity makes the bandwidth estimate approximate.",
+      caution: "Half travel is not guaranteed to tune to 819 kHz. Search the available band. Do not move the loop or touch the tank while measuring the bandwidth.",
+      note: "\u22123 dB = 0.707 \xD7 peak amplitude \xB7 record Table 5",
+      inspect: ["probe", "scope", "capacitor"],
+      record: "Record band limits, f\u2080, f_low, f_high, loaded Q and a scope image with scales visible."
     },
     {
       id: "envelope",
-      kicker: "READ THE DETECTOR",
-      title: "From RF to DC.",
-      time: "20 min",
-      icon: "i-dmm",
-      dockTitle: "Read detector",
-      dockSub: "TP3 \xB7 DMM DC",
-      lede: "Leave the probe on TP1 and put the DMM on TP3, DC volts. As you raise the generator, the detector diode conducts and TP3 follows the peak \u2014 minus its drop.",
-      tasks: [
-        "Keep the generator at <b>f\u2080</b>. Put the DMM on <b>TP3, DC volts</b> \u2014 never AC volts.",
-        "Step the source through <b>0.05, 0.1, 0.2, 0.3, 0.5 and 1.0 V</b>. Record TP1 peak and TP3 DC.",
-        "Find the <b>dead zone</b>: below roughly 0.2\u20130.3 V of TP1 peak, TP3 barely moves.",
-        "Above it, TP3 tracks TP1 roughly linearly, offset by the diode drop. Fill <b>Table 6</b>."
+      scene: 8,
+      name: "Measure the detector",
+      group: "Measure",
+      title: "Compare RF peak with DC output.",
+      intro: "At resonance, measure the actual input at TP1 and output at TP3 as you vary the generator level. A steady sine should give a positive, nearly steady detector voltage.",
+      parts: "Scope at TP1 \xB7 DMM on DC volts from TP3 to GND",
+      steps: [
+        "Leave the source at the measured f\u2080. Put the DMM\u2019s positive lead on TP3 and its common lead on GND.",
+        "Use the lab\u2019s six source settings: 0.05, 0.1, 0.2, 0.3, 0.5 and 1 V, within the instrument\u2019s capability. Record its amplitude convention.",
+        "At each setting, record TP1 peak on the scope and TP3 DC on the meter. For a centred sine, TP1 peak is Vpp / 2. Plot TP3 DC against measured TP1 peak."
       ],
-      warn: "TP3 is a rectified envelope, not an AC signal. An AC meter reads near zero and tells you nothing. Use DC volts.",
-      numbers: [
-        ["TP1", "scope", "peak"],
-        ["TP3", "DMM", "DC"],
-        ["Drop", "0.2\u20130.3", "V"]
-      ],
-      focus: { part: "dmm", name: "Digital multimeter", spec: "DC V \xB7 TP3 to ground" },
-      camera: { pos: [14, 12, 19], target: [5.6, 2.4, 2.2] },
-      callouts: [
-        {
-          slot: "tl",
-          kicker: "The output",
-          title: "DC volts, not AC.",
-          body: "The 3.3 nF holds each positive peak. TP3 sits at a steady DC level for a steady sine.",
-          anchor: "tp3"
-        },
-        {
-          slot: "br",
-          kicker: "The dead zone",
-          title: "Look for the low-level dead zone.",
-          body: "At low input the diode conducts weakly. Its apparent dead zone depends on current, loading and the specific part.",
-          anchor: "diodeBand"
-        }
-      ]
+      why: "The detector charges near each positive RF peak and decays between peaks. At 819 kHz the carrier period is about 1.22 \xB5s, much shorter than RC = 49.5 \xB5s. An AM signal instead produces a changing envelope, within the detector\u2019s tracking limits.",
+      check: "With the required diode orientation, TP3 is positive. Look for weak response at low levels and increasing output above it. The diode\u2019s drop is not a universal fixed threshold.",
+      caution: "A small TP3 reading does not prove the tank is mistuned. First check TP1 amplitude, diode orientation, contacts and the RC connections.",
+      note: "TP1: RF peak \xB7 TP3: DC mean \xB7 record Table 6",
+      inspect: ["diode", "ceramic", "dmm"],
+      record: "Record all six TP1/TP3 pairs, low-level behaviour, scope captures and any changes that fixed a fault."
     }
   ];
-  var PARTS = {
-    coil: {
-      tag: "The tank \xB7 L",
-      title: "75-turn coil",
-      spec: "291.5 \xB5H predicted \xB7 0.30 mm wire",
-      body: "75 close-wound turns on a 50 mm PVC former, about 25 mm long. Wheeler's formula gives 291.5 \xB5H. Every turn matters: one missing turn moves the band, and a loose winding changes the length l.",
-      tip: "Count in tens and keep the turns touching. The 12 m spool leaves almost no spare wire."
-    },
-    pipe: {
-      tag: "The former",
-      title: "PVC pipe",
-      spec: "50 mm outside diameter \xB7 insulating",
-      body: "An offcut of 50 mm PVC pipe. It sets the coil diameter and gives the capacitor a rigid place to live. PVC is an insulator, so it does not affect the magnetic field.",
-      tip: "Keep the pipe dry and clean. Tape the coil tails down so they cannot flex at the joints."
-    },
-    capacitor: {
-      tag: "The tank \xB7 C",
-      title: "AM tuning capacitor",
-      spec: "20\u2013280 pF \xB7 verify AM terminals",
-      body: "A representative variable tuning capacitor. The AM section sweeps roughly 20\u2013280 pF; the frame may also carry an FM section or a small trimmer. The tank uses one pair of lugs only.",
-      tip: "Confirm the AM pair with your grader, then verify the sweep with the DMM's capacitance mode before soldering."
-    },
-    diode: {
-      tag: "The detector",
-      title: "1N60P detector diode",
-      spec: "Glass axial body \xB7 forward drop depends on current",
-      body: "A low-forward-voltage detector diode; verify the supplied manufacturer\u2019s datasheet. It conducts on the positive half of the tank waveform and blocks the negative half, charging the 3.3 nF toward the peak. The black band is the cathode.",
-      tip: "Band toward TP3. A reversed diode can give negative DC; the required orientation gives positive DC at TP3."
-    },
-    resistor: {
-      tag: "The load",
-      title: "15 k\u03A9 resistor",
-      spec: "1/4 W \xB7 5 % \xB7 brown-green-orange-gold",
-      body: "The resistor bleeds the detector capacitor between RF peaks. With 3.3 nF it sets \u03C4 = 49.5 \xB5s, long enough to smooth 819 kHz and short enough to follow audio.",
-      tip: "It must be in parallel with the 3.3 nF, from TP3 to ground \u2014 not in series with the signal."
-    },
-    ceramic: {
-      tag: "The load",
-      title: "3.3 nF ceramic capacitor",
-      spec: "332 marking \xB7 ceramic disc",
-      body: "The peak-holding bucket. The diode charges it on each positive peak; the 15 k\u03A9 lets it decay. With the resistor it forms the detector's low-pass load and holds TP3 at the envelope voltage.",
-      tip: "Marked 332: 33 \xD7 10\xB2 pF = 3.3 nF. Fit it across the 15 k\u03A9, from TP3 to ground."
-    },
-    board: {
-      tag: "The bench",
-      title: "Breadboard",
-      spec: "400 tie points \xB7 central channel",
-      body: "A compact solderless breadboard. Each column half (a\u2013e and f\u2013j) is one node; the centre channel separates the two halves. The long red and blue rails are the power/ground buses.",
-      tip: "Use one ground rail for the tank return, the resistor and the capacitor. Keep TP1 and TP3 on different columns."
-    },
-    loop: {
-      tag: "The source",
-      title: "Five-turn test loop",
-      spec: "\u22486 cm across \xB7 magnetic coupling only",
-      body: "Five turns of insulated wire driven by the generator. It stands on the same axis as the coil, 3\u20135 cm away, and couples by its changing magnetic field. It is never wired to the tank.",
-      tip: "Closer is not always better: too close loads the tank and broadens the peak. Start at 4\u20135 cm."
-    },
-    generator: {
-      tag: "The bench",
-      title: "Function generator",
-      spec: "sine \xB7 0.56\u20132.1 MHz \xB7 up to \u22481 V",
-      body: "The stand-in transmitter. It drives the five-turn loop with a sine wave. Its amplitude and frequency are the two knobs that matter; it is not a power supply for the detector.",
-      tip: "Verify the output on the scope before blaming the tank. Some generators lose amplitude above 1 MHz."
-    },
-    scope: {
-      tag: "The bench",
-      title: "Oscilloscope",
-      spec: "CH1 \xB7 DC coupling \xB7 \xD710 probe",
-      body: "Used to see the RF peak at TP1 and find the \u22123 dB points. DC coupling keeps the waveform's true position; AC coupling would hide the detector's DC level.",
-      tip: "Compensate the probe on the 1 kHz square output. Keep the ground clip short and on tank ground."
-    },
-    probe: {
-      tag: "The bench",
-      title: "\xD710 oscilloscope probe",
-      spec: "\u224810 pF \xB7 10:1",
-      body: "A \xD710 probe divides the signal by ten at the scope but presents only about 10 pF to the tank. A \xD71 probe presents roughly 100 pF \u2014 enough to detune the circuit you are measuring.",
-      tip: "Probe switch on \xD710 and channel on \xD710. If the two disagree, every amplitude is wrong by a decade."
-    },
-    dmm: {
-      tag: "The bench",
-      title: "Digital multimeter",
-      spec: "DC volts \xB7 10 M\u03A9 input",
-      body: "Reads the detector's rectified output at TP3. Use DC volts; AC volts would block the very level you are trying to measure. The 10 M\u03A9 input barely loads the 15 k\u03A9 load.",
-      tip: "If TP3 reads high with no signal, short it to ground briefly. The 3.3 nF may simply be holding charge."
-    },
-    spool: {
-      tag: "The kit",
-      title: "Enamelled copper wire",
-      spec: "0.30 mm \xB7 \u224812 m",
-      body: "About 12 m of enamelled copper. 75 turns on a 50 mm former use 11.78 m, so the tails must stay short. The enamel is the insulation; scrape it off only where you need electrical contact.",
-      tip: "Do not kink the wire. A sharp bend cracks the enamel and creates a hidden open circuit."
-    },
-    tray: {
-      tag: "The kit",
-      title: "Detector parts",
-      spec: "1N60P \xB7 15 k\u03A9 \xB7 3.3 nF",
-      body: "The three non-tuning parts. The diode rectifies, the resistor leaks, and the ceramic capacitor holds the peak. Together they turn the tank's RF envelope into a DC voltage at TP3.",
-      tip: "Keep the diode in its bag until the tank is finished. Glass bodies and eager elbows do not mix."
-    },
-    tools: {
-      tag: "The bench",
-      title: "Tape, blade, ruler",
-      spec: "for the winding and the mount",
-      body: "Masking or electrical tape anchors the winding and the capacitor frame. A blade or sandpaper strips enamel. A ruler checks the 25 mm winding length.",
-      tip: "Ask before soldering. A quick tinned joint beats a long dwell on plastic."
-    },
-    tank: {
-      tag: "The tank",
-      title: "Parallel LC tank",
-      spec: "291.5 \xB5H \u2225 20\u2013280 pF",
-      body: "At resonance the coil and capacitor exchange energy, their reactances cancel, and the parallel combination presents a high impedance. The voltage across it peaks at f\u2080 = 1 / 2\u03C0\u221A(LC).",
-      tip: "The tank has no polarity. Either coil tail can go to either AM lug."
-    }
-  };
 
-  // radio-guide/vendor/three.module.js
+  // vendor/three.module.js
   var REVISION = "170";
   var MOUSE = { LEFT: 0, MIDDLE: 1, RIGHT: 2, ROTATE: 0, DOLLY: 1, PAN: 2 };
   var TOUCH = { ROTATE: 0, PAN: 1, DOLLY_PAN: 2, DOLLY_ROTATE: 3 };
@@ -656,9 +342,9 @@
       const listeners = this._listeners;
       const listenerArray = listeners[type];
       if (listenerArray !== void 0) {
-        const index = listenerArray.indexOf(listener);
-        if (index !== -1) {
-          listenerArray.splice(index, 1);
+        const index2 = listenerArray.indexOf(listener);
+        if (index2 !== -1) {
+          listenerArray.splice(index2, 1);
         }
       }
     }
@@ -731,8 +417,8 @@
   function randFloat(low, high) {
     return low + Math.random() * (high - low);
   }
-  function randFloatSpread(range) {
-    return range * (0.5 - Math.random());
+  function randFloatSpread(range2) {
+    return range2 * (0.5 - Math.random());
   }
   function seededRandom(s) {
     if (s !== void 0) _seed = s;
@@ -892,8 +578,8 @@
       this.y = y;
       return this;
     }
-    setComponent(index, value) {
-      switch (index) {
+    setComponent(index2, value) {
+      switch (index2) {
         case 0:
           this.x = value;
           break;
@@ -901,18 +587,18 @@
           this.y = value;
           break;
         default:
-          throw new Error("index is out of range: " + index);
+          throw new Error("index is out of range: " + index2);
       }
       return this;
     }
-    getComponent(index) {
-      switch (index) {
+    getComponent(index2) {
+      switch (index2) {
         case 0:
           return this.x;
         case 1:
           return this.y;
         default:
-          throw new Error("index is out of range: " + index);
+          throw new Error("index is out of range: " + index2);
       }
     }
     clone() {
@@ -1096,9 +782,9 @@
       array[offset + 1] = this.y;
       return array;
     }
-    fromBufferAttribute(attribute, index) {
-      this.x = attribute.getX(index);
-      this.y = attribute.getY(index);
+    fromBufferAttribute(attribute, index2) {
+      this.x = attribute.getX(index2);
+      this.y = attribute.getY(index2);
       return this;
     }
     rotateAround(center, angle) {
@@ -1943,8 +1629,8 @@
       this.w = w;
       return this;
     }
-    setComponent(index, value) {
-      switch (index) {
+    setComponent(index2, value) {
+      switch (index2) {
         case 0:
           this.x = value;
           break;
@@ -1958,12 +1644,12 @@
           this.w = value;
           break;
         default:
-          throw new Error("index is out of range: " + index);
+          throw new Error("index is out of range: " + index2);
       }
       return this;
     }
-    getComponent(index) {
-      switch (index) {
+    getComponent(index2) {
+      switch (index2) {
         case 0:
           return this.x;
         case 1:
@@ -1973,7 +1659,7 @@
         case 3:
           return this.w;
         default:
-          throw new Error("index is out of range: " + index);
+          throw new Error("index is out of range: " + index2);
       }
     }
     clone() {
@@ -2263,11 +1949,11 @@
       array[offset + 3] = this.w;
       return array;
     }
-    fromBufferAttribute(attribute, index) {
-      this.x = attribute.getX(index);
-      this.y = attribute.getY(index);
-      this.z = attribute.getZ(index);
-      this.w = attribute.getW(index);
+    fromBufferAttribute(attribute, index2) {
+      this.x = attribute.getX(index2);
+      this.y = attribute.getY(index2);
+      this.z = attribute.getZ(index2);
+      this.w = attribute.getW(index2);
       return this;
     }
     random() {
@@ -2781,11 +2467,11 @@
       array[offset + 3] = this._w;
       return array;
     }
-    fromBufferAttribute(attribute, index) {
-      this._x = attribute.getX(index);
-      this._y = attribute.getY(index);
-      this._z = attribute.getZ(index);
-      this._w = attribute.getW(index);
+    fromBufferAttribute(attribute, index2) {
+      this._x = attribute.getX(index2);
+      this._y = attribute.getY(index2);
+      this._z = attribute.getZ(index2);
+      this._w = attribute.getW(index2);
       this._onChangeCallback();
       return this;
     }
@@ -2837,8 +2523,8 @@
       this.z = z;
       return this;
     }
-    setComponent(index, value) {
-      switch (index) {
+    setComponent(index2, value) {
+      switch (index2) {
         case 0:
           this.x = value;
           break;
@@ -2849,12 +2535,12 @@
           this.z = value;
           break;
         default:
-          throw new Error("index is out of range: " + index);
+          throw new Error("index is out of range: " + index2);
       }
       return this;
     }
-    getComponent(index) {
-      switch (index) {
+    getComponent(index2) {
+      switch (index2) {
         case 0:
           return this.x;
         case 1:
@@ -2862,7 +2548,7 @@
         case 2:
           return this.z;
         default:
-          throw new Error("index is out of range: " + index);
+          throw new Error("index is out of range: " + index2);
       }
     }
     clone() {
@@ -3158,11 +2844,11 @@
       this.z = sz;
       return this;
     }
-    setFromMatrixColumn(m, index) {
-      return this.fromArray(m.elements, index * 4);
+    setFromMatrixColumn(m, index2) {
+      return this.fromArray(m.elements, index2 * 4);
     }
-    setFromMatrix3Column(m, index) {
-      return this.fromArray(m.elements, index * 3);
+    setFromMatrix3Column(m, index2) {
+      return this.fromArray(m.elements, index2 * 3);
     }
     setFromEuler(e) {
       this.x = e._x;
@@ -3191,10 +2877,10 @@
       array[offset + 2] = this.z;
       return array;
     }
-    fromBufferAttribute(attribute, index) {
-      this.x = attribute.getX(index);
-      this.y = attribute.getY(index);
-      this.z = attribute.getZ(index);
+    fromBufferAttribute(attribute, index2) {
+      this.x = attribute.getX(index2);
+      this.y = attribute.getY(index2);
+      this.z = attribute.getZ(index2);
       return this;
     }
     random() {
@@ -5057,10 +4743,10 @@
         }
         return this;
       }
-      const index = this.children.indexOf(object);
-      if (index !== -1) {
+      const index2 = this.children.indexOf(object);
+      if (index2 !== -1) {
         object.parent = null;
-        this.children.splice(index, 1);
+        this.children.splice(index2, 1);
         object.dispatchEvent(_removedEvent);
         _childremovedEvent.child = object;
         this.dispatchEvent(_childremovedEvent);
@@ -6075,10 +5761,10 @@
       array[offset + 2] = this.b;
       return array;
     }
-    fromBufferAttribute(attribute, index) {
-      this.r = attribute.getX(index);
-      this.g = attribute.getY(index);
-      this.b = attribute.getZ(index);
+    fromBufferAttribute(attribute, index2) {
+      this.r = attribute.getX(index2);
+      this.g = attribute.getY(index2);
+      this.b = attribute.getZ(index2);
       return this;
     }
     toJSON() {
@@ -6581,90 +6267,90 @@
       this.array.set(value, offset);
       return this;
     }
-    getComponent(index, component) {
-      let value = this.array[index * this.itemSize + component];
+    getComponent(index2, component) {
+      let value = this.array[index2 * this.itemSize + component];
       if (this.normalized) value = denormalize(value, this.array);
       return value;
     }
-    setComponent(index, component, value) {
+    setComponent(index2, component, value) {
       if (this.normalized) value = normalize(value, this.array);
-      this.array[index * this.itemSize + component] = value;
+      this.array[index2 * this.itemSize + component] = value;
       return this;
     }
-    getX(index) {
-      let x = this.array[index * this.itemSize];
+    getX(index2) {
+      let x = this.array[index2 * this.itemSize];
       if (this.normalized) x = denormalize(x, this.array);
       return x;
     }
-    setX(index, x) {
+    setX(index2, x) {
       if (this.normalized) x = normalize(x, this.array);
-      this.array[index * this.itemSize] = x;
+      this.array[index2 * this.itemSize] = x;
       return this;
     }
-    getY(index) {
-      let y = this.array[index * this.itemSize + 1];
+    getY(index2) {
+      let y = this.array[index2 * this.itemSize + 1];
       if (this.normalized) y = denormalize(y, this.array);
       return y;
     }
-    setY(index, y) {
+    setY(index2, y) {
       if (this.normalized) y = normalize(y, this.array);
-      this.array[index * this.itemSize + 1] = y;
+      this.array[index2 * this.itemSize + 1] = y;
       return this;
     }
-    getZ(index) {
-      let z = this.array[index * this.itemSize + 2];
+    getZ(index2) {
+      let z = this.array[index2 * this.itemSize + 2];
       if (this.normalized) z = denormalize(z, this.array);
       return z;
     }
-    setZ(index, z) {
+    setZ(index2, z) {
       if (this.normalized) z = normalize(z, this.array);
-      this.array[index * this.itemSize + 2] = z;
+      this.array[index2 * this.itemSize + 2] = z;
       return this;
     }
-    getW(index) {
-      let w = this.array[index * this.itemSize + 3];
+    getW(index2) {
+      let w = this.array[index2 * this.itemSize + 3];
       if (this.normalized) w = denormalize(w, this.array);
       return w;
     }
-    setW(index, w) {
+    setW(index2, w) {
       if (this.normalized) w = normalize(w, this.array);
-      this.array[index * this.itemSize + 3] = w;
+      this.array[index2 * this.itemSize + 3] = w;
       return this;
     }
-    setXY(index, x, y) {
-      index *= this.itemSize;
+    setXY(index2, x, y) {
+      index2 *= this.itemSize;
       if (this.normalized) {
         x = normalize(x, this.array);
         y = normalize(y, this.array);
       }
-      this.array[index + 0] = x;
-      this.array[index + 1] = y;
+      this.array[index2 + 0] = x;
+      this.array[index2 + 1] = y;
       return this;
     }
-    setXYZ(index, x, y, z) {
-      index *= this.itemSize;
+    setXYZ(index2, x, y, z) {
+      index2 *= this.itemSize;
       if (this.normalized) {
         x = normalize(x, this.array);
         y = normalize(y, this.array);
         z = normalize(z, this.array);
       }
-      this.array[index + 0] = x;
-      this.array[index + 1] = y;
-      this.array[index + 2] = z;
+      this.array[index2 + 0] = x;
+      this.array[index2 + 1] = y;
+      this.array[index2 + 2] = z;
       return this;
     }
-    setXYZW(index, x, y, z, w) {
-      index *= this.itemSize;
+    setXYZW(index2, x, y, z, w) {
+      index2 *= this.itemSize;
       if (this.normalized) {
         x = normalize(x, this.array);
         y = normalize(y, this.array);
         z = normalize(z, this.array);
         w = normalize(w, this.array);
       }
-      this.array[index + 0] = x;
-      this.array[index + 1] = y;
-      this.array[index + 2] = z;
-      this.array[index + 3] = w;
+      this.array[index2 + 0] = x;
+      this.array[index2 + 1] = y;
+      this.array[index2 + 2] = z;
+      this.array[index2 + 3] = w;
       return this;
     }
     onUpload(callback) {
@@ -6730,11 +6416,11 @@
     getIndex() {
       return this.index;
     }
-    setIndex(index) {
-      if (Array.isArray(index)) {
-        this.index = new (arrayNeedsUint32(index) ? Uint32BufferAttribute : Uint16BufferAttribute)(index, 1);
+    setIndex(index2) {
+      if (Array.isArray(index2)) {
+        this.index = new (arrayNeedsUint32(index2) ? Uint32BufferAttribute : Uint16BufferAttribute)(index2, 1);
       } else {
-        this.index = index;
+        this.index = index2;
       }
       return this;
     }
@@ -6955,9 +6641,9 @@
       }
     }
     computeTangents() {
-      const index = this.index;
+      const index2 = this.index;
       const attributes = this.attributes;
-      if (index === null || attributes.position === void 0 || attributes.normal === void 0 || attributes.uv === void 0) {
+      if (index2 === null || attributes.position === void 0 || attributes.normal === void 0 || attributes.uv === void 0) {
         console.error("THREE.BufferGeometry: .computeTangents() failed. Missing required attributes (index, position, normal or uv)");
         return;
       }
@@ -7000,7 +6686,7 @@
       if (groups.length === 0) {
         groups = [{
           start: 0,
-          count: index.count
+          count: index2.count
         }];
       }
       for (let i = 0, il = groups.length; i < il; ++i) {
@@ -7009,9 +6695,9 @@
         const count = group.count;
         for (let j = start, jl = start + count; j < jl; j += 3) {
           handleTriangle(
-            index.getX(j + 0),
-            index.getX(j + 1),
-            index.getX(j + 2)
+            index2.getX(j + 0),
+            index2.getX(j + 1),
+            index2.getX(j + 2)
           );
         }
       }
@@ -7033,14 +6719,14 @@
         const start = group.start;
         const count = group.count;
         for (let j = start, jl = start + count; j < jl; j += 3) {
-          handleVertex(index.getX(j + 0));
-          handleVertex(index.getX(j + 1));
-          handleVertex(index.getX(j + 2));
+          handleVertex(index2.getX(j + 0));
+          handleVertex(index2.getX(j + 1));
+          handleVertex(index2.getX(j + 2));
         }
       }
     }
     computeVertexNormals() {
-      const index = this.index;
+      const index2 = this.index;
       const positionAttribute = this.getAttribute("position");
       if (positionAttribute !== void 0) {
         let normalAttribute = this.getAttribute("normal");
@@ -7055,11 +6741,11 @@
         const pA = new Vector3(), pB = new Vector3(), pC = new Vector3();
         const nA = new Vector3(), nB = new Vector3(), nC = new Vector3();
         const cb = new Vector3(), ab = new Vector3();
-        if (index) {
-          for (let i = 0, il = index.count; i < il; i += 3) {
-            const vA = index.getX(i + 0);
-            const vB = index.getX(i + 1);
-            const vC = index.getX(i + 2);
+        if (index2) {
+          for (let i = 0, il = index2.count; i < il; i += 3) {
+            const vA = index2.getX(i + 0);
+            const vB = index2.getX(i + 1);
+            const vC = index2.getX(i + 2);
             pA.fromBufferAttribute(positionAttribute, vA);
             pB.fromBufferAttribute(positionAttribute, vB);
             pC.fromBufferAttribute(positionAttribute, vC);
@@ -7107,15 +6793,15 @@
         const itemSize = attribute.itemSize;
         const normalized = attribute.normalized;
         const array2 = new array.constructor(indices2.length * itemSize);
-        let index = 0, index2 = 0;
+        let index2 = 0, index22 = 0;
         for (let i = 0, l = indices2.length; i < l; i++) {
           if (attribute.isInterleavedBufferAttribute) {
-            index = indices2[i] * attribute.data.stride + attribute.offset;
+            index2 = indices2[i] * attribute.data.stride + attribute.offset;
           } else {
-            index = indices2[i] * itemSize;
+            index2 = indices2[i] * itemSize;
           }
           for (let j = 0; j < itemSize; j++) {
-            array2[index2++] = array[index++];
+            array2[index22++] = array[index2++];
           }
         }
         return new BufferAttribute(array2, itemSize, normalized);
@@ -7171,11 +6857,11 @@
         return data;
       }
       data.data = { attributes: {} };
-      const index = this.index;
-      if (index !== null) {
+      const index2 = this.index;
+      if (index2 !== null) {
         data.data.index = {
-          type: index.array.constructor.name,
-          array: Array.prototype.slice.call(index.array)
+          type: index2.array.constructor.name,
+          array: Array.prototype.slice.call(index2.array)
         };
       }
       const attributes = this.attributes;
@@ -7226,9 +6912,9 @@
       this.boundingSphere = null;
       const data = {};
       this.name = source.name;
-      const index = source.index;
-      if (index !== null) {
-        this.setIndex(index.clone(data));
+      const index2 = source.index;
+      if (index2 !== null) {
+        this.setIndex(index2.clone(data));
       }
       const attributes = source.attributes;
       for (const name in attributes) {
@@ -7316,12 +7002,12 @@
         }
       }
     }
-    getVertexPosition(index, target) {
+    getVertexPosition(index2, target) {
       const geometry = this.geometry;
       const position = geometry.attributes.position;
       const morphPosition = geometry.morphAttributes.position;
       const morphTargetsRelative = geometry.morphTargetsRelative;
-      target.fromBufferAttribute(position, index);
+      target.fromBufferAttribute(position, index2);
       const morphInfluences = this.morphTargetInfluences;
       if (morphPosition && morphInfluences) {
         _morphA.set(0, 0, 0);
@@ -7329,7 +7015,7 @@
           const influence = morphInfluences[i];
           const morphAttribute = morphPosition[i];
           if (influence === 0) continue;
-          _tempA.fromBufferAttribute(morphAttribute, index);
+          _tempA.fromBufferAttribute(morphAttribute, index2);
           if (morphTargetsRelative) {
             _morphA.addScaledVector(_tempA, influence);
           } else {
@@ -7364,24 +7050,24 @@
       let intersection;
       const geometry = this.geometry;
       const material = this.material;
-      const index = geometry.index;
+      const index2 = geometry.index;
       const position = geometry.attributes.position;
       const uv = geometry.attributes.uv;
       const uv1 = geometry.attributes.uv1;
       const normal = geometry.attributes.normal;
       const groups = geometry.groups;
       const drawRange = geometry.drawRange;
-      if (index !== null) {
+      if (index2 !== null) {
         if (Array.isArray(material)) {
           for (let i = 0, il = groups.length; i < il; i++) {
             const group = groups[i];
             const groupMaterial = material[group.materialIndex];
             const start = Math.max(group.start, drawRange.start);
-            const end = Math.min(index.count, Math.min(group.start + group.count, drawRange.start + drawRange.count));
+            const end = Math.min(index2.count, Math.min(group.start + group.count, drawRange.start + drawRange.count));
             for (let j = start, jl = end; j < jl; j += 3) {
-              const a = index.getX(j);
-              const b = index.getX(j + 1);
-              const c = index.getX(j + 2);
+              const a = index2.getX(j);
+              const b = index2.getX(j + 1);
+              const c = index2.getX(j + 2);
               intersection = checkGeometryIntersection(this, groupMaterial, raycaster, rayLocalSpace, uv, uv1, normal, a, b, c);
               if (intersection) {
                 intersection.faceIndex = Math.floor(j / 3);
@@ -7392,11 +7078,11 @@
           }
         } else {
           const start = Math.max(0, drawRange.start);
-          const end = Math.min(index.count, drawRange.start + drawRange.count);
+          const end = Math.min(index2.count, drawRange.start + drawRange.count);
           for (let i = start, il = end; i < il; i += 3) {
-            const a = index.getX(i);
-            const b = index.getX(i + 1);
-            const c = index.getX(i + 2);
+            const a = index2.getX(i);
+            const b = index2.getX(i + 1);
+            const c = index2.getX(i + 2);
             intersection = checkGeometryIntersection(this, material, raycaster, rayLocalSpace, uv, uv1, normal, a, b, c);
             if (intersection) {
               intersection.faceIndex = Math.floor(i / 3);
@@ -8215,24 +7901,24 @@
     projectPoint(point, target) {
       return target.copy(point).addScaledVector(this.normal, -this.distanceToPoint(point));
     }
-    intersectLine(line, target) {
-      const direction = line.delta(_vector1);
+    intersectLine(line2, target) {
+      const direction = line2.delta(_vector1);
       const denominator = this.normal.dot(direction);
       if (denominator === 0) {
-        if (this.distanceToPoint(line.start) === 0) {
-          return target.copy(line.start);
+        if (this.distanceToPoint(line2.start) === 0) {
+          return target.copy(line2.start);
         }
         return null;
       }
-      const t = -(line.start.dot(this.normal) + this.constant) / denominator;
+      const t = -(line2.start.dot(this.normal) + this.constant) / denominator;
       if (t < 0 || t > 1) {
         return null;
       }
-      return target.copy(line.start).addScaledVector(direction, t);
+      return target.copy(line2.start).addScaledVector(direction, t);
     }
-    intersectsLine(line) {
-      const startSign = this.distanceToPoint(line.start);
-      const endSign = this.distanceToPoint(line.end);
+    intersectsLine(line2) {
+      const startSign = this.distanceToPoint(line2.start);
+      const endSign = this.distanceToPoint(line2.end);
       return startSign < 0 && endSign > 0 || endSign < 0 && startSign > 0;
     }
     intersectsBox(box2) {
@@ -8442,26 +8128,26 @@
         let mergeIndex = 0;
         for (let i = 1; i < updateRanges.length; i++) {
           const previousRange = updateRanges[mergeIndex];
-          const range = updateRanges[i];
-          if (range.start <= previousRange.start + previousRange.count + 1) {
+          const range2 = updateRanges[i];
+          if (range2.start <= previousRange.start + previousRange.count + 1) {
             previousRange.count = Math.max(
               previousRange.count,
-              range.start + range.count - previousRange.start
+              range2.start + range2.count - previousRange.start
             );
           } else {
             ++mergeIndex;
-            updateRanges[mergeIndex] = range;
+            updateRanges[mergeIndex] = range2;
           }
         }
         updateRanges.length = mergeIndex + 1;
         for (let i = 0, l = updateRanges.length; i < l; i++) {
-          const range = updateRanges[i];
+          const range2 = updateRanges[i];
           gl.bufferSubData(
             bufferType,
-            range.start * array.BYTES_PER_ELEMENT,
+            range2.start * array.BYTES_PER_ELEMENT,
             array,
-            range.start,
-            range.count
+            range2.start,
+            range2.count
           );
         }
         attribute.clearUpdateRanges();
@@ -9452,23 +9138,23 @@
     const defaultState = createBindingState(null);
     let currentState = defaultState;
     let forceUpdate = false;
-    function setup(object, material, program, geometry, index) {
+    function setup(object, material, program, geometry, index2) {
       let updateBuffers = false;
       const state = getBindingState(geometry, program, material);
       if (currentState !== state) {
         currentState = state;
         bindVertexArrayObject(currentState.object);
       }
-      updateBuffers = needsUpdate(object, geometry, program, index);
-      if (updateBuffers) saveCache(object, geometry, program, index);
-      if (index !== null) {
-        attributes.update(index, gl.ELEMENT_ARRAY_BUFFER);
+      updateBuffers = needsUpdate(object, geometry, program, index2);
+      if (updateBuffers) saveCache(object, geometry, program, index2);
+      if (index2 !== null) {
+        attributes.update(index2, gl.ELEMENT_ARRAY_BUFFER);
       }
       if (updateBuffers || forceUpdate) {
         forceUpdate = false;
         setupVertexAttributes(object, material, program, geometry);
-        if (index !== null) {
-          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, attributes.get(index).buffer);
+        if (index2 !== null) {
+          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, attributes.get(index2).buffer);
         }
       }
     }
@@ -9522,7 +9208,7 @@
         index: null
       };
     }
-    function needsUpdate(object, geometry, program, index) {
+    function needsUpdate(object, geometry, program, index2) {
       const cachedAttributes = currentState.attributes;
       const geometryAttributes = geometry.attributes;
       let attributesNum = 0;
@@ -9543,10 +9229,10 @@
         }
       }
       if (currentState.attributesNum !== attributesNum) return true;
-      if (currentState.index !== index) return true;
+      if (currentState.index !== index2) return true;
       return false;
     }
-    function saveCache(object, geometry, program, index) {
+    function saveCache(object, geometry, program, index2) {
       const cache = {};
       const attributes2 = geometry.attributes;
       let attributesNum = 0;
@@ -9570,7 +9256,7 @@
       }
       currentState.attributes = cache;
       currentState.attributesNum = attributesNum;
-      currentState.index = index;
+      currentState.index = index2;
     }
     function initAttributes() {
       const newAttributes = currentState.newAttributes;
@@ -9605,11 +9291,11 @@
         }
       }
     }
-    function vertexAttribPointer(index, size, type, normalized, stride, offset, integer) {
+    function vertexAttribPointer(index2, size, type, normalized, stride, offset, integer) {
       if (integer === true) {
-        gl.vertexAttribIPointer(index, size, type, stride, offset);
+        gl.vertexAttribIPointer(index2, size, type, stride, offset);
       } else {
-        gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
+        gl.vertexAttribPointer(index2, size, type, normalized, stride, offset);
       }
     }
     function setupVertexAttributes(object, material, program, geometry) {
@@ -11843,10 +11529,10 @@
     container.map[uniformObject.id] = uniformObject;
   }
   function parseUniform(activeInfo, addr, container) {
-    const path = activeInfo.name, pathLength = path.length;
+    const path2 = activeInfo.name, pathLength = path2.length;
     RePathPart.lastIndex = 0;
     while (true) {
-      const match = RePathPart.exec(path), matchEnd = RePathPart.lastIndex;
+      const match = RePathPart.exec(path2), matchEnd = RePathPart.lastIndex;
       let id = match[1];
       const idIsIndex = match[2] === "]", subscript = match[3];
       if (idIsIndex) id = id | 0;
@@ -11913,8 +11599,8 @@
     const from = Math.max(errorLine - 6, 0);
     const to = Math.min(errorLine + 6, lines.length);
     for (let i = from; i < to; i++) {
-      const line = i + 1;
-      lines2.push(`${line === errorLine ? ">" : " "} ${line}: ${lines[i]}`);
+      const line2 = i + 1;
+      lines2.push(`${line2 === errorLine ? ">" : " "} ${line2}: ${lines[i]}`);
     }
     return lines2.join("\n");
   }
@@ -13121,7 +12807,7 @@
     const opaque = [];
     const transmissive = [];
     const transparent = [];
-    function init2() {
+    function init() {
       renderItemsIndex = 0;
       opaque.length = 0;
       transmissive.length = 0;
@@ -13194,7 +12880,7 @@
       opaque,
       transmissive,
       transparent,
-      init: init2,
+      init,
       push,
       unshift,
       finish,
@@ -13592,7 +13278,7 @@
     const lights = new WebGLLights(extensions);
     const lightsArray = [];
     const shadowsArray = [];
-    function init2(camera) {
+    function init(camera) {
       state.camera = camera;
       lightsArray.length = 0;
       shadowsArray.length = 0;
@@ -13617,7 +13303,7 @@
       transmissionRenderTarget: {}
     };
     return {
-      init: init2,
+      init,
       state,
       setupLights,
       setupLightsView,
@@ -16363,27 +16049,27 @@ void main() {
       this.cameraAutoUpdate = true;
       this.enabled = false;
       this.isPresenting = false;
-      this.getController = function(index) {
-        let controller = controllers[index];
+      this.getController = function(index2) {
+        let controller = controllers[index2];
         if (controller === void 0) {
           controller = new WebXRController();
-          controllers[index] = controller;
+          controllers[index2] = controller;
         }
         return controller.getTargetRaySpace();
       };
-      this.getControllerGrip = function(index) {
-        let controller = controllers[index];
+      this.getControllerGrip = function(index2) {
+        let controller = controllers[index2];
         if (controller === void 0) {
           controller = new WebXRController();
-          controllers[index] = controller;
+          controllers[index2] = controller;
         }
         return controller.getGripSpace();
       };
-      this.getHand = function(index) {
-        let controller = controllers[index];
+      this.getHand = function(index2) {
+        let controller = controllers[index2];
         if (controller === void 0) {
           controller = new WebXRController();
-          controllers[index] = controller;
+          controllers[index2] = controller;
         }
         return controller.getHandSpace();
       };
@@ -16551,10 +16237,10 @@ void main() {
       function onInputSourcesChange(event) {
         for (let i = 0; i < event.removed.length; i++) {
           const inputSource = event.removed[i];
-          const index = controllerInputSources.indexOf(inputSource);
-          if (index >= 0) {
-            controllerInputSources[index] = null;
-            controllers[index].disconnect(inputSource);
+          const index2 = controllerInputSources.indexOf(inputSource);
+          if (index2 >= 0) {
+            controllerInputSources[index2] = null;
+            controllers[index2].disconnect(inputSource);
           }
         }
         for (let i = 0; i < event.added.length; i++) {
@@ -17183,9 +16869,9 @@ void main() {
       }
       gl.bindBuffer(gl.UNIFORM_BUFFER, null);
     }
-    function hasUniformChanged(uniform, index, indexArray, cache) {
+    function hasUniformChanged(uniform, index2, indexArray, cache) {
       const value = uniform.value;
-      const indexString = index + "_" + indexArray;
+      const indexString = index2 + "_" + indexArray;
       if (cache[indexString] === void 0) {
         if (typeof value === "number" || typeof value === "boolean") {
           cache[indexString] = value;
@@ -17275,8 +16961,8 @@ void main() {
     function onUniformsGroupsDispose(event) {
       const uniformsGroup = event.target;
       uniformsGroup.removeEventListener("dispose", onUniformsGroupsDispose);
-      const index = allocatedBindingPoints.indexOf(uniformsGroup.__bindingPointIndex);
-      allocatedBindingPoints.splice(index, 1);
+      const index2 = allocatedBindingPoints.indexOf(uniformsGroup.__bindingPointIndex);
+      allocatedBindingPoints.splice(index2, 1);
       gl.deleteBuffer(buffers[uniformsGroup.id]);
       delete buffers[uniformsGroup.id];
       delete updateList[uniformsGroup.id];
@@ -17678,11 +17364,11 @@ void main() {
         const frontFaceCW = object.isMesh && object.matrixWorld.determinant() < 0;
         const program = setProgram(camera, scene2, geometry, material, object);
         state.setMaterial(material, frontFaceCW);
-        let index = geometry.index;
+        let index2 = geometry.index;
         let rangeFactor = 1;
         if (material.wireframe === true) {
-          index = geometries.getWireframeAttribute(geometry);
-          if (index === void 0) return;
+          index2 = geometries.getWireframeAttribute(geometry);
+          if (index2 === void 0) return;
           rangeFactor = 2;
         }
         const drawRange = geometry.drawRange;
@@ -17693,20 +17379,20 @@ void main() {
           drawStart = Math.max(drawStart, group.start * rangeFactor);
           drawEnd = Math.min(drawEnd, (group.start + group.count) * rangeFactor);
         }
-        if (index !== null) {
+        if (index2 !== null) {
           drawStart = Math.max(drawStart, 0);
-          drawEnd = Math.min(drawEnd, index.count);
+          drawEnd = Math.min(drawEnd, index2.count);
         } else if (position !== void 0 && position !== null) {
           drawStart = Math.max(drawStart, 0);
           drawEnd = Math.min(drawEnd, position.count);
         }
         const drawCount = drawEnd - drawStart;
         if (drawCount < 0 || drawCount === Infinity) return;
-        bindingStates.setup(object, material, program, geometry, index);
+        bindingStates.setup(object, material, program, geometry, index2);
         let attribute;
         let renderer = bufferRenderer;
-        if (index !== null) {
-          attribute = attributes.get(index);
+        if (index2 !== null) {
+          attribute = attributes.get(index2);
           renderer = indexedBufferRenderer;
           renderer.setIndex(attribute);
         }
@@ -17741,7 +17427,7 @@ void main() {
               const starts = object._multiDrawStarts;
               const counts = object._multiDrawCounts;
               const drawCount2 = object._multiDrawCount;
-              const bytesPerElement = index ? attributes.get(index).bytesPerElement : 1;
+              const bytesPerElement = index2 ? attributes.get(index2).bytesPerElement : 1;
               const uniforms = properties.get(material).currentProgram.getUniforms();
               for (let i = 0; i < drawCount2; i++) {
                 uniforms.setValue(_gl, "_gl_DrawID", i);
@@ -18943,90 +18629,90 @@ void main() {
       }
       return this;
     }
-    getComponent(index, component) {
-      let value = this.array[index * this.data.stride + this.offset + component];
+    getComponent(index2, component) {
+      let value = this.array[index2 * this.data.stride + this.offset + component];
       if (this.normalized) value = denormalize(value, this.array);
       return value;
     }
-    setComponent(index, component, value) {
+    setComponent(index2, component, value) {
       if (this.normalized) value = normalize(value, this.array);
-      this.data.array[index * this.data.stride + this.offset + component] = value;
+      this.data.array[index2 * this.data.stride + this.offset + component] = value;
       return this;
     }
-    setX(index, x) {
+    setX(index2, x) {
       if (this.normalized) x = normalize(x, this.array);
-      this.data.array[index * this.data.stride + this.offset] = x;
+      this.data.array[index2 * this.data.stride + this.offset] = x;
       return this;
     }
-    setY(index, y) {
+    setY(index2, y) {
       if (this.normalized) y = normalize(y, this.array);
-      this.data.array[index * this.data.stride + this.offset + 1] = y;
+      this.data.array[index2 * this.data.stride + this.offset + 1] = y;
       return this;
     }
-    setZ(index, z) {
+    setZ(index2, z) {
       if (this.normalized) z = normalize(z, this.array);
-      this.data.array[index * this.data.stride + this.offset + 2] = z;
+      this.data.array[index2 * this.data.stride + this.offset + 2] = z;
       return this;
     }
-    setW(index, w) {
+    setW(index2, w) {
       if (this.normalized) w = normalize(w, this.array);
-      this.data.array[index * this.data.stride + this.offset + 3] = w;
+      this.data.array[index2 * this.data.stride + this.offset + 3] = w;
       return this;
     }
-    getX(index) {
-      let x = this.data.array[index * this.data.stride + this.offset];
+    getX(index2) {
+      let x = this.data.array[index2 * this.data.stride + this.offset];
       if (this.normalized) x = denormalize(x, this.array);
       return x;
     }
-    getY(index) {
-      let y = this.data.array[index * this.data.stride + this.offset + 1];
+    getY(index2) {
+      let y = this.data.array[index2 * this.data.stride + this.offset + 1];
       if (this.normalized) y = denormalize(y, this.array);
       return y;
     }
-    getZ(index) {
-      let z = this.data.array[index * this.data.stride + this.offset + 2];
+    getZ(index2) {
+      let z = this.data.array[index2 * this.data.stride + this.offset + 2];
       if (this.normalized) z = denormalize(z, this.array);
       return z;
     }
-    getW(index) {
-      let w = this.data.array[index * this.data.stride + this.offset + 3];
+    getW(index2) {
+      let w = this.data.array[index2 * this.data.stride + this.offset + 3];
       if (this.normalized) w = denormalize(w, this.array);
       return w;
     }
-    setXY(index, x, y) {
-      index = index * this.data.stride + this.offset;
+    setXY(index2, x, y) {
+      index2 = index2 * this.data.stride + this.offset;
       if (this.normalized) {
         x = normalize(x, this.array);
         y = normalize(y, this.array);
       }
-      this.data.array[index + 0] = x;
-      this.data.array[index + 1] = y;
+      this.data.array[index2 + 0] = x;
+      this.data.array[index2 + 1] = y;
       return this;
     }
-    setXYZ(index, x, y, z) {
-      index = index * this.data.stride + this.offset;
+    setXYZ(index2, x, y, z) {
+      index2 = index2 * this.data.stride + this.offset;
       if (this.normalized) {
         x = normalize(x, this.array);
         y = normalize(y, this.array);
         z = normalize(z, this.array);
       }
-      this.data.array[index + 0] = x;
-      this.data.array[index + 1] = y;
-      this.data.array[index + 2] = z;
+      this.data.array[index2 + 0] = x;
+      this.data.array[index2 + 1] = y;
+      this.data.array[index2 + 2] = z;
       return this;
     }
-    setXYZW(index, x, y, z, w) {
-      index = index * this.data.stride + this.offset;
+    setXYZW(index2, x, y, z, w) {
+      index2 = index2 * this.data.stride + this.offset;
       if (this.normalized) {
         x = normalize(x, this.array);
         y = normalize(y, this.array);
         z = normalize(z, this.array);
         w = normalize(w, this.array);
       }
-      this.data.array[index + 0] = x;
-      this.data.array[index + 1] = y;
-      this.data.array[index + 2] = z;
-      this.data.array[index + 3] = w;
+      this.data.array[index2 + 0] = x;
+      this.data.array[index2 + 1] = y;
+      this.data.array[index2 + 2] = z;
+      this.data.array[index2 + 3] = w;
       return this;
     }
     clone(data) {
@@ -19034,9 +18720,9 @@ void main() {
         console.log("THREE.InterleavedBufferAttribute.clone(): Cloning an interleaved buffer attribute will de-interleave buffer data.");
         const array = [];
         for (let i = 0; i < this.count; i++) {
-          const index = i * this.data.stride + this.offset;
+          const index2 = i * this.data.stride + this.offset;
           for (let j = 0; j < this.itemSize; j++) {
-            array.push(this.data.array[index + j]);
+            array.push(this.data.array[index2 + j]);
           }
         }
         return new BufferAttribute(new this.array.constructor(array), this.itemSize, this.normalized);
@@ -19055,9 +18741,9 @@ void main() {
         console.log("THREE.InterleavedBufferAttribute.toJSON(): Serializing an interleaved buffer attribute will de-interleave buffer data.");
         const array = [];
         for (let i = 0; i < this.count; i++) {
-          const index = i * this.data.stride + this.offset;
+          const index2 = i * this.data.stride + this.offset;
           for (let j = 0; j < this.itemSize; j++) {
-            array.push(this.data.array[index + j]);
+            array.push(this.data.array[index2 + j]);
           }
         }
         return {
@@ -19315,17 +19001,17 @@ void main() {
       if (source.boundingSphere !== null) this.boundingSphere = source.boundingSphere.clone();
       return this;
     }
-    getColorAt(index, color) {
-      color.fromArray(this.instanceColor.array, index * 3);
+    getColorAt(index2, color) {
+      color.fromArray(this.instanceColor.array, index2 * 3);
     }
-    getMatrixAt(index, matrix) {
-      matrix.fromArray(this.instanceMatrix.array, index * 16);
+    getMatrixAt(index2, matrix) {
+      matrix.fromArray(this.instanceMatrix.array, index2 * 16);
     }
-    getMorphAt(index, object) {
+    getMorphAt(index2, object) {
       const objectInfluences = object.morphTargetInfluences;
       const array = this.morphTexture.source.data.data;
       const len = objectInfluences.length + 1;
-      const dataIndex = index * len + 1;
+      const dataIndex = index2 * len + 1;
       for (let i = 0; i < objectInfluences.length; i++) {
         objectInfluences[i] = array[dataIndex + i];
       }
@@ -19354,16 +19040,16 @@ void main() {
         _instanceIntersects.length = 0;
       }
     }
-    setColorAt(index, color) {
+    setColorAt(index2, color) {
       if (this.instanceColor === null) {
         this.instanceColor = new InstancedBufferAttribute(new Float32Array(this.instanceMatrix.count * 3).fill(1), 3);
       }
-      color.toArray(this.instanceColor.array, index * 3);
+      color.toArray(this.instanceColor.array, index2 * 3);
     }
-    setMatrixAt(index, matrix) {
-      matrix.toArray(this.instanceMatrix.array, index * 16);
+    setMatrixAt(index2, matrix) {
+      matrix.toArray(this.instanceMatrix.array, index2 * 16);
     }
-    setMorphAt(index, object) {
+    setMorphAt(index2, object) {
       const objectInfluences = object.morphTargetInfluences;
       const len = objectInfluences.length + 1;
       if (this.morphTexture === null) {
@@ -19375,7 +19061,7 @@ void main() {
         morphInfluencesSum += objectInfluences[i];
       }
       const morphBaseInfluence = this.geometry.morphTargetsRelative ? 1 : 1 - morphInfluencesSum;
-      const dataIndex = len * index;
+      const dataIndex = len * index2;
       array[dataIndex] = morphBaseInfluence;
       array.set(objectInfluences, dataIndex + 1);
     }
@@ -19690,7 +19376,7 @@ void main() {
   };
   function CubicPoly() {
     let c0 = 0, c1 = 0, c2 = 0, c3 = 0;
-    function init2(x0, x1, t0, t1) {
+    function init(x0, x1, t0, t1) {
       c0 = x0;
       c1 = t0;
       c2 = -3 * x0 + 3 * x1 - 2 * t0 - t1;
@@ -19698,14 +19384,14 @@ void main() {
     }
     return {
       initCatmullRom: function(x0, x1, x2, x3, tension) {
-        init2(x1, x2, tension * (x2 - x0), tension * (x3 - x1));
+        init(x1, x2, tension * (x2 - x0), tension * (x3 - x1));
       },
       initNonuniformCatmullRom: function(x0, x1, x2, x3, dt0, dt1, dt2) {
         let t1 = (x1 - x0) / dt0 - (x2 - x0) / (dt0 + dt1) + (x2 - x1) / dt1;
         let t2 = (x2 - x1) / dt1 - (x3 - x1) / (dt1 + dt2) + (x3 - x2) / dt2;
         t1 *= dt1;
         t2 *= dt1;
-        init2(x1, x2, t1, t2);
+        init(x1, x2, t1, t2);
       },
       calc: function(t) {
         const t2 = t * t;
@@ -20188,8 +19874,8 @@ void main() {
       this.curves = [];
       this.autoClose = false;
     }
-    add(curve) {
-      this.curves.push(curve);
+    add(curve2) {
+      this.curves.push(curve2);
     }
     closePath() {
       const startPoint = this.curves[0].getPoint(0);
@@ -20214,10 +19900,10 @@ void main() {
       while (i < curveLengths.length) {
         if (curveLengths[i] >= d) {
           const diff = curveLengths[i] - d;
-          const curve = this.curves[i];
-          const segmentLength = curve.getLength();
+          const curve2 = this.curves[i];
+          const segmentLength = curve2.getLength();
           const u = segmentLength === 0 ? 0 : 1 - diff / segmentLength;
-          return curve.getPointAt(u, optionalTarget);
+          return curve2.getPointAt(u, optionalTarget);
         }
         i++;
       }
@@ -20265,9 +19951,9 @@ void main() {
       const points = [];
       let last;
       for (let i = 0, curves = this.curves; i < curves.length; i++) {
-        const curve = curves[i];
-        const resolution = curve.isEllipseCurve ? divisions * 2 : curve.isLineCurve || curve.isLineCurve3 ? 1 : curve.isSplineCurve ? divisions * curve.points.length : divisions;
-        const pts = curve.getPoints(resolution);
+        const curve2 = curves[i];
+        const resolution = curve2.isEllipseCurve ? divisions * 2 : curve2.isLineCurve || curve2.isLineCurve3 ? 1 : curve2.isSplineCurve ? divisions * curve2.points.length : divisions;
+        const pts = curve2.getPoints(resolution);
         for (let j = 0; j < pts.length; j++) {
           const point = pts[j];
           if (last && last.equals(point)) continue;
@@ -20284,8 +19970,8 @@ void main() {
       super.copy(source);
       this.curves = [];
       for (let i = 0, l = source.curves.length; i < l; i++) {
-        const curve = source.curves[i];
-        this.curves.push(curve.clone());
+        const curve2 = source.curves[i];
+        this.curves.push(curve2.clone());
       }
       this.autoClose = source.autoClose;
       return this;
@@ -20295,8 +19981,8 @@ void main() {
       data.autoClose = this.autoClose;
       data.curves = [];
       for (let i = 0, l = this.curves.length; i < l; i++) {
-        const curve = this.curves[i];
-        data.curves.push(curve.toJSON());
+        const curve2 = this.curves[i];
+        data.curves.push(curve2.toJSON());
       }
       return data;
     }
@@ -20305,8 +19991,8 @@ void main() {
       this.autoClose = json.autoClose;
       this.curves = [];
       for (let i = 0, l = json.curves.length; i < l; i++) {
-        const curve = json.curves[i];
-        this.curves.push(new Curves[curve.type]().fromJSON(curve));
+        const curve2 = json.curves[i];
+        this.curves.push(new Curves[curve2.type]().fromJSON(curve2));
       }
       return this;
     }
@@ -20332,7 +20018,7 @@ void main() {
       const vertices = [];
       const normals = [];
       const uvs = [];
-      let index = 0;
+      let index2 = 0;
       const indexArray = [];
       const halfHeight = height / 2;
       let groupStart = 0;
@@ -20366,7 +20052,7 @@ void main() {
             normal.set(sinTheta, slope, cosTheta).normalize();
             normals.push(normal.x, normal.y, normal.z);
             uvs.push(u, 1 - v);
-            indexRow.push(index++);
+            indexRow.push(index2++);
           }
           indexArray.push(indexRow);
         }
@@ -20390,7 +20076,7 @@ void main() {
         groupStart += groupCount;
       }
       function generateCap(top) {
-        const centerIndexStart = index;
+        const centerIndexStart = index2;
         const uv = new Vector2();
         const vertex2 = new Vector3();
         let groupCount = 0;
@@ -20400,9 +20086,9 @@ void main() {
           vertices.push(0, halfHeight * sign, 0);
           normals.push(0, sign, 0);
           uvs.push(0.5, 0.5);
-          index++;
+          index2++;
         }
-        const centerIndexEnd = index;
+        const centerIndexEnd = index2;
         for (let x = 0; x <= radialSegments; x++) {
           const u = x / radialSegments;
           const theta = u * thetaLength + thetaStart;
@@ -20416,7 +20102,7 @@ void main() {
           uv.x = cosTheta * 0.5 + 0.5;
           uv.y = sinTheta * 0.5 * sign + 0.5;
           uvs.push(uv.x, uv.y);
-          index++;
+          index2++;
         }
         for (let x = 0; x < radialSegments; x++) {
           const c = centerIndexStart + x;
@@ -20518,8 +20204,8 @@ void main() {
       widthSegments = Math.max(3, Math.floor(widthSegments));
       heightSegments = Math.max(2, Math.floor(heightSegments));
       const thetaEnd = Math.min(thetaStart + thetaLength, Math.PI);
-      let index = 0;
-      const grid = [];
+      let index2 = 0;
+      const grid2 = [];
       const vertex2 = new Vector3();
       const normal = new Vector3();
       const indices = [];
@@ -20544,16 +20230,16 @@ void main() {
           normal.copy(vertex2).normalize();
           normals.push(normal.x, normal.y, normal.z);
           uvs.push(u + uOffset, 1 - v);
-          verticesRow.push(index++);
+          verticesRow.push(index2++);
         }
-        grid.push(verticesRow);
+        grid2.push(verticesRow);
       }
       for (let iy = 0; iy < heightSegments; iy++) {
         for (let ix = 0; ix < widthSegments; ix++) {
-          const a = grid[iy][ix + 1];
-          const b = grid[iy][ix];
-          const c = grid[iy + 1][ix];
-          const d = grid[iy + 1][ix + 1];
+          const a = grid2[iy][ix + 1];
+          const b = grid2[iy][ix];
+          const c = grid2[iy + 1][ix];
+          const d = grid2[iy + 1][ix + 1];
           if (iy !== 0 || thetaStart > 0) indices.push(a, b, d);
           if (iy !== heightSegments - 1 || thetaEnd < Math.PI) indices.push(b, c, d);
         }
@@ -20633,17 +20319,17 @@ void main() {
     }
   };
   var TubeGeometry = class _TubeGeometry extends BufferGeometry {
-    constructor(path = new QuadraticBezierCurve3(new Vector3(-1, -1, 0), new Vector3(-1, 1, 0), new Vector3(1, 1, 0)), tubularSegments = 64, radius = 1, radialSegments = 8, closed = false) {
+    constructor(path2 = new QuadraticBezierCurve3(new Vector3(-1, -1, 0), new Vector3(-1, 1, 0), new Vector3(1, 1, 0)), tubularSegments = 64, radius = 1, radialSegments = 8, closed = false) {
       super();
       this.type = "TubeGeometry";
       this.parameters = {
-        path,
+        path: path2,
         tubularSegments,
         radius,
         radialSegments,
         closed
       };
-      const frames = path.computeFrenetFrames(tubularSegments, closed);
+      const frames = path2.computeFrenetFrames(tubularSegments, closed);
       this.tangents = frames.tangents;
       this.normals = frames.normals;
       this.binormals = frames.binormals;
@@ -20669,7 +20355,7 @@ void main() {
         generateIndices();
       }
       function generateSegment(i) {
-        P = path.getPointAt(i / tubularSegments, P);
+        P = path2.getPointAt(i / tubularSegments, P);
         const N = frames.normals[i];
         const B = frames.binormals[i];
         for (let j = 0; j <= radialSegments; j++) {
@@ -21070,8 +20756,8 @@ void main() {
     getSettings_() {
       return this.settings || this.DefaultSettings_;
     }
-    copySampleValue_(index) {
-      const result = this.resultBuffer, values = this.sampleValues, stride = this.valueSize, offset = index * stride;
+    copySampleValue_(index2) {
+      const result = this.resultBuffer, values = this.sampleValues, stride = this.valueSize, offset = index2 * stride;
       for (let i = 0; i !== stride; ++i) {
         result[i] = values[offset + i];
       }
@@ -21498,9 +21184,9 @@ void main() {
         return this;
       };
       this.removeHandler = function(regex) {
-        const index = handlers.indexOf(regex);
-        if (index !== -1) {
-          handlers.splice(index, 2);
+        const index2 = handlers.indexOf(regex);
+        if (index2 !== -1) {
+          handlers.splice(index2, 2);
         }
         return this;
       };
@@ -21545,8 +21231,8 @@ void main() {
       this.withCredentials = value;
       return this;
     }
-    setPath(path) {
-      this.path = path;
+    setPath(path2) {
+      this.path = path2;
       return this;
     }
     setResourcePath(resourcePath) {
@@ -21747,10 +21433,10 @@ void main() {
   );
   var _supportedObjectNames = ["material", "materials", "bones", "map"];
   var Composite = class {
-    constructor(targetGroup, path, optionalParsedPath) {
-      const parsedPath = optionalParsedPath || PropertyBinding.parseTrackName(path);
+    constructor(targetGroup, path2, optionalParsedPath) {
+      const parsedPath = optionalParsedPath || PropertyBinding.parseTrackName(path2);
       this._targetGroup = targetGroup;
-      this._bindings = targetGroup.subscribe_(path, parsedPath);
+      this._bindings = targetGroup.subscribe_(path2, parsedPath);
     }
     getValue(array, offset) {
       this.bind();
@@ -21777,19 +21463,19 @@ void main() {
     }
   };
   var PropertyBinding = class _PropertyBinding {
-    constructor(rootNode, path, parsedPath) {
-      this.path = path;
-      this.parsedPath = parsedPath || _PropertyBinding.parseTrackName(path);
+    constructor(rootNode, path2, parsedPath) {
+      this.path = path2;
+      this.parsedPath = parsedPath || _PropertyBinding.parseTrackName(path2);
       this.node = _PropertyBinding.findNode(rootNode, this.parsedPath.nodeName);
       this.rootNode = rootNode;
       this.getValue = this._getValue_unbound;
       this.setValue = this._setValue_unbound;
     }
-    static create(root, path, parsedPath) {
+    static create(root, path2, parsedPath) {
       if (!(root && root.isAnimationObjectGroup)) {
-        return new _PropertyBinding(root, path, parsedPath);
+        return new _PropertyBinding(root, path2, parsedPath);
       } else {
-        return new _PropertyBinding.Composite(root, path, parsedPath);
+        return new _PropertyBinding.Composite(root, path2, parsedPath);
       }
     }
     /**
@@ -22255,7 +21941,7 @@ void main() {
     }
   }
 
-  // radio-guide/vendor/OrbitControls.js
+  // vendor/OrbitControls.js
   var _changeEvent = { type: "change" };
   var _startEvent = { type: "start" };
   var _endEvent = { type: "end" };
@@ -23041,7 +22727,7 @@ void main() {
     }
   }
 
-  // radio-guide/vendor/RoundedBoxGeometry.js
+  // vendor/RoundedBoxGeometry.js
   var _tempNormal = new Vector3();
   function getUv(faceDirVector, normal, uvAxis, projectionAxis, radius, sideLength) {
     const totArcLength = 2 * Math.PI * radius / 4;
@@ -23129,7 +22815,7 @@ void main() {
     }
   };
 
-  // radio-guide/src/lib.js
+  // src/lib.js
   var PALETTE = {
     ink: 1581373,
     inkSoft: 2831440,
@@ -23142,8 +22828,8 @@ void main() {
     brass: 12093768,
     brassLight: 13938285,
     silver: 13157562,
-    teal: 1478541,
-    tealDeep: 749168,
+    teal: 10767657,
+    tealDeep: 8207654,
     red: 11028792,
     blue: 3043222,
     amber: 14129982,
@@ -23173,13 +22859,13 @@ void main() {
     return m;
   }
   function tube(points, radius, material, tubular = 80, radial = 6) {
-    const curve = new CatmullRomCurve3(
+    const curve2 = new CatmullRomCurve3(
       points.map((p) => new Vector3(p[0], p[1], p[2])),
       false,
       "catmullrom",
       0.2
     );
-    const geo = new TubeGeometry(curve, tubular, radius, radial, false);
+    const geo = new TubeGeometry(curve2, tubular, radius, radial, false);
     const mesh = new Mesh(geo, material);
     mesh.castShadow = false;
     mesh.receiveShadow = false;
@@ -23196,12 +22882,12 @@ void main() {
     tex.anisotropy = 8;
     return tex;
   }
-  function tagSprite(text, opts = {}) {
+  function tagSprite(text2, opts = {}) {
     const {
       fg = "#18213d",
       bg = "rgba(251,245,233,.94)",
       border = "#b8a68d",
-      dot = "#168f8d",
+      dot: dot2 = "#168f8d",
       mono = true,
       width = 2.1
     } = opts;
@@ -23220,7 +22906,7 @@ void main() {
       ctx.strokeStyle = border;
       ctx.lineWidth = 2;
       ctx.stroke();
-      ctx.fillStyle = dot;
+      ctx.fillStyle = dot2;
       ctx.beginPath();
       ctx.arc(32, h / 2, 7, 0, Math.PI * 2);
       ctx.fill();
@@ -23228,7 +22914,7 @@ void main() {
       ctx.font = `${mono ? '600 34px "JetBrains Mono", monospace' : '600 38px "Barlow Semi Condensed", sans-serif'}`;
       ctx.textBaseline = "middle";
       ctx.letterSpacing = "2px";
-      ctx.fillText(text, 52, h / 2 + 1);
+      ctx.fillText(text2, 52, h / 2 + 1);
     });
     const material = new SpriteMaterial({
       map: tex,
@@ -23292,8 +22978,8 @@ void main() {
       woodDark: std(10452044, { roughness: 0.88 }),
       copper: new MeshStandardMaterial({
         color: PALETTE.copper,
-        metalness: 0.72,
-        roughness: 0.28
+        metalness: 0.55,
+        roughness: 0.48
       }),
       copperMatte: new MeshStandardMaterial({
         color: 11168312,
@@ -23455,7 +23141,7 @@ void main() {
     }
   }
 
-  // radio-guide/src/models.js
+  // src/models.js
   var V = (x, y, z) => new Vector3(x, y, z);
   var DEG = Math.PI / 180;
   var Bench = class {
@@ -23506,8 +23192,8 @@ void main() {
     }
     /* ------------------------------------------------------------------ setup */
     _lights() {
-      this.scene.add(new HemisphereLight(16775401, 10193781, 0.85));
-      const key = new DirectionalLight(16774107, 1.95);
+      this.scene.add(new HemisphereLight(16053743, 10198164, 1.25));
+      const key = new DirectionalLight(16119021, 2.4);
       key.position.set(15, 25, 17);
       key.target.position.set(0, 2.5, 0);
       key.castShadow = true;
@@ -23522,10 +23208,10 @@ void main() {
       key.shadow.normalBias = 0.03;
       key.shadow.radius = 5;
       this.scene.add(key, key.target);
-      const fill = new DirectionalLight(12378329, 0.7);
+      const fill = new DirectionalLight(14739692, 0.9);
       fill.position.set(-18, 12, 9);
       this.scene.add(fill);
-      const rim = new DirectionalLight(16770230, 0.6);
+      const rim = new DirectionalLight(15854042, 0.65);
       rim.position.set(-4, 8, -20);
       this.scene.add(rim);
       this.scene.add(new AmbientLight(16775146, 0.18));
@@ -23698,10 +23384,10 @@ void main() {
           post.rotation.x = z > 0 ? -0.08 : 0.08;
           post.castShadow = true;
           g.add(post);
-          const pad = rounded(0.86, 0.06, 0.3, 0.03, this.m.tape);
-          pad.position.set(x, -1.5, z * 0.985);
-          pad.castShadow = false;
-          g.add(pad);
+          const pad2 = rounded(0.86, 0.06, 0.3, 0.03, this.m.tape);
+          pad2.position.set(x, -1.5, z * 0.985);
+          pad2.castShadow = false;
+          g.add(pad2);
         }
       }
       const pipePrint = canvasTexture(1024, 256, (ctx, w, h) => {
@@ -23733,8 +23419,8 @@ void main() {
         const a = t * turns * Math.PI * 2;
         points.push(new Vector3(-1.25 + 2.5 * t, Math.cos(a) * r, Math.sin(a) * r));
       }
-      const curve = new CatmullRomCurve3(points, false, "catmullrom", 0.02);
-      const geo = new TubeGeometry(curve, n, 0.015, 6, false);
+      const curve2 = new CatmullRomCurve3(points, false, "catmullrom", 0.02);
+      const geo = new TubeGeometry(curve2, n, 0.015, 6, false);
       this.coilGeo = geo;
       this.coilCount = geo.index ? geo.index.count : 0;
       const mesh = new Mesh(geo, this.m.copper);
@@ -23785,111 +23471,110 @@ void main() {
       const g = new Group();
       this.root.add(g);
       this.capGroup = g;
-      const body = rounded(3.42, 2.5, 1.52, 0.16, this.m.clear, 4);
-      body.castShadow = true;
-      body.userData.noPick = false;
-      g.add(body);
-      for (const z of [-0.74, 0.74]) {
-        for (const [x, y, w, h] of [
-          [0, 1.2, 3.36, 0.1],
-          [0, -1.2, 3.36, 0.1],
-          [-1.66, 0, 0.1, 2.3],
-          [1.66, 0, 0.1, 2.3]
-        ]) {
-          const bar = rounded(w, h, 0.1, 0.035, this.m.ivory);
-          bar.position.set(x, y, z);
-          bar.castShadow = false;
-          g.add(bar);
-        }
-      }
-      for (let i = 0; i < 5; i++) {
-        const z = -0.44 + i * 0.19;
-        const plate = new Mesh(new CylinderGeometry(0.94, 0.94, 0.022, 40, 1, false, 0, Math.PI), this.m.brass);
+      const shell = new MeshPhysicalMaterial({
+        color: 15065022,
+        roughness: 0.3,
+        metalness: 0,
+        transparent: true,
+        opacity: 0.48,
+        depthWrite: false,
+        side: DoubleSide
+      });
+      this.capShell = rounded(2.1, 2.1, 1.7, 0.13, shell, 5);
+      g.add(this.capShell);
+      const front = rounded(2.06, 2.06, 0.1, 0.1, this.m.ivory, 4);
+      front.position.z = 0.86;
+      g.add(front);
+      const rear = rounded(2.06, 2.06, 0.09, 0.1, this.m.ivory, 4);
+      rear.position.z = -0.86;
+      g.add(rear);
+      for (const x of [-0.48, 0.48]) for (let i = 0; i < 13; i++) {
+        const plate = cyl(0.42, 0.42, 0.018, 24, this.m.silver);
         plate.rotation.x = Math.PI / 2;
-        plate.position.set(0, 0, z);
+        plate.position.set(x, 0, -0.65 + i * 0.1);
         plate.castShadow = false;
         g.add(plate);
       }
       const rotor = new Group();
       g.add(rotor);
       this.capRotor = rotor;
-      for (let i = 0; i < 5; i++) {
-        const z = -0.535 + i * 0.19;
-        const plate = new Mesh(new CylinderGeometry(0.88, 0.88, 0.026, 40, 1, false, 0, Math.PI), this.m.brassLight);
-        plate.rotation.x = Math.PI / 2;
-        plate.position.set(0, 0, z);
-        plate.castShadow = false;
-        rotor.add(plate);
-      }
-      const shaft = cyl(0.095, 0.095, 1.46, 16, this.m.silver);
+      const shaft = cyl(0.17, 0.17, 0.43, 6, this.m.brass);
       shaft.rotation.x = Math.PI / 2;
-      shaft.position.z = 0.16;
+      shaft.position.z = 1.08;
       rotor.add(shaft);
-      const dial = new Group();
-      dial.position.z = 0.88;
-      g.add(dial);
-      this.capDial = dial;
-      const disc = cyl(0.74, 0.74, 0.09, 40, this.m.ivory);
-      disc.rotation.x = Math.PI / 2;
-      dial.add(disc);
-      const dialRing = new Mesh(
-        new TorusGeometry(0.62, 0.017, 6, 48),
-        this.m.scopeDark
-      );
-      dialRing.position.z = 0.052;
-      dial.add(dialRing);
-      for (let i = 0; i < 12; i++) {
-        const tick = box(0.022, i % 3 === 0 ? 0.15 : 0.09, 0.01, this.m.scopeDark);
-        const a = i / 12 * Math.PI * 2;
-        tick.position.set(Math.sin(a) * 0.5, Math.cos(a) * 0.5, 0.055);
-        tick.rotation.z = -a;
-        tick.castShadow = false;
-        dial.add(tick);
+      const bore = cyl(0.075, 0.075, 0.012, 20, this.m.black);
+      bore.rotation.x = Math.PI / 2;
+      bore.position.z = 1.3;
+      rotor.add(bore);
+      const mark = box(0.035, 0.12, 0.012, this.m.copperDark);
+      mark.position.set(0, 0.11, 1.305);
+      rotor.add(mark);
+      this.capDial = null;
+      for (const x of [-0.78, 0.78]) for (const y of [-0.78, 0.78]) {
+        const screw = cyl(0.105, 0.105, 0.045, 20, this.m.silver);
+        screw.rotation.x = Math.PI / 2;
+        screw.position.set(x, y, 0.94);
+        g.add(screw);
+        const slot = box(0.14, 0.018, 9e-3, this.m.ink);
+        slot.position.set(x, y, 0.968);
+        g.add(slot);
       }
-      const pointer = box(0.055, 0.47, 0.018, this.m.copperDark);
-      pointer.position.set(0, 0.22, 0.065);
-      pointer.castShadow = false;
-      dial.add(pointer);
-      const knob = cyl(0.21, 0.21, 0.22, 24, this.m.whitePlastic);
-      knob.rotation.x = Math.PI / 2;
-      knob.position.z = 0.08;
-      dial.add(knob);
-      for (const x of [-1.2, -0.4, 0.4, 1.2]) {
-        const lug = box(0.24, 0.52, 0.075, this.m.silver);
-        lug.position.set(x, -1.46, 0.18);
-        g.add(lug);
-        const hole = new Mesh(
-          new TorusGeometry(0.052, 0.014, 5, 16),
-          this.m.black
-        );
-        hole.position.set(x, -1.61, 0.225);
+      for (const x of [-0.59, 0.59]) {
+        const rim = new Mesh(new TorusGeometry(0.115, 0.025, 8, 24), this.m.brass);
+        rim.position.set(x, -0.27, 0.93);
+        g.add(rim);
+        const hole = cyl(0.09, 0.09, 0.01, 18, this.m.black);
+        hole.rotation.x = Math.PI / 2;
+        hole.position.set(x, -0.27, 0.926);
         g.add(hole);
       }
+      for (const x of [-0.52, 0.52]) for (const y of [-0.5, 0.5]) {
+        const trim = cyl(0.2, 0.2, 0.06, 24, this.m.brassLight);
+        trim.rotation.x = Math.PI / 2;
+        trim.position.set(x, y, -0.94);
+        g.add(trim);
+        const slot = box(0.27, 0.025, 0.012, this.m.ink);
+        slot.position.set(x, y, -0.978);
+        g.add(slot);
+      }
+      this.capTerminals = [];
+      for (const [side, xs] of [[-1, [-0.67, 0, 0.67]], [1, [-0.75, -0.25, 0.25, 0.75]]]) {
+        for (const x of xs) {
+          const lug = rounded(0.13, 0.64, 0.045, 0.02, this.m.brass, 3);
+          lug.position.set(x, side * 1.27, -0.47);
+          g.add(lug);
+          this.capTerminals.push(lug);
+          const hole = new Mesh(new TorusGeometry(0.028, 9e-3, 6, 12), this.m.copperDark);
+          hole.position.set(x, side * 1.49, -0.442);
+          g.add(hole);
+        }
+      }
+      this.capAMLocal = V(-0.67, -1.49, -0.47);
+      this.capCommonLocal = V(0, -1.49, -0.47);
+      this.capTrayPos = V(-6.1, 1.2, 7.75);
+      this.capTrayQuat = new Quaternion().setFromEuler(new Euler(-Math.PI / 2, 0, 0.12));
+      this.capMountedPos = V(-7.5, 8.32, -0.35);
+      this.capMountedQuat = new Quaternion();
+      this.capAMWorld = this.capAMLocal.clone().add(this.capMountedPos);
+      this.capCommonWorld = this.capCommonLocal.clone().add(this.capMountedPos);
       const mount = new Group();
       this.root.add(mount);
       this.capMount = mount;
-      const pad = rounded(3.05, 0.4, 0.7, 0.1, this.m.foam);
-      pad.position.set(-7.5, 6.9, -0.95);
-      mount.add(pad);
-      for (const x of [-9.36, -5.64]) {
-        const band = rounded(0.3, 2.75, 1.68, 0.07, this.m.tape);
+      const pad2 = rounded(1.9, 0.32, 1.1, 0.07, this.m.foam);
+      pad2.position.set(-7.5, 7.1, -0.15);
+      mount.add(pad2);
+      for (const x of [-8.51, -6.49]) {
+        const band = rounded(0.14, 2.1, 1.72, 0.025, this.m.tape);
         band.position.set(x, 8.32, -0.35);
-        band.castShadow = false;
         mount.add(band);
       }
       mount.visible = false;
       tagPart(g, "capacitor");
-      this._anchor("cap", g, 0, -0.4, 0);
-      this._anchor("capFrame", g, 1.62, -1.05, 0.55);
-      this._anchor("capKnob", g, 0, 0, 1.22);
-      this._anchor("tankTop", g, -1.2, -1.3, 0.1);
-      this._anchor("tankBottom", g, 1.2, -1.3, 0.1);
-      this.capTrayPos = V(-6.1, 1.2, 7.75);
-      this.capTrayQuat = new Quaternion().setFromEuler(
-        new Euler(-Math.PI / 2, 0, 0.12)
-      );
-      this.capMountedPos = V(-7.5, 8.32, -0.35);
-      this.capMountedQuat = new Quaternion();
+      this._anchor("cap", g, 0, 0, 0);
+      this._anchor("capFrame", g, 0.95, 0, 0.85);
+      this._anchor("capKnob", g, 0, 0, 1.3);
+      this._anchor("tankTop", g, ...this.capAMLocal.toArray());
+      this._anchor("tankBottom", g, ...this.capCommonLocal.toArray());
       g.position.copy(this.capTrayPos);
       g.quaternion.copy(this.capTrayQuat);
     }
@@ -23897,8 +23582,8 @@ void main() {
       const g = new Group();
       this.root.add(g);
       this.tankLeads = g;
-      const a = tube([[-8.75, 6.716, -1], [-8.95, 7.12, -0.8], [-8.85, 7.12, -0.35], [-8.7, 6.71, -0.17]], 0.025, this.m.copper, 72, 6);
-      const b = tube([[-6.25, 6.716, -1], [-6.05, 7.12, -0.8], [-6.15, 7.12, -0.35], [-6.3, 6.71, -0.17]], 0.025, this.m.copper, 72, 6);
+      const a = tube([[-8.75, 6.716, -1], [-8.95, 7.12, -0.8], [-8.85, 7.12, -0.35], this.capAMWorld.toArray()], 0.025, this.m.copper, 72, 6);
+      const b = tube([[-6.25, 6.716, -1], [-6.05, 7.12, -0.8], [-6.15, 7.12, -0.35], this.capCommonWorld.toArray()], 0.025, this.m.copper, 72, 6);
       g.add(a, b);
       this.reveals.tank = [a.geometry, b.geometry];
       tagPart(g, "tank");
@@ -24099,10 +23784,10 @@ void main() {
         [2.12, this.m.railBlue],
         [2.42, this.m.railRed]
       ]) {
-        const line = box(7.4, 0.015, 0.045, mat);
-        line.position.set(0, 0.514, z + (z < 0 ? -0.13 : 0.13));
-        line.castShadow = false;
-        g.add(line);
+        const line2 = box(7.4, 0.015, 0.045, mat);
+        line2.position.set(0, 0.514, z + (z < 0 ? -0.13 : 0.13));
+        line2.castShadow = false;
+        g.add(line2);
       }
       for (const z of [-2.55, 2.55]) {
         const ruler = box(7.5, 8e-3, 0.02, this.m.pvcEdge);
@@ -24681,7 +24366,7 @@ void main() {
       this.boardLinks = g;
       const signal = tube(
         [
-          [-8.7, 6.86, -0.17],
+          this.capAMWorld.toArray(),
           [-8.82, 6.6, 0.35],
           [-8.88, 5.3, 1.55],
           [-8.65, 3.4, 2.45],
@@ -24704,7 +24389,7 @@ void main() {
       );
       const ground = tube(
         [
-          [-6.3, 6.86, -0.17],
+          this.capCommonWorld.toArray(),
           [-6.25, 6.6, 0.2],
           [-6.2, 5.1, 1.65],
           [-5.7, 2.6, 2.8],
@@ -24828,113 +24513,50 @@ void main() {
       return 1 / Math.sqrt(1 + (40 * (u - 1 / u)) ** 2);
     }
     _drawScope() {
-      if (this.generatorTex) {
-        const ctx2 = this.generatorTex.image.getContext("2d");
-        ctx2.fillStyle = "#101a20";
-        ctx2.fillRect(18, 85, 240, 30);
-        ctx2.fillStyle = "#b8a98f";
-        ctx2.font = '500 17px "JetBrains Mono",monospace';
-        ctx2.fillText((2 * this.sourceAmplitude).toFixed(2) + " Vpp", 22, 104);
-        this.generatorTex.needsUpdate = true;
-      }
       if (!this.scopeCtx) return;
       const ctx = this.scopeCtx;
-      const w = 640;
-      const h = 360;
-      ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = "#07151b";
-      ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = "rgba(84,190,181,.13)";
+      ctx.fillStyle = "#202a29";
+      ctx.fillRect(0, 0, 640, 360);
+      ctx.strokeStyle = "#45534f";
       ctx.lineWidth = 1;
-      for (let x = 32; x < w; x += 32) {
+      for (let x = 32; x < 640; x += 32) {
         ctx.beginPath();
         ctx.moveTo(x, 0);
-        ctx.lineTo(x, h);
+        ctx.lineTo(x, 360);
         ctx.stroke();
       }
-      for (let y = 30; y < h; y += 30) {
+      for (let y = 30; y < 360; y += 30) {
         ctx.beginPath();
         ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
+        ctx.lineTo(640, y);
         ctx.stroke();
       }
-      ctx.strokeStyle = "rgba(84,190,181,.3)";
+      ctx.strokeStyle = "#c2cab9";
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.moveTo(w / 2, 0);
-      ctx.lineTo(w / 2, h);
-      ctx.moveTo(0, h / 2);
-      ctx.lineTo(w, h / 2);
-      ctx.stroke();
-      const ratio = this._response();
-      const amp = this.probeAtTP1 ? this.sourceAmplitude * ratio * 210 : 0;
-      const cy = h / 2 - 8;
-      ctx.save();
-      ctx.shadowColor = "rgba(91,224,207,.75)";
-      ctx.shadowBlur = 14;
-      ctx.strokeStyle = "#64e0d5";
-      ctx.lineWidth = 3.2;
-      ctx.beginPath();
-      for (let x = 0; x <= w; x += 2) {
-        const y = cy - Math.sin(x / w * Math.PI * 8 - this.time * 2.5) * amp;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
+      for (let x = 0; x <= 640; x += 2) {
+        const y = 180 - (this.probeAtTP1 ? 70 : 0) * Math.sin(x / 640 * Math.PI * 12);
+        x ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
       }
       ctx.stroke();
-      ctx.restore();
-      ctx.fillStyle = "#a5eee4";
-      ctx.font = '500 22px "JetBrains Mono", monospace';
-      ctx.fillText("CH1", 24, 34);
-      ctx.fillStyle = "#7eafa7";
-      ctx.font = '400 18px "JetBrains Mono", monospace';
-      ctx.fillText("DC  \xD710", 82, 34);
-      ctx.fillText("500 mV/div", 24, h - 24);
-      ctx.textAlign = "right";
-      ctx.fillText("819.0 kHz", w - 24, h - 24);
-      ctx.fillStyle = ratio > 0.82 ? "#7be1d5" : "#947f63";
-      ctx.font = '600 20px "JetBrains Mono", monospace';
-      ctx.fillText(!this.probeAtTP1 ? "PROBE DISCONNECTED" : ratio > 0.82 ? "RESONANCE" : "DETUNED", w - 24, 36);
-      ctx.textAlign = "left";
+      ctx.fillStyle = "#e2e6dc";
+      ctx.font = "22px Barlow,sans-serif";
+      ctx.fillText("CH1  \xB7  TP1  \xB7  \xD710", 22, 35);
+      ctx.font = "18px Barlow,sans-serif";
+      ctx.fillText("ILLUSTRATIVE TRACE \xB7 NOT A READING", 22, 335);
       this.scopeTex.needsUpdate = true;
     }
     _drawDmm() {
       if (!this.dmmCtx) return;
       const ctx = this.dmmCtx;
-      const w = 512;
-      const h = 256;
-      if (!this.dmmOn) {
-        ctx.fillStyle = "#303b34";
-        ctx.fillRect(0, 0, w, h);
-        ctx.fillStyle = "rgba(201,219,190,.2)";
-        ctx.font = '500 68px "JetBrains Mono", monospace';
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText("\u2014 \u2014 \u2014", w / 2, h / 2);
-        this.dmmTex.needsUpdate = true;
-        return;
-      }
-      const ratio = this._response();
-      const value = Math.max(0, this.sourceAmplitude * ratio - 0.25);
-      const text = value < 1e-3 ? "0.000" : value.toFixed(3);
-      ctx.fillStyle = "#d6e2c3";
-      ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = "rgba(63,85,45,.1)";
-      for (let y = 0; y < h; y += 4) ctx.fillRect(0, y, w, 1);
-      ctx.fillStyle = "#25331d";
-      ctx.font = '500 84px "JetBrains Mono", monospace';
-      ctx.textAlign = "right";
-      ctx.textBaseline = "alphabetic";
-      ctx.fillText(text, w - 100, 128);
-      ctx.font = '500 30px "JetBrains Mono", monospace';
-      ctx.fillText("V", w - 38, 126);
-      ctx.textAlign = "left";
-      ctx.font = '500 24px "JetBrains Mono", monospace';
-      ctx.fillText("DC", 32, 58);
-      ctx.font = '400 20px "JetBrains Mono", monospace';
-      ctx.fillText("TP3 \xB7 ILLUSTRATION", 32, 222);
-      ctx.textAlign = "right";
-      ctx.fillStyle = "rgba(37,51,29,.55)";
-      ctx.fillText("AUTO", w - 30, 222);
-      ctx.textAlign = "left";
+      ctx.fillStyle = "#d0d8bd";
+      ctx.fillRect(0, 0, 512, 256);
+      ctx.fillStyle = "#303b30";
+      ctx.textAlign = "center";
+      ctx.font = "70px Barlow,sans-serif";
+      ctx.fillText(this.dmmOn ? "TP3" : "\u2014", 256, 132);
+      ctx.font = "24px Barlow,sans-serif";
+      ctx.fillText("DC VOLTS \xB7 MEASURE ON BENCH", 256, 213);
       this.dmmTex.needsUpdate = true;
     }
     setTuning(pF) {
@@ -25013,42 +24635,42 @@ void main() {
       this._drawDmm();
     }
     /* -------------------------------------------------------------------- state */
-    setStep(index, instant = false) {
+    setStep(index2, instant = false) {
       this.tweens = [];
-      this.step = index;
+      this.step = index2;
       this.paused = false;
       this.animation = { elapsed: instant ? 9 : 0, duration: 8 };
-      this.coilGroup.visible = index >= 1;
-      this._reveal("coil", index >= 1 ? 1 : 0, 0);
-      this.looseTails.visible = index >= 1 && index <= 2;
-      this.spoolGroup.visible = index <= 1;
-      this.toolsGroup.visible = index <= 1;
-      this.trayGroup.visible = index === 0;
-      this._moveCap(index >= 2, 0);
-      this.tankLeads.visible = index >= 3;
-      this._reveal("tank", index >= 3 ? 1 : 0, 0);
-      this.detectorGroup.visible = index >= 4;
-      this.looseParts.visible = index < 4;
-      this.boardLinks.visible = index >= 5;
-      this._reveal("boardLinks", index >= 5 ? 1 : 0, 0);
-      this.genLeads.visible = index >= 6;
-      this.loopGroup.visible = index >= 6;
-      this.dmmGroup.visible = index === 0 || index >= 8;
-      this._setProbe(index >= 7);
-      this.probeGround.visible = index >= 7;
-      this._setDmm(index >= 8);
+      this.coilGroup.visible = index2 >= 1;
+      this._reveal("coil", index2 >= 1 ? 1 : 0, 0);
+      this.looseTails.visible = index2 >= 1 && index2 <= 2;
+      this.spoolGroup.visible = index2 <= 1;
+      this.toolsGroup.visible = index2 <= 1;
+      this.trayGroup.visible = index2 === 0;
+      this._moveCap(index2 >= 2, 0);
+      this.tankLeads.visible = index2 >= 3;
+      this._reveal("tank", index2 >= 3 ? 1 : 0, 0);
+      this.detectorGroup.visible = index2 >= 4;
+      this.looseParts.visible = index2 < 4;
+      this.boardLinks.visible = index2 >= 5;
+      this._reveal("boardLinks", index2 >= 5 ? 1 : 0, 0);
+      this.genLeads.visible = index2 >= 6;
+      this.loopGroup.visible = index2 >= 6;
+      this.dmmGroup.visible = index2 === 0 || index2 >= 8;
+      this._setProbe(index2 >= 7);
+      this.probeGround.visible = index2 >= 7;
+      this._setDmm(index2 >= 8);
       this.sourceAmplitude = 0.5;
       this.setTuning(129.5);
-      this.boardGroup.visible = index === 0 || index >= 4;
-      this.pipeGroup.visible = index !== 4;
-      this.capGroup.visible = index !== 4;
-      this.capMount.visible = index >= 2 && index !== 4;
-      this.tankLeads.visible = index >= 3 && index !== 4;
-      this.generatorGroup.visible = index === 0 || index >= 6;
-      this.scopeGroup.visible = index === 0 || index >= 7;
-      this.probeGroup.visible = index >= 7;
-      this.probeCable.visible = index >= 7;
-      this.signalGroup.visible = this.signalOn && index >= 6;
+      this.boardGroup.visible = index2 === 0 || index2 >= 4;
+      this.pipeGroup.visible = index2 !== 4;
+      this.capGroup.visible = index2 !== 4;
+      this.capMount.visible = index2 >= 2 && index2 !== 4;
+      this.tankLeads.visible = index2 >= 3 && index2 !== 4;
+      this.generatorGroup.visible = index2 === 0 || index2 >= 6;
+      this.scopeGroup.visible = index2 === 0 || index2 >= 7;
+      this.probeGroup.visible = index2 >= 7;
+      this.probeCable.visible = index2 >= 7;
+      this.signalGroup.visible = this.signalOn && index2 >= 6;
       this._animateStep();
       this._drawScope();
       this._drawDmm();
@@ -25110,7 +24732,7 @@ void main() {
         this._drawScope();
         this._drawDmm();
       }
-      if (this.step >= 7 && Math.floor(this.time * 12) !== this.lastScreenFrame) {
+      if (false) {
         this.lastScreenFrame = Math.floor(this.time * 12);
         this._drawScope();
         this._drawDmm();
@@ -25147,1038 +24769,772 @@ void main() {
     }
   };
 
-  // radio-guide/src/scene.js
-  var reduceMotion = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // src/scene.js
+  var BOXES = {
+    1: [[-10.6, 0, -3.6], [-4.4, 7.3, 1.8]],
+    2: [[-10.5, 0, -3.6], [-4.4, 10.1, 1.8]],
+    3: [[-10.5, 0, -3.6], [-4.4, 10.1, 1.8]],
+    4: [[0.4, 0.4, -1.6], [8.8, 3, 4]],
+    5: [[-11, 0, -4], [9, 10, 5]],
+    6: [[-19, 0, -5], [9, 10, 8]],
+    7: [[-19, 0, -9], [15, 10, 8]],
+    8: [[-19, 0, -9], [15, 10, 11]]
+  };
+  var LABELS = {
+    1: [["coil", "75 turns / 25 mm"], ["coil", "\xD8 50 mm former"]],
+    2: [["capKnob", "Threaded tuning shaft"], ["tankTop", "AM pair: verify on part"]],
+    3: [["tankTop", "TP1 / example AM lug"], ["tankBottom", "GND / example common"]],
+    4: [["diodeBand", "Cathode band \u2192 TP3"], ["load", "15 k\u03A9 \u2225 3.3 nF"]],
+    5: [["tp1", "TP1 / diode anode"], ["groundRail", "Receiver GND"]],
+    6: [["loop", "Source loop / own return"], ["coil", "Receiver / isolated"]],
+    7: [["probeTip", "\xD710 tip \u2192 TP1"], ["groundRail", "Probe ground \u2192 GND"]],
+    8: [["tp3", "TP3 / detector output"], ["dmm", "DMM / DC volts"]]
+  };
   var RadioScene = class {
-    constructor(canvas, options = {}) {
+    constructor(canvas, { onPart = () => {
+    }, onReady = () => {
+    }, onProgress = () => {
+    }, BenchClass = Bench, boxes = BOXES, labels = LABELS } = {}) {
+      this.boxes = boxes;
+      this.labelDefinitions = labels;
       this.canvas = canvas;
-      this.stage = canvas.closest(".stage") || canvas.parentElement;
-      this.calloutLayer = document.getElementById("callouts");
-      this.leaderLayer = document.getElementById("leaders");
-      this.onPart = options.onPart || (() => {
-      });
-      this.onReady = options.onReady || (() => {
-      });
-      this.renderer = new WebGLRenderer({
-        canvas,
-        antialias: true,
-        alpha: true,
-        powerPreference: "high-performance"
-      });
-      this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-      this.renderer.setClearColor(0, 0);
+      this.stage = canvas.parentElement;
+      this.onPart = onPart;
+      this.onReady = onReady;
+      this.onProgress = onProgress;
+      this.labels = document.getElementById("callouts");
+      this.leaders = document.getElementById("leaders");
+      this.motionQuery = matchMedia("(prefers-reduced-motion: reduce)");
+      this.renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: "low-power" });
+      this.renderer.setPixelRatio(Math.min(Math.max(devicePixelRatio || 1, 1.5), 2));
       this.renderer.outputColorSpace = SRGBColorSpace;
       this.renderer.toneMapping = ACESFilmicToneMapping;
-      this.renderer.toneMappingExposure = 1.03;
+      this.renderer.toneMappingExposure = 0.98;
       this.renderer.shadowMap.enabled = true;
       this.renderer.shadowMap.type = PCFSoftShadowMap;
-      this.camera = new PerspectiveCamera(32, 1, 0.2, 180);
+      this.camera = new PerspectiveCamera(32, 1, 0.1, 250);
       this.controls = new OrbitControls(this.camera, canvas);
-      this.controls.enableDamping = true;
-      this.controls.dampingFactor = 0.065;
+      this.controls.enableDamping = false;
       this.controls.enablePan = false;
-      this.controls.minDistance = 9;
-      this.controls.maxDistance = 80;
-      this.controls.minPolarAngle = 0.32;
-      this.controls.maxPolarAngle = 1.41;
-      this.controls.rotateSpeed = 0.72;
+      this.controls.minDistance = 2;
+      this.controls.maxDistance = 160;
+      this.controls.minPolarAngle = 0.01;
+      this.controls.maxPolarAngle = Math.PI * 0.49;
+      this.controls.rotateSpeed = 0.7;
       this.controls.zoomSpeed = 0.8;
-      this.bench = new Bench(this.renderer);
-      this.step = 0;
+      this.bench = new BenchClass(this.renderer);
+      this.step = 1;
       this.labelsOn = true;
-      this.callouts = [];
-      this.leaderNodes = [];
-      this.cameraTween = null;
-      this.lastPointer = { x: 0, y: 0 };
-      this.dragging = false;
+      this.playing = false;
+      this.visible = false;
+      this.enabled = true;
+      this.frameCount = 0;
+      this.raf = 0;
+      this.last = 0;
+      this.ready = false;
+      this.top = false;
+      this.controls.addEventListener("change", () => this.invalidate());
+      this.observer = new IntersectionObserver((entries) => {
+        this.visible = entries[0].isIntersecting;
+        if (this.visible) {
+          this.last = 0;
+          this.invalidate();
+        } else this.cancelFrame();
+      }, { threshold: 0 });
+      this.observer.observe(this.stage);
+      this.resizeObserver = new ResizeObserver(() => this.resize());
+      this.resizeObserver.observe(this.stage);
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) this.cancelFrame();
+        else {
+          this.last = 0;
+          this.invalidate();
+        }
+      });
+      this.motionQuery.addEventListener("change", () => {
+        this.playing = false;
+        this.onProgress(this.progress, false);
+        this.invalidate();
+      });
       this.raycaster = new Raycaster();
       this.pointer = new Vector2();
-      this.hoverDirty = false;
-      this._firstFrame = true;
-      this._last = performance.now();
-      this._bind();
+      canvas.addEventListener("pointerdown", (e) => {
+        this.down = [e.clientX, e.clientY];
+      });
+      canvas.addEventListener("pointerup", (e) => {
+        if (!this.down || Math.hypot(e.clientX - this.down[0], e.clientY - this.down[1]) > 5) return;
+        const r = canvas.getBoundingClientRect();
+        this.pointer.set((e.clientX - r.left) / r.width * 2 - 1, 1 - (e.clientY - r.top) / r.height * 2);
+        this.raycaster.setFromCamera(this.pointer, this.camera);
+        const hit = this.raycaster.intersectObjects(this.bench.pickables).find((h) => this.isVisible(h.object));
+        if (hit) this.onPart(hit.object.userData.part);
+      });
+      canvas.addEventListener("keydown", (e) => {
+        if (!["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "+", "=", "-", "Home"].includes(e.key)) return;
+        e.preventDefault();
+        if (e.key === "Home") return this.resetView();
+        if (["+", "=", "-"].includes(e.key)) return this.zoom(e.key === "-" ? 1.16 : 0.86);
+        const offset = this.camera.position.clone().sub(this.controls.target), s = new Spherical().setFromVector3(offset);
+        s.theta += e.key === "ArrowLeft" ? 0.12 : e.key === "ArrowRight" ? -0.12 : 0;
+        s.phi = MathUtils.clamp(s.phi + (e.key === "ArrowUp" ? -0.12 : e.key === "ArrowDown" ? 0.12 : 0), 0.02, 1.53);
+        this.camera.position.copy(this.controls.target).add(new Vector3().setFromSpherical(s));
+        this.controls.update();
+        this.invalidate();
+      });
+      canvas.addEventListener("webglcontextlost", (e) => {
+        e.preventDefault();
+        this.cancelFrame();
+        document.getElementById("scene-error").hidden = false;
+      });
+      canvas.addEventListener("webglcontextrestored", () => {
+        document.getElementById("scene-error").hidden = true;
+        this.invalidate();
+      });
+      this.setStep(1);
       this.resize();
-      this._resizeObserver = new ResizeObserver(() => this.resize());
-      this._resizeObserver.observe(this.stage);
-      this._applyCamera(0, true);
-      this._loop = this._loop.bind(this);
-      this._raf = requestAnimationFrame(this._loop);
     }
-    _bind() {
-      this.controls.addEventListener("start", () => {
-        this.cameraTween = null;
-      });
-      this.canvas.addEventListener("pointerdown", (e) => {
-        this.dragging = true;
-        this.lastPointer = { x: e.clientX, y: e.clientY };
-      });
-      this.canvas.addEventListener("pointerup", (e) => {
-        const dx = e.clientX - this.lastPointer.x;
-        const dy = e.clientY - this.lastPointer.y;
-        this.dragging = false;
-        if (Math.hypot(dx, dy) > 6) return;
-        const part = this._pick(e);
-        if (part) this.onPart(part);
-      });
-      this.canvas.addEventListener("pointerleave", () => {
-        this.canvas.style.cursor = "grab";
-      });
-      this.canvas.addEventListener("pointermove", (e) => {
-        if (e.buttons) {
-          this.canvas.style.cursor = "grabbing";
-          return;
-        }
-        this.canvas.style.cursor = "grab";
-        this._hover(e);
-      });
-    }
-    _pointerInfo(e) {
-      const rect = this.canvas.getBoundingClientRect();
-      this.pointer.x = (e.clientX - rect.left) / rect.width * 2 - 1;
-      this.pointer.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
-    }
-    _visibleChain(obj) {
-      let o = obj;
-      while (o) {
-        if (!o.visible) return false;
-        o = o.parent;
-      }
+    isVisible(object) {
+      for (let o = object; o; o = o.parent) if (!o.visible) return false;
       return true;
     }
-    _pick(e) {
-      this._pointerInfo(e);
-      this.raycaster.setFromCamera(this.pointer, this.camera);
-      const hits = this.raycaster.intersectObjects(this.bench.pickables, false);
-      for (const hit of hits) {
-        if (!hit.object.userData.part) continue;
-        if (!this._visibleChain(hit.object)) continue;
-        return hit.object.userData.part;
-      }
-      return null;
+    get progress() {
+      return Math.min(1, this.bench.animation.elapsed / this.bench.animation.duration);
     }
-    _hover(e) {
-      if (!this._hoverQueued) {
-        this._hoverQueued = true;
-        requestAnimationFrame(() => {
-          this._hoverQueued = false;
-          const part = this._pick(e);
-          this.canvas.style.cursor = part ? "pointer" : "grab";
-        });
-      }
+    setStep(step) {
+      this.step = step;
+      this.playing = false;
+      this.top = false;
+      this.bench.setStep(step, true);
+      this.bench.paused = true;
+      this.bench.spoolGroup.visible = false;
+      this.bench.toolsGroup.visible = false;
+      this.makeLabels();
+      this.resetView();
+      this.onProgress(1, false);
+      this.invalidate();
     }
     resize() {
-      const w = this.canvas.clientWidth;
-      const h = this.canvas.clientHeight;
+      const w = this.canvas.clientWidth, h = this.canvas.clientHeight;
       if (!w || !h) return;
+      const selected = this.bench.selected, node2 = this.bench.activeNode;
       this.renderer.setSize(w, h, false);
       this.camera.aspect = w / h;
       this.camera.updateProjectionMatrix();
-      if (this.bench) this._applyCamera(this.step, true);
-      this._updateCalloutPositions();
+      if (selected) this.focusPart(selected);
+      else {
+        this.resetView(this.top);
+        if (node2 && node2 !== "all") this.bench.highlightNode?.(node2);
+      }
     }
-    _responsiveScale() {
-      const a = this.camera.aspect;
-      if (a < 0.95) return 1.42;
-      if (a < 1.25) return 1.2;
-      return 1;
-    }
-    _applyCamera(index, instant = false) {
-      const preset = STEPS[index]?.camera;
-      if (!preset) return;
-      const bounds = [
-        [[-19, 0, -9], [15, 10, 11]],
-        [[-10.6, 1.6, -3.6], [-4.4, 7.3, 1.8]],
-        [[-9.5, 5.5, -1.6], [-5.5, this.bench.animation.elapsed >= 8 ? 9.8 : 12.8, 1.3]],
-        [[-10.2, 3, -3.2], [-4.8, 9.8, 1.5]],
-        [[0.4, 0.4, -1.6], [8.8, this.bench.animation.elapsed >= 8 ? 2.8 : 4.6, 4]],
-        [[-11, 0, -4], [9, 10, 5]],
-        [[-19, 0, -5], [9, 10, 8]],
-        [[0, 0, -9], [15, 6, 5]],
-        [[0, 0, -2], [12, 5, 11]]
-      ][index];
-      const box2 = new Box3(new Vector3(...bounds[0]), new Vector3(...bounds[1]));
+    fit(box2, direction) {
       const target = box2.getCenter(new Vector3());
-      const direction = new Vector3(...index === 4 ? [0.3, 1.5, 1] : index >= 7 ? [0.45, 1.1, 1.5] : [0.7, 0.65, 1.4]).normalize();
+      direction.normalize();
       const right = new Vector3().crossVectors(new Vector3(0, 1, 0), direction).normalize();
       const up = new Vector3().crossVectors(direction, right);
-      const tanV = Math.tan(MathUtils.degToRad(this.camera.fov / 2));
-      const tanH = tanV * this.camera.aspect;
+      const tv = Math.tan(MathUtils.degToRad(this.camera.fov / 2)), th = tv * this.camera.aspect;
       let distance = 0;
       for (const x of [box2.min.x, box2.max.x]) for (const y of [box2.min.y, box2.max.y]) for (const z of [box2.min.z, box2.max.z]) {
         const v = new Vector3(x, y, z).sub(target);
-        distance = Math.max(distance, Math.abs(v.dot(right)) / tanH + v.dot(direction), Math.abs(v.dot(up)) / tanV + v.dot(direction));
+        distance = Math.max(distance, Math.abs(v.dot(right)) / th + v.dot(direction), Math.abs(v.dot(up)) / tv + v.dot(direction));
       }
-      const pos = target.clone().addScaledVector(direction, distance * 1.08);
-      this.controls.maxDistance = Math.max(80, distance * 1.8);
-      if (instant) {
-        this.camera.position.copy(pos);
-        this.controls.target.copy(target);
-        this.controls.update();
-        this.cameraTween = null;
-        return;
-      }
-      this.cameraTween = {
-        fromPos: this.camera.position.clone(),
-        fromTarget: this.controls.target.clone(),
-        toPos: pos,
-        toTarget: target,
-        start: performance.now(),
-        duration: reduceMotion ? 1 : 850
-      };
+      this.controls.maxDistance = Math.max(160, distance * 2);
+      this.camera.position.copy(target).addScaledVector(direction, distance * 1.12);
+      this.controls.target.copy(target);
+      this.controls.update();
+      this.invalidate();
     }
-    setStep(index, options = {}) {
-      this.step = index;
-      this.bench.setStep(index, !!options.instant || reduceMotion);
-      this._applyCamera(index, !!options.instant);
-      this._buildCallouts();
-      if (options.instant) this._updateCalloutPositions();
-    }
-    resetView() {
-      this._applyCamera(this.step, false);
+    resetView(top = false) {
+      this.bench.clearFocus?.();
+      if (this.annotations) this.makeLabels();
+      this.top = top;
+      const bounds = this.boxes[this.step];
+      const box2 = new Box3(new Vector3(...bounds[0]), new Vector3(...bounds[1]));
+      if (this.progress < 1 && [2, 4].includes(this.step)) box2.max.y += 3;
+      this.fit(box2, top ? new Vector3(0, 1, 0.015) : new Vector3(...this.bench.viewDirection || (this.step === 4 ? [0.15, 1.7, 1] : [0.6, 0.65, 1.4])));
     }
     focusPart(id) {
       const b = this.bench;
-      const part = {
-        coil: b.coilGroup,
-        pipe: b.pipeGroup,
-        capacitor: b.capGroup,
-        diode: b.detectorParts[0],
-        resistor: b.detectorParts[1],
-        ceramic: b.detectorParts[2],
-        board: b.boardGroup,
-        loop: b.loopGroup,
-        scope: b.scopeGroup,
-        dmm: b.dmmGroup,
-        probe: b.probeGroup,
-        generator: b.generatorGroup,
-        spool: b.spoolGroup,
-        tray: b.trayGroup
-      }[id];
-      if (!part || !this._visibleChain(part)) return;
-      b.animation.elapsed = b.animation.duration;
-      b._animateStep();
-      part.updateWorldMatrix(true, true);
-      const bounds = new Box3().setFromObject(part);
-      const target = bounds.getCenter(new Vector3());
-      const size = bounds.getSize(new Vector3());
-      const radius = Math.max(size.x, size.y, size.z) * 0.65;
-      const distance = Math.max(2.6, radius / Math.tan(MathUtils.degToRad(this.camera.fov / 2)) / Math.min(1, this.camera.aspect));
-      const dir = new Vector3(0.3, 1.1, 1.5).normalize();
-      this.controls.minDistance = 1.5;
-      this.cameraTween = {
-        fromPos: this.camera.position.clone(),
-        fromTarget: this.controls.target.clone(),
-        toPos: target.clone().addScaledVector(dir, distance),
-        toTarget: target,
-        start: performance.now(),
-        duration: reduceMotion ? 1 : 700
-      };
-    }
-    replay() {
-      this.setStep(this.step);
-    }
-    togglePause() {
-      this.bench.paused = !this.bench.paused;
-      return this.bench.paused;
+      const part = b.parts?.[id] || { coil: b.coilGroup, pipe: b.pipeGroup, capacitor: b.capGroup, diode: b.detectorParts[0], resistor: b.detectorParts[1], ceramic: b.detectorParts[2], board: b.boardGroup, loop: b.loopGroup, generator: b.generatorGroup, scope: b.scopeGroup, probe: b.probeGroup, dmm: b.dmmGroup }[id];
+      if (!part || !this.isVisible(part)) return;
+      this.scrub(1);
+      b.inspect?.(id);
+      b.root.updateMatrixWorld(true);
+      const custom = b.focusBounds?.(id) || b.focusBoxes?.[id];
+      if (b.annotationsFor) this.makeLabels(b.annotationsFor(id));
+      this.fit(custom ? new Box3(new Vector3(...custom[0]), new Vector3(...custom[1])) : new Box3().setFromObject(part), new Vector3(...b.focusDirection?.(id) || [0.15, 1.1, 1.5]));
     }
     zoom(factor) {
       const offset = this.camera.position.clone().sub(this.controls.target);
-      const len = offset.length();
-      const next = MathUtils.clamp(len * factor, this.controls.minDistance, this.controls.maxDistance);
-      offset.setLength(next);
+      offset.setLength(MathUtils.clamp(offset.length() * factor, 2, this.controls.maxDistance));
       this.camera.position.copy(this.controls.target).add(offset);
       this.controls.update();
+      this.invalidate();
     }
     setLabels(on) {
+      this.bench.setLabels?.(on);
       this.labelsOn = on;
-      if (!on) {
-        this.calloutLayer.innerHTML = "";
-        this.leaderLayer.innerHTML = "";
-        this.callouts = [];
-        this.leaderNodes = [];
+      this.labels.hidden = !on;
+      this.leaders.hidden = !on;
+      this.invalidate();
+    }
+    setEnabled(enabled) {
+      this.enabled = enabled;
+      if (enabled) {
+        this.last = 0;
+        this.resize();
+        this.invalidate();
+      } else this.cancelFrame();
+    }
+    scrub(fraction) {
+      this.playing = false;
+      this.bench.paused = true;
+      this.bench.animation.elapsed = Math.max(0, Math.min(1, fraction)) * this.bench.animation.duration;
+      this.bench._animateStep();
+      this.bench._drawScope();
+      this.bench._drawDmm();
+      this.onProgress(this.progress, false);
+      this.invalidate();
+    }
+    togglePlay() {
+      if (this.playing) {
+        this.playing = false;
+        this.onProgress(this.progress, false);
         return;
       }
-      this._buildCallouts();
-      this._updateCalloutPositions();
+      if (this.progress >= 1) this.scrub(0);
+      this.playing = true;
+      this.last = 0;
+      this.resetView(this.top);
+      this.onProgress(this.progress, true);
+      this.invalidate();
     }
-    setSignal(on) {
-      this.bench.setSignal(on);
+    cancelFrame() {
+      if (this.raf) cancelAnimationFrame(this.raf);
+      this.raf = 0;
+      this.last = 0;
     }
-    setTuning(pF) {
-      return this.bench.setTuning(pF);
+    invalidate() {
+      if (!this.raf && this.enabled && this.visible && !document.hidden) this.raf = requestAnimationFrame((t) => this.render(t));
     }
-    _buildCallouts() {
-      if (!this.labelsOn) return;
-      this.calloutLayer.innerHTML = "";
-      this.leaderLayer.innerHTML = "";
-      this.callouts = [];
-      this.leaderNodes = [];
-      const data = STEPS[this.step]?.callouts || [];
-      data.forEach((c, i) => {
-        const el = document.createElement("article");
-        el.className = "callout";
-        el.dataset.slot = c.slot;
-        el.innerHTML = `
-        <span class="callout-num">${String(this.step + 1).padStart(2, "0")} \xB7 ${String.fromCharCode(65 + i)}</span>
-        <div class="callout-kicker">${c.kicker}</div>
-        <div class="callout-title">${c.title}</div>
-        <p class="callout-body">${c.body}</p>`;
-        this.calloutLayer.appendChild(el);
-        this.callouts.push({ el, anchor: c.anchor, slot: c.slot });
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("fill", "none");
-        path.setAttribute("stroke", "#8b7c66");
-        path.setAttribute("stroke-width", "1");
-        path.setAttribute("stroke-dasharray", "3 4");
-        path.setAttribute("opacity", "0");
-        this.leaderLayer.appendChild(path);
-        const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        dot.setAttribute("r", "2.4");
-        dot.setAttribute("fill", "#168f8d");
-        dot.setAttribute("stroke", "#f4ebdb");
-        dot.setAttribute("stroke-width", "1.3");
-        dot.setAttribute("opacity", "0");
-        this.leaderLayer.appendChild(dot);
-        this.leaderNodes.push({ path, dot });
-        requestAnimationFrame(() => {
-          if (el.isConnected) el.classList.add("is-in");
-          path.setAttribute("opacity", "0.7");
-          dot.setAttribute("opacity", "1");
-        });
-      });
-    }
-    _updateCalloutPositions() {
-      if (!this.stage.contains(this.calloutLayer)) return;
-      if (!this.labelsOn || !this.callouts.length) return;
-      const rect = this.stage.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      this.leaderLayer.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
-      this.leaderLayer.setAttribute("width", rect.width);
-      this.leaderLayer.setAttribute("height", rect.height);
-      const v = new Vector3();
-      this.callouts.forEach((c, i) => {
-        const anchor = this.bench.anchors[c.anchor];
-        const nodes = this.leaderNodes[i];
-        if (!anchor) {
-          nodes.path.setAttribute("opacity", "0");
-          nodes.dot.setAttribute("opacity", "0");
-          return;
-        }
-        anchor.getWorldPosition(v);
-        v.project(this.camera);
-        const canvasRect = this.canvas.getBoundingClientRect();
-        const x = canvasRect.left - rect.left + (v.x * 0.5 + 0.5) * canvasRect.width;
-        const y = canvasRect.top - rect.top + (-v.y * 0.5 + 0.5) * canvasRect.height;
-        const visible = v.z < 1 && x > -30 && x < rect.width + 30 && y > -20 && y < rect.height + 20;
-        if (!visible) {
-          nodes.path.setAttribute("opacity", "0");
-          nodes.dot.setAttribute("opacity", "0");
-          return;
-        }
-        const card = c.el.getBoundingClientRect();
-        const left = card.left - rect.left;
-        const top = card.top - rect.top;
-        const isLeft = c.slot === "tl" || c.slot === "bl";
-        const startX = isLeft ? left + card.width : left;
-        const startY = top + Math.min(card.height * 0.5, 42);
-        const elbowX = startX + (isLeft ? 26 : -26);
-        nodes.path.setAttribute(
-          "d",
-          `M ${startX.toFixed(1)} ${startY.toFixed(1)} L ${elbowX.toFixed(1)} ${startY.toFixed(1)} L ${elbowX.toFixed(1)} ${y.toFixed(1)} L ${x.toFixed(1)} ${y.toFixed(1)}`
-        );
-        nodes.path.setAttribute("opacity", "0.68");
-        nodes.dot.setAttribute("cx", x.toFixed(1));
-        nodes.dot.setAttribute("cy", y.toFixed(1));
-        nodes.dot.setAttribute("opacity", "1");
-      });
-    }
-    _loop(now) {
-      const dt = Math.min((now - this._last) / 1e3, 0.05);
-      this._last = now;
-      if (this.cameraTween) {
-        const t = MathUtils.clamp(
-          (now - this.cameraTween.start) / this.cameraTween.duration,
-          0,
-          1
-        );
-        const e = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        this.camera.position.lerpVectors(
-          this.cameraTween.fromPos,
-          this.cameraTween.toPos,
-          e
-        );
-        this.controls.target.lerpVectors(
-          this.cameraTween.fromTarget,
-          this.cameraTween.toTarget,
-          e
-        );
-        if (t >= 1) this.cameraTween = null;
+    render(now) {
+      this.raf = 0;
+      if (!this.enabled || !this.visible || document.hidden) return;
+      if (this.playing) {
+        const dt = this.last ? Math.min((now - this.last) / 1e3, 0.05) : 0;
+        this.last = now;
+        this.bench.animation.elapsed = Math.min(this.bench.animation.duration, this.bench.animation.elapsed + dt);
+        this.bench._animateStep();
+        this.playing = this.progress < 1;
+        this.onProgress(this.progress, this.playing);
+        if (!this.playing) this.resetView(this.top);
       }
-      this.controls.update();
-      const wasPlaying = this.bench.animation.elapsed < this.bench.animation.duration;
-      this.bench.update(dt);
-      if (wasPlaying && this.bench.animation.elapsed >= this.bench.animation.duration && [2, 4].includes(this.step)) this._applyCamera(this.step);
-      const progress = document.getElementById("animationProgress");
-      const status = document.getElementById("animationStatus");
-      const a = this.bench.animation;
-      if (progress) progress.value = Math.min(100, a.elapsed / a.duration * 100);
-      if (status) {
-        const descriptions = [
-          "Inspect the kit \xB7 click a component",
-          "Winding 75 turns",
-          "Lowering the capacitor onto its mount",
-          "Joining the two AM terminals",
-          "Inserting diode, resistor, then capacitor",
-          "Connecting TP1 and ground",
-          "Aligning the five-turn test loop",
-          "Sweeping C past the 819 kHz source",
-          "Increasing the six source levels"
-        ];
-        status.textContent = this.bench.paused ? "Animation paused" : a.elapsed >= a.duration ? "Step complete \xB7 replay to watch again" : descriptions[this.step];
-      }
-      if (this.step === 7 && a.elapsed < a.duration) {
-        const cap = document.getElementById("tuneRange");
-        const readout = document.getElementById("tuneCap");
-        const frequency = document.getElementById("tuneFreq");
-        if (cap) cap.value = this.bench.tuning;
-        if (readout) readout.textContent = this.bench.tuning.toFixed(1) + " pF";
-        if (frequency) frequency.textContent = (1 / (2 * Math.PI * Math.sqrt(2915e-7 * this.bench.tuning * 1e-12)) / 1e3).toFixed(1) + " kHz";
-      }
-      this._updateLessonReadout();
       this.renderer.render(this.bench.scene, this.camera);
-      this._updateCalloutPositions();
-      if (this._firstFrame) {
-        this._firstFrame = false;
+      this.frameCount++;
+      this.positionLabels();
+      if (!this.ready) {
+        this.ready = true;
         this.onReady();
       }
-      this._raf = requestAnimationFrame(this._loop);
+      if (this.playing) this.invalidate();
     }
-    _updateLessonReadout() {
-      const readout = document.getElementById("liveReadout");
-      if (!readout) return;
-      const b = this.bench, ratio = b._response();
-      readout.hidden = this.step < 6;
-      if (this.step === 6) readout.textContent = "5-turn loop \u2192 magnetic field \u2192 75-turn coil \xB7 no electrical connection";
-      if (this.step === 7) readout.textContent = `Illustration \xB7 source 819 kHz \xB7 C ${b.tuning.toFixed(1)} pF \xB7 TP1 peak ${(b.sourceAmplitude * ratio).toFixed(3)} V`;
-      if (this.step === 8) readout.textContent = `Illustration \xB7 source ${b.sourceAmplitude.toFixed(2)} V \xB7 TP1 peak ${(b.sourceAmplitude * ratio).toFixed(3)} V \xB7 TP3 DC ${Math.max(0, b.sourceAmplitude * ratio - 0.25).toFixed(3)} V`;
+    makeLabels(definitions = this.labelDefinitions[this.step]) {
+      this.labels.replaceChildren();
+      this.leaders.replaceChildren();
+      this.annotations = [];
+      for (const [i, [anchor, text2]] of definitions.entries()) {
+        const el = document.createElement("span");
+        el.className = "model-label";
+        el.textContent = text2;
+        this.labels.append(el);
+        const path2 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path2.setAttribute("fill", "none");
+        path2.setAttribute("stroke", "#92988d");
+        path2.setAttribute("stroke-width", "1");
+        const dot2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        dot2.setAttribute("r", "2.5");
+        dot2.setAttribute("fill", "#a44d29");
+        this.leaders.append(path2, dot2);
+        this.annotations.push({ anchor, el, path: path2, dot: dot2, i });
+      }
+    }
+    positionLabels() {
+      if (!this.labelsOn) return;
+      const rect = this.stage.getBoundingClientRect(), cr = this.canvas.getBoundingClientRect();
+      this.leaders.setAttribute("viewBox", `0 0 ${rect.width} ${rect.height}`);
+      for (const a of this.annotations) {
+        const anchor = this.bench.anchors[a.anchor];
+        if (!anchor) continue;
+        const point = anchor.getWorldPosition(new Vector3());
+        if (!this.bench.annotationsFor && this.step === 1 && a.i === 1) point.z += 2.5;
+        point.project(this.camera);
+        const x = cr.left - rect.left + (point.x + 1) * cr.width / 2, y = cr.top - rect.top + (1 - point.y) * cr.height / 2;
+        const visible = point.z < 1 && x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
+        a.el.hidden = !visible;
+        a.path.style.display = a.dot.style.display = visible ? "" : "none";
+        if (!visible) continue;
+        const three = this.annotations.length === 3, left = a.i === 0 || three && a.i === 1 ? 18 : Math.max(18, rect.width - a.el.offsetWidth - 18), top = a.i === 0 || three && a.i === 2 ? 58 : rect.height - 135;
+        a.el.style.left = `${left}px`;
+        a.el.style.top = `${top}px`;
+        const sx = left + a.el.offsetWidth / 2, sy = top + (a.i === 0 ? a.el.offsetHeight : 0);
+        a.path.setAttribute("d", `M${sx},${sy} L${sx},${(sy + y) / 2} L${x},${y}`);
+        a.dot.setAttribute("cx", x);
+        a.dot.setAttribute("cy", y);
+      }
     }
   };
 
-  // radio-guide/src/main.js
-  var $ = (sel, root = document) => root.querySelector(sel);
-  var $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-  var clamp2 = (v, a, b) => Math.min(b, Math.max(a, v));
-  var reduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var PART_ICON = {
-    coil: "i-coil",
-    pipe: "i-ruler",
-    capacitor: "i-capacitor",
-    diode: "i-diode",
-    resistor: "i-resistor",
-    ceramic: "i-capacitor",
-    board: "i-board",
-    loop: "i-loop",
-    generator: "i-signal",
-    scope: "i-scope",
-    probe: "i-probe",
-    dmm: "i-dmm",
-    spool: "i-coil",
-    tray: "i-tools",
-    tools: "i-tools",
-    tank: "i-schematic"
-  };
-  var store = {
-    get(key, fallback) {
-      try {
-        const raw = localStorage.getItem(key);
-        return raw === null ? fallback : JSON.parse(raw);
-      } catch {
-        return fallback;
+  // src/wiring.js
+  var copper = "#a44d29";
+  var ink = "#28302e";
+  var text = (x, y, t, size = 16, extra = "") => `<text x="${x}" y="${y}" font-size="${size}" ${extra}>${t}</text>`;
+  var path = (d, color = copper, extra = "") => `<path d="${d}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" ${extra}/>`;
+  var dot = (x, y) => `<circle cx="${x}" cy="${y}" r="4" fill="${copper}"/>`;
+  var net = (id, body) => `<g class="wire-net" data-net="${id}">${body}</g>`;
+  function wiringSVG(step) {
+    if (step < 4) return tankSVG(step);
+    const x = (c) => 100 + (c - 1) * 19;
+    const rows = { a: 180, b: 199, c: 218, d: 237, e: 256, f: 300, g: 319, h: 338, i: 357, j: 376 };
+    let holes = "", labels = "", strips = "";
+    for (let c = 1; c <= 30; c++) {
+      labels += text(x(c), 164, c, 10, 'text-anchor="middle"');
+      for (const y of Object.values(rows)) holes += `<circle cx="${x(c)}" cy="${y}" r="2.8" fill="#9ca195"/>`;
+    }
+    for (const [row, y] of Object.entries(rows)) labels += text(72, y + 4, row, 12);
+    for (const c of [9, 17, 25]) {
+      const id = c === 9 ? "tp1" : "tp3";
+      strips += net(id, `<rect x="${x(c) - 6}" y="173" width="12" height="90" rx="5" fill="${copper}" opacity=".16"/>`);
+      if (c !== 9) strips += net("gnd", `<rect x="${x(c) - 6}" y="294" width="12" height="89" rx="5" fill="${ink}" opacity=".12"/>`);
+    }
+    let drawing = `<rect x="52" y="141" width="645" height="318" rx="9" fill="#eceee6" stroke="#c6ccbf"/>${strips}${holes}<g class="diagram-mono">${labels}</g>`;
+    drawing += path("M78 278H672", "#c3c8bc", 'stroke-width="1"') + text(79, 288, "centre channel", 10, 'fill="#747c71"');
+    drawing += net("tp1", path(`M40 100H${x(9)}V${rows.d}`) + dot(x(9), rows.d) + text(37, 82, "TP1", 16));
+    drawing += net("tp3", path(`M${x(17)} ${rows.b}V113H${x(25)}V${rows.b}`) + dot(x(17), rows.d) + dot(x(25), rows.d) + text(486, 100, "TP3", 16));
+    drawing += path(`M${x(9)} ${rows.d}H${x(17)}`, ink);
+    drawing += `<rect x="${x(9) + 42}" y="225" width="68" height="24" rx="10" fill="#d8be91" stroke="${ink}"/><rect x="${x(9) + 94}" y="225" width="7" height="24" fill="${ink}"/>`;
+    drawing += text(x(9) + 63, 216, "1N60P", 14, 'text-anchor="middle"') + text(x(9) + 95, 273, "band \u2192", 13);
+    drawing += path(`M${x(17)} ${rows.e}V266l-6 5 12 8-12 8 12 8-6 5v19`, ink);
+    drawing += text(x(17) - 14, 313, "15 k\u03A9", 13, 'text-anchor="end"');
+    drawing += path(`M${x(25)} ${rows.d}V275m-13 0h26m-26 12h26m-13 0v32`, ink);
+    drawing += text(x(25) + 20, 290, "3.3 nF", 14);
+    drawing += net("gnd", path(`M${x(17)} ${rows.i}V422H40M${x(25)} ${rows.i}V422H${x(17)}`, ink, 'stroke-dasharray="7 4"') + dot(x(17), 422) + dot(x(25), 422) + text(77, 446, "Receiver GND \xB7 verify rail continuity", 14));
+    for (let c = 1; c <= 30; c++) drawing += `<circle cx="${x(c)}" cy="422" r="2.4" fill="${ink}"/>`;
+    const source = step >= 6 ? `<rect x="32" y="10" width="696" height="45" fill="#e9ece3"/>${text(47, 38, "Generator + return \u2192 5-turn loop", 15)}${text(712, 38, "Magnetic coupling only", 14, 'text-anchor="end" fill="#a44d29"')}` : "";
+    return wrap("Detector breadboard connections", `${source}${drawing}${text(37, 490, "a\u2013e: one strip per number", 14)}${text(724, 490, "f\u2013j: a separate strip", 14, 'text-anchor="end"')}`, 760, 510);
+  }
+  function tankSVG(step) {
+    let d = `<g class="diagram-mono">${text(32, 40, "TANK / TWO SHARED NODES", 13)}</g>`;
+    d += `<rect x="110" y="148" width="200" height="198" rx="38" fill="#e7e9e0" stroke="#b9c0b2"/><ellipse cx="310" cy="247" rx="24" ry="99" fill="#d7dccf" stroke="#b9c0b2"/>`;
+    for (let i = 0; i < 29; i++) d += `<path d="M${151 + i * 3.5} 151c-27 22-27 170 0 192" fill="none" stroke="${copper}" stroke-width="2.5"/>`;
+    d += text(205, 390, "75-turn winding", 19, 'text-anchor="middle"') + text(205, 416, "50 mm diameter \xB7 \u224825 mm length", 14, 'text-anchor="middle"');
+    d += path("M143 127v-12h115v12M143 120h115", "#747c71", 'stroke-width="1"') + text(200, 106, "\u224825 mm", 14, 'text-anchor="middle"');
+    if (step >= 2) {
+      d += `<rect x="485" y="169" width="136" height="136" rx="10" fill="#e5dfc8" stroke="#b3ac8d"/><rect x="493" y="177" width="120" height="120" rx="7" fill="#f0eedf" stroke="#c9c4ac"/><circle cx="553" cy="229" r="15" fill="#b69c65" stroke="#8f7850"/><circle cx="553" cy="229" r="5" fill="#676658"/>`;
+      for (const x of [511, 553, 595]) d += `<rect x="${x - 4}" y="304" width="8" height="30" fill="#b69c65"/>`;
+      for (const x of [505, 537, 569, 601]) d += `<rect x="${x - 3}" y="149" width="6" height="20" fill="#b69c65"/>`;
+      for (const x of [506, 600]) for (const y of [190, 284]) d += `<circle cx="${x}" cy="${y}" r="4" fill="#a2a793"/>`;
+      d += text(553, 390, "Enclosed variable capacitor", 19, 'text-anchor="middle"') + text(553, 416, "20\u2013280 pF AM section", 14, 'text-anchor="middle"');
+      if (step >= 3) {
+        d += net("tp1", path("M151 151V72H445V351H511V334") + dot(445, 72) + text(463, 77, "TP1", 17));
+        d += net("gnd", path("M251 344V455H553V334", ink, 'stroke-dasharray="7 4"') + dot(445, 455) + text(463, 482, "Receiver GND", 16));
       }
-    },
-    set(key, value) {
-      try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch {
-      }
-    },
-    remove(key) {
-      try {
-        localStorage.removeItem(key);
-      } catch {
+      d += text(553, 355, "Example pair only; verify AM / common", 12, 'text-anchor="middle" fill="#a44d29"');
+    } else {
+      d += path("M151 151V92H90M251 344v110h65");
+      d += text(350, 201, "Keep each turn beside the last.", 18) + text(350, 232, "No crossing or overlapping turns.", 16) + text(350, 283, "Strip only the two ends.", 18) + text(350, 314, "Expose \u224810 mm of clean copper.", 16);
+    }
+    return wrap("Coil and variable capacitor connections", d, 760, 510);
+  }
+  function wrap(title, body, w, h) {
+    return `<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="${title}" xmlns="http://www.w3.org/2000/svg"><g class="diagram-text">${body}</g></svg>`;
+  }
+  function highlightNode(node2) {
+    document.querySelectorAll("[data-net]").forEach((el) => el.classList.toggle("wire-dim", node2 !== "all" && el.dataset.net !== node2));
+  }
+  function wiringDescription(step, node2) {
+    if (node2 === "tp1") return "TP1: one coil end + one AM terminal + the diode anode (d9). These points belong to the same receiver node.";
+    if (node2 === "tp3") return step < 4 ? "TP3 is added with the detector in step 04. It is a separate node from TP1." : "TP3: the diode cathode at d17, the resistor at e17 and the capacitor at d25. The b17\u2013b25 jumper joins the two strips.";
+    if (node2 === "gnd") return "Receiver GND: tank return + resistor return + capacitor return. The generator/test-loop return has no direct wire to this node.";
+    return step < 4 ? "The capacitor\u2019s terminal positions are representative. Identify AM and common on the supplied part; do not use this drawing as its pinout." : "Example holes match the assembly. Solid copper lines identify signal connections; dashed graphite lines identify receiver GND. The source loop uses its own return.";
+  }
+
+  // src/physics.js
+  var NOMINAL = Object.freeze({ turns: 75, diameterMM: 50, lengthMM: 25, rOhm: 15e3, cNF: 3.3 });
+  function inductanceUH(n = 75, d = 50, l = 25) {
+    return d * d * n * n / (457 * d + 1016 * l);
+  }
+  function resonanceHz(lUH, cPF) {
+    return 1 / (2 * Math.PI * Math.sqrt(lUH * 1e-6 * cPF * 1e-12));
+  }
+  function capacitancePF(lUH, fHz) {
+    return 1e12 / ((2 * Math.PI * fHz) ** 2 * lUH * 1e-6);
+  }
+  function response(f, f0, q) {
+    const x = q * (f / f0 - f0 / f);
+    return { re: 1 / (1 + x * x), im: -x / (1 + x * x), magnitude: 1 / Math.sqrt(1 + x * x) };
+  }
+  function bandwidth(f0, q) {
+    const root = Math.sqrt(4 + 1 / (q * q));
+    return { low: f0 * (root - 1 / q) / 2, high: f0 * (root + 1 / q) / 2, width: f0 / q };
+  }
+  function detectorTrace({ carrier = 819e3, f0 = carrier, q = 40, amplitude = 0.8, depth = 0, audio = 1e3, drop = 0.25, cNF = 3.3, rOhm = 15e3, duration = depth ? 2e-3 : 12e-6, samplesPerCycle = 64 } = {}) {
+    const tau = rOhm * cNF * 1e-9;
+    const dt = 1 / (carrier * samplesPerCycle);
+    const warmup = Math.max(12 * tau, depth ? 3 / audio : 0);
+    const count = Math.ceil((warmup + duration) / dt);
+    const h = response(carrier, f0, q);
+    const lo = response(carrier - audio, f0, q), hi = response(carrier + audio, f0, q);
+    const decay = Math.exp(-dt / tau);
+    const stride = Math.max(1, Math.floor(duration / dt / 1600));
+    const points = [];
+    let held = 0, sum = 0, min = Infinity, max = -Infinity, n = 0;
+    for (let i = 0; i <= count; i++) {
+      const t = i * dt - warmup;
+      const phase = 2 * Math.PI * carrier * t;
+      const side = 2 * Math.PI * audio * t;
+      const sample = (z) => z.re * Math.cos(phase) - z.im * Math.sin(phase);
+      const lower = lo.re * Math.cos(phase - side) - lo.im * Math.sin(phase - side);
+      const upper = hi.re * Math.cos(phase + side) - hi.im * Math.sin(phase + side);
+      const vin = amplitude * (sample(h) + depth * 0.5 * (lower + upper));
+      held = Math.max(0, vin - drop, held * decay);
+      if (t >= 0) {
+        sum += held;
+        n++;
+        min = Math.min(min, held);
+        max = Math.max(max, held);
+        if (i % stride === 0) {
+          const er = h.re + depth * 0.5 * ((lo.re + hi.re) * Math.cos(side) + (lo.im - hi.im) * Math.sin(side));
+          const ei = h.im + depth * 0.5 * ((lo.im + hi.im) * Math.cos(side) + (hi.re - lo.re) * Math.sin(side));
+          points.push({ t, input: vin, output: held, envelope: amplitude * Math.hypot(er, ei) });
+        }
       }
     }
+    return { points, mean: sum / n, ripple: max - min, tau, dt, duration, peak: amplitude * h.magnitude };
+  }
+
+  // src/signals.js
+  var $ = (s) => document.querySelector(s);
+  var ink2 = "#28302e";
+  var copper2 = "#a44d29";
+  var grid = "#d8dcd1";
+  var muted = "#687162";
+  var txt = (x, y, t, extra = "") => `<text x="${x}" y="${y}" ${extra}>${t}</text>`;
+  var line = (x1, y1, x2, y2, color = grid, extra = "") => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" ${extra}/>`;
+  var curve = (points, x, y) => points.map((p, i) => `${i ? "L" : "M"}${x(p).toFixed(2)},${y(p).toFixed(2)}`).join(" ");
+  var range = (id, label, min, max, step, value, unit) => `<div class="control"><label for="model-${id}">${label}</label><output id="out-${id}" for="model-${id}">${value} ${unit}</output><input id="model-${id}" data-model="${id}" type="range" min="${min}" max="${max}" step="${step}" value="${value}"></div>`;
+  var select = (id, label, options, value) => `<div class="control"><label for="model-${id}">${label}</label><select id="model-${id}" data-model="${id}">${options.map(([v, t]) => `<option value="${v}" ${v == value ? "selected" : ""}>${t}</option>`).join("")}</select></div>`;
+  var reading = (name, value, unit) => `<div><small>${name}</small><strong>${value}<span>${unit}</span></strong></div>`;
+  var SignalLab = class {
+    constructor(onChange = () => {
+    }) {
+      this.mode = "resonance";
+      this.state = { c: 129.5, frequency: 819, q: 40, probe: 0, amplitude: 0.8, drop: 0.25, load: 3.3, depth: 0 };
+      this.onChange = onChange;
+      this.renderControls();
+    }
+    get f0() {
+      return resonanceHz(inductanceUH(), this.state.c + this.state.probe);
+    }
+    setMode(mode) {
+      this.mode = mode;
+      document.querySelectorAll("[data-plot]").forEach((b) => b.setAttribute("aria-pressed", b.dataset.plot === mode));
+      this.renderControls();
+      this.draw();
+    }
+    renderControls() {
+      const s = this.state;
+      $("#signal-controls").innerHTML = this.mode === "resonance" ? range("c", "Tuning capacitance", 20, 280, 0.1, s.c, "pF") + range("frequency", "Test frequency", 400, 2400, 1, s.frequency, "kHz") + range("q", "Assumed loaded Q", 10, 100, 1, s.q, "") + select("probe", "Added probe capacitance", [[0, "None \xB7 ideal baseline"], [10, "10 pF \xB7 typical \xD710"], [100, "100 pF \xB7 typical \xD71"]], s.probe) + `<button class="signal-action" data-match>Match C to test frequency \u2192</button><button class="signal-action" data-reset-model>Reset model</button>` : range("amplitude", "Resonant TP1 peak scale", 0.05, 2, 0.05, s.amplitude, "V") + range("drop", "Assumed diode drop", 0, 0.5, 0.01, s.drop, "V") + select("load", "Detector capacitor", [[0.33, "0.33 nF \xB7 compare"], [3.3, "3.3 nF \xB7 lab value"], [33, "33 nF \xB7 compare"]], s.load) + select("depth", "Signal applied to tank", [[0, "Steady sine"], [0.6, "AM \xB7 1 kHz, 60% depth"]], s.depth) + `<button class="signal-action" data-resonate>Set tank to resonance \u2192</button><button class="signal-action" data-reset-model>Reset model</button>`;
+      $("#signal-controls").querySelectorAll("[data-model]").forEach((el) => el.addEventListener("input", () => {
+        this.state[el.dataset.model] = Number(el.value);
+        this.updateOutputs();
+        this.draw();
+        this.onChange(this.state);
+      }));
+      $("[data-match]")?.addEventListener("click", () => {
+        const needed = capacitancePF(inductanceUH(), s.frequency * 1e3) - s.probe;
+        s.c = Math.max(20, Math.min(280, needed));
+        this.renderControls();
+        this.draw();
+        this.onChange(s);
+        if (needed < 20 || needed > 280) $("#model-equations").insertAdjacentHTML("afterbegin", "<p>Matching this frequency needs a capacitance outside 20\u2013280 pF. The control has stopped at the nearest endpoint.</p>");
+      });
+      $("[data-resonate]")?.addEventListener("click", () => {
+        s.frequency = this.f0 / 1e3;
+        this.draw();
+        this.onChange(s);
+      });
+      $("[data-reset-model]").addEventListener("click", () => {
+        Object.assign(s, { c: 129.5, frequency: 819, q: 40, probe: 0, amplitude: 0.8, drop: 0.25, load: 3.3, depth: 0 });
+        this.renderControls();
+        this.draw();
+        this.onChange(s);
+      });
+      this.updateOutputs();
+    }
+    updateOutputs() {
+      const units = { c: "pF", frequency: "kHz", q: "", amplitude: "V", drop: "V" };
+      for (const id of Object.keys(units)) {
+        const out = $(`#out-${id}`);
+        if (out) out.textContent = `${Number(this.state[id].toFixed(id === "c" ? 1 : id === "frequency" ? 1 : 2))} ${units[id]}`;
+      }
+    }
+    draw() {
+      if (this.mode === "resonance") this.drawResonance();
+      else this.drawDetector();
+    }
+    svg(title, content) {
+      const fontSize = Math.max(13, 11.5 * 680 / Math.max(300, $("#plot").clientWidth - 12));
+      $("#plot").innerHTML = `<svg class="plot-svg" viewBox="0 0 680 295" role="img" aria-label="${title}"><g font-family="Barlow,Arial,sans-serif" font-size="${fontSize}" fill="${muted}">${content}</g></svg>`;
+    }
+    drawResonance() {
+      const s = this.state, f0 = this.f0, bw = bandwidth(f0, s.q), baseline = resonanceHz(inductanceUH(), s.c);
+      const x = (f2) => 55 + (f2 - 4e5) / 2e6 * 596, y = (a) => 234 - a * 178;
+      const freqs = Array.from({ length: 1001 }, (_, i) => 4e5 + i * 2e3);
+      for (const f2 of [f0, bw.low, bw.high, baseline]) if (f2 >= 4e5 && f2 <= 24e5) freqs.push(f2);
+      freqs.sort((a, b) => a - b);
+      let plot = txt(55, 22, "Relative TP1 amplitude") + txt(651, 22, `L = ${inductanceUH().toFixed(1)} \xB5H`, 'text-anchor="end"');
+      for (const level of [0, 0.5, 1]) plot += line(55, y(level), 651, y(level)) + txt(45, y(level) + 4, level.toFixed(1), 'text-anchor="end"');
+      for (const f2 of [0.4, 0.8, 1.2, 1.6, 2, 2.4]) plot += line(x(f2 * 1e6), 56, x(f2 * 1e6), 234) + txt(x(f2 * 1e6), 256, f2.toFixed(1), 'text-anchor="middle"');
+      plot += txt(651, 281, "Frequency / MHz", 'text-anchor="end"');
+      plot += line(55, y(Math.SQRT1_2), 651, y(Math.SQRT1_2), "#a6ad9f", 'stroke-dasharray="4 5"') + txt(64, y(Math.SQRT1_2) - 8, "0.707 / \u22123 dB");
+      if (s.probe) plot += `<path d="${curve(freqs, (f2) => x(f2), (f2) => y(response(f2, baseline, s.q).magnitude))}" fill="none" stroke="#a6ad9f" stroke-width="2" stroke-dasharray="5 4"/>`;
+      plot += `<path d="${curve(freqs, (f2) => x(f2), (f2) => y(response(f2, f0, s.q).magnitude))}" fill="none" stroke="${copper2}" stroke-width="2.5"/>`;
+      const f = s.frequency * 1e3, ratio = response(f, f0, s.q).magnitude;
+      plot += line(x(f), 47, x(f), 234, ink2, 'stroke-dasharray="3 4"') + `<circle cx="${x(f)}" cy="${y(ratio)}" r="4" fill="${ink2}"/>`;
+      plot += txt(Math.max(110, Math.min(590, x(f))), 43, `${s.frequency.toFixed(1)} kHz`, 'text-anchor="middle" fill="#28302e"');
+      this.svg(`Normalized resonance: peak ${(f0 / 1e3).toFixed(1)} kilohertz, bandwidth ${(bw.width / 1e3).toFixed(1)} kilohertz; test amplitude ${(ratio * 100).toFixed(1)} percent`, plot);
+      $("#plot-readout").innerHTML = reading("Resonance f\u2080", (f0 / 1e3).toFixed(1), "kHz") + reading("Bandwidth", (bw.width / 1e3).toFixed(1), "kHz") + reading("At test frequency", (ratio * 100).toFixed(1), "%");
+      $("#model-equations").innerHTML = `<p class="equation">L = d\xB2N\xB2 / (457d + 1016l) = ${inductanceUH().toFixed(2)} \xB5H<br>f\u2080 = 1 / (2\u03C0\u221A(L(C + Cprobe)))<br>|H(f)| = [1 + Q\xB2(f/f\u2080 \u2212 f\u2080/f)\xB2]\u207B\xBD</p><p>Half-power points: ${(bw.low / 1e3).toFixed(2)} and ${(bw.high / 1e3).toFixed(2)} kHz. Loaded Q is an assumption, not a measurement. Probe presets add capacitance only; their resistive loss, diode loading, coil self-capacitance and coupling changes are not solved. ${s.probe ? "The dashed curve is the same tank without added probe capacitance." : ""}</p><p>The amplitude is normalized. This does not predict volts from generator output; the coil coupling and source impedance have not been measured.</p>`;
+    }
+    drawDetector() {
+      const s = this.state;
+      const result = detectorTrace({ carrier: s.frequency * 1e3, f0: this.f0, q: s.q, amplitude: s.amplitude, drop: s.drop, cNF: s.load, depth: s.depth });
+      this.lastTrace = result;
+      const maxV = Math.max(0.5, s.amplitude * (1 + s.depth) * 1.12), minV = s.depth ? 0 : -maxV;
+      const x = (t) => 55 + t / result.duration * 596, y = (v) => 234 - (v - minV) / (maxV - minV) * 178;
+      const timeUnit = s.depth ? "ms" : "\xB5s", factor = s.depth ? 1e3 : 1e6;
+      let plot = txt(55, 22, "Voltage / V") + txt(651, 22, `${s.frequency.toFixed(1)} kHz`, 'text-anchor="end"');
+      for (const v of s.depth ? [0, maxV / 2, maxV] : [-maxV, 0, maxV]) plot += line(55, y(v), 651, y(v)) + txt(45, y(v) + 4, v.toFixed(1), 'text-anchor="end"');
+      for (let i = 0; i <= 4; i++) {
+        const t = i / 4 * result.duration;
+        plot += line(x(t), 56, x(t), 234) + txt(x(t), 256, (t * factor).toFixed(s.depth ? 1 : 0), 'text-anchor="middle"');
+      }
+      plot += txt(651, 281, `Time / ${timeUnit}`, 'text-anchor="end"');
+      const inputKey = s.depth ? "envelope" : "input";
+      plot += `<path d="${curve(result.points, (p) => x(p.t), (p) => y(p[inputKey]))}" stroke="#8b9486" fill="none" stroke-width="1.4" ${s.depth ? 'stroke-dasharray="5 4"' : ""}/>`;
+      plot += `<path d="${curve(result.points, (p) => x(p.t), (p) => y(p.output))}" stroke="${copper2}" fill="none" stroke-width="2.2"/>`;
+      plot += line(75, 39, 95, 39, "#8b9486", 'stroke-width="2"') + txt(102, 43, s.depth ? "TP1 envelope" : "TP1 RF");
+      plot += line(258, 39, 278, 39, copper2, 'stroke-width="2"') + txt(285, 43, "TP3 output");
+      this.svg(`Detector model. Mean output ${result.mean.toFixed(3)} volts. Time constant ${(result.tau * 1e6).toFixed(2)} microseconds.`, plot);
+      $("#plot-readout").innerHTML = reading("RC time constant", (result.tau * 1e6).toFixed(1), "\xB5s") + reading("TP3 mean", result.mean.toFixed(3), "V") + reading(s.depth ? "TP3 swing" : "RF ripple", (result.ripple * 1e3).toFixed(1), "mVpp");
+      $("#model-equations").innerHTML = `<p class="equation">\u03C4 = 15 k\u03A9 \xD7 ${s.load} nF = ${(result.tau * 1e6).toFixed(1)} \xB5s<br>Vout[n] = max(0, Vin[n] \u2212 Vd,<br>Vout[n\u22121] \xD7 exp(\u2212\u0394t/\u03C4))</p><p>Resonance settings carry over: C ${s.c.toFixed(1)} pF + ${s.probe} pF, Q ${s.q}, f\u2080 ${(this.f0 / 1e3).toFixed(1)} kHz. The peak scale is the assumed resonant TP1 carrier amplitude, not generator voltage. ${s.depth ? "The carrier and both AM sidebands pass through the complex tank response. The envelope is shown instead of undersampling the RF carrier." : "The graph resolves individual RF cycles and the discharge between peaks."}</p><p>A constant-drop diode recharges the capacitor instantly from an ideal voltage source. The calculation uses 64 samples per carrier cycle, after settling for at least 12 RC. It omits diode I\u2013V behaviour, junction capacitance, reverse leakage, charging resistance and detector feedback on the tank. Use it to compare trends, not to predict bench readings.</p>`;
+    }
   };
+
+  // src/main.js
+  var $2 = (s) => document.querySelector(s);
+  var $$ = (s) => [...document.querySelectorAll(s)];
+  var pad = (n) => String(n).padStart(2, "0");
+  var PARTS = {
+    coil: ["75-turn coil", "75 turns of 0.30 mm enamelled copper on a 50 mm former, with an approximately 25 mm winding length. The computed 291.5 \xB5H is an estimate from geometry. Measure the actual resonance."],
+    pipe: ["PVC former", "The insulating pipe supports the winding. The coil diameter follows its outside diameter. The support cradles are illustrative, not required parts."],
+    capacitor: ["Enclosed variable capacitor", "Compact 21 \xD7 21 \xD7 17 mm-style housing based on the supplied reference, with a threaded tuning shaft, rear trimmers and seven terminal tabs. The two connected tabs are an illustrative AM/common pair: confirm your actual pinout. Rear trimmers are not the main tuning control."],
+    diode: ["1N60P diode", "The dark band marks the cathode, which goes to TP3. The unbanded end goes to TP1. The forward voltage depends on current and the actual device; the signal model\u2019s 0.25 V is an adjustable simplification."],
+    resistor: ["15 k\u03A9 resistor", "Connect it from TP3 to receiver GND, in parallel with the 3.3 nF capacitor. It provides the capacitor\u2019s discharge path."],
+    ceramic: ["3.3 nF capacitor", "The 332 marking means 33 \xD7 10\xB2 pF, or 3.3 nF. This nonpolar capacitor connects from TP3 to GND. With 15 k\u03A9, RC is 49.5 \xB5s."],
+    board: ["Breadboard connections", "Each numbered a\u2013e strip is connected internally; the corresponding f\u2013j strip is separate. The model uses d9 for TP1 and d17/e17 plus strip 25 for TP3. Verify your board\u2019s ground-rail continuity."],
+    loop: ["Five-turn test loop", "Its two leads connect only to the generator. Keep its return separate from receiver GND. Align its axis with the receiving coil and keep the spacing fixed while measuring."],
+    generator: ["Function generator", "Drives the separate test loop in the RF band. Check frequency range, amplitude units and termination settings. Its output voltage is not the voltage at TP1."],
+    scope: ["Oscilloscope", "Measures TP1 relative to receiver GND. Use a compensated \xD710 probe and matching channel setting. The miniature screen is an illustration; use the signal model for calculated traces."],
+    probe: ["\xD710 probe", "Tip to TP1; short ground lead to receiver GND. Probe capacitance detunes the tank. The signal model uses 10 pF as an example; check the actual probe specification."],
+    dmm: ["DC voltmeter", "Positive lead to TP3, common lead to receiver GND. For the steady-sine test, record DC voltage alongside the actual TP1 peak from the scope."]
+  };
+  var shortNames = { coil: "Coil", pipe: "Former", capacitor: "Variable capacitor", diode: "Diode", resistor: "15 k\u03A9", ceramic: "3.3 nF", board: "Breadboard", loop: "Test loop", generator: "Generator", scope: "Scope", probe: "Probe", dmm: "DMM" };
   var scene = null;
-  var stepIndex = 0;
-  var tuning = 129.5;
-  var currentL = 291.5;
-  function initScene() {
-    const canvas = $("#scene-canvas");
-    const loading = $("#stageLoading");
-    const error = $("#stageError");
-    if (!canvas) return;
-    try {
-      scene = new RadioScene(canvas, {
-        onPart: (id) => openInspector(id),
-        onReady: () => {
-          loading?.classList.add("is-hidden");
-        }
-      });
-      scene.setStep(stepIndex, { instant: true });
-      scene.setTuning(tuning);
-    } catch (err) {
-      console.error("3D scene failed:", err);
-      loading?.classList.add("is-hidden");
-      if (error) error.hidden = false;
-    }
-    const fallback = window.setTimeout(() => {
-      if (!scene) {
-        loading?.classList.add("is-hidden");
-        if (error) error.hidden = false;
+  var index = 0;
+  var tab = "assembly";
+  var node = "all";
+  var selectedPart = null;
+  var sceneFailed = false;
+  var lab = new SignalLab((s) => {
+    scene?.bench.setTuning(s.c);
+    scene?.invalidate();
+  });
+  var drawingZoom = document.createElement("button");
+  drawingZoom.textContent = "Enlarge";
+  drawingZoom.dataset.drawingZoom = "";
+  drawingZoom.setAttribute("aria-pressed", "false");
+  $2(".node-select").append(drawingZoom);
+  drawingZoom.addEventListener("click", () => {
+    const enlarged = $2("#wiring-drawing").classList.toggle("is-enlarged");
+    drawingZoom.setAttribute("aria-pressed", String(enlarged));
+    drawingZoom.textContent = enlarged ? "Fit drawing" : "Enlarge";
+  });
+  new ResizeObserver(() => {
+    if (tab === "signal") lab.draw();
+  }).observe($2("#plot"));
+  function renderNav() {
+    let group = "";
+    $2("#step-nav").innerHTML = LESSONS.map((l, i) => {
+      let heading = "";
+      if (l.group !== group) {
+        group = l.group;
+        heading = `<p class="step-group">${group}</p>`;
       }
-    }, 12e3);
-    window.addEventListener("pagehide", () => clearTimeout(fallback), { once: true });
+      return `${heading}<button class="step-link" data-step="${i}" ${i === index ? 'aria-current="step"' : ""}><span>${pad(i + 1)}</span><span>${l.name}</span></button>`;
+    }).join("");
+    $$("#step-nav [data-step]").forEach((b) => b.addEventListener("click", () => setStep(+b.dataset.step)));
   }
-  function pad2(n) {
-    return String(n).padStart(2, "0");
-  }
-  function buildDock() {
-    const track = $("#dockTrack");
-    if (!track) return;
-    track.innerHTML = STEPS.map(
-      (s, i) => `
-    <button type="button" class="dock-card" role="tab" data-step="${i}" aria-selected="${i === 0}" aria-label="Step ${i + 1}: ${s.dockTitle}">
-      <span class="dock-num">${pad2(i + 1)}</span>
-      <span class="dock-icon"><svg aria-hidden="true"><use href="#${s.icon}"/></svg></span>
-      <span class="dock-copy"><strong>${s.dockTitle}</strong><small>${s.dockSub}</small></span>
-    </button>`
-    ).join("");
-    track.querySelectorAll("[data-step]").forEach((btn) => {
-      btn.addEventListener("click", () => setStep(Number(btn.dataset.step)));
+  function setStep(next, { historyMode = "push", scroll = false } = {}) {
+    index = Math.max(0, Math.min(LESSONS.length - 1, next));
+    const l = LESSONS[index];
+    const content = { "lesson-number": `Step ${pad(index + 1)} / ${pad(LESSONS.length)} \xB7 ${l.group}`, "lesson-title": l.title, "lesson-intro": l.intro, "lesson-parts": l.parts, "lesson-why": l.why, "lesson-check": l.check, "lesson-caution": l.caution, "figure-label": `${pad(index + 1)} / ${l.name}`, "model-footnote": l.note, "figure-number": `FIG. ${pad(index + 1)}`, "page-count": `${pad(index + 1)} / ${pad(LESSONS.length)}`, "record-prompt": l.record };
+    for (const [id, value] of Object.entries(content)) document.getElementById(id).textContent = value;
+    $2("#lesson-steps").replaceChildren(...l.steps.map((t) => {
+      const li = document.createElement("li");
+      li.textContent = t;
+      return li;
+    }));
+    $2("#prev-step").disabled = index === 0;
+    $2("#next-step").textContent = index === LESSONS.length - 1 ? "Lab record \u2192" : "Next \u2192";
+    $$("#step-nav [data-step]").forEach((b) => {
+      if (+b.dataset.step === index) b.setAttribute("aria-current", "step");
+      else b.removeAttribute("aria-current");
     });
-  }
-  function renderStep(i, { focusPanel = false } = {}) {
-    const step = STEPS[i];
-    if (!step) return;
-    const num = $("#stepNum");
-    const time = $("#stepTime");
-    const progress = $("#panelProgress");
-    const kicker = $("#stepKicker");
-    const title = $("#stepTitle");
-    const lede = $("#stepLede");
-    const tasks = $("#stepTasks");
-    const warn = $("#stepWarn");
-    const numbers = $("#stepNumbers");
-    const focusName = $("#focusName");
-    const focusSpec = $("#focusSpec");
-    const focusIcon = $(".focus-icon use");
-    const tuneCard = $("#tuneCard");
-    if (num) num.textContent = `STEP ${pad2(i + 1)} / ${pad2(STEPS.length)}`;
-    if (time) time.textContent = step.time;
-    if (progress) progress.style.width = `${(i + 1) / STEPS.length * 100}%`;
-    if (kicker) kicker.textContent = step.kicker;
-    if (title) title.textContent = step.title;
-    if (lede) lede.textContent = step.lede;
-    if (tasks) tasks.innerHTML = step.tasks.map((t) => `<li>${t}</li>`).join("");
-    if (warn) {
-      const p = warn.querySelector("p");
-      if (p) p.innerHTML = step.warn;
-      warn.hidden = !step.warn;
-    }
-    if (numbers) {
-      numbers.innerHTML = step.numbers.map(
-        ([label, value, unit]) => `<div><span>${label}</span><strong>${value}${unit ? ` <small>${unit}</small>` : ""}</strong></div>`
-      ).join("");
-    }
-    if (focusName) focusName.textContent = step.focus.name;
-    if (focusSpec) focusSpec.textContent = step.focus.spec;
-    if (focusIcon) focusIcon.setAttribute("href", `#${PART_ICON[step.focus.part] || step.icon}`);
-    if (tuneCard) {
-      tuneCard.hidden = step.id !== "resonance";
-      if (!tuneCard.hidden) {
-        const range = $("#tuneRange");
-        if (range) range.value = String(tuning);
-        updateTuneReadout();
+    const active = $2(`[data-step="${index}"]`);
+    if (innerWidth < 992 && active) $2("#step-nav").scrollTo({ left: active.offsetLeft - $2("#step-nav").offsetLeft - 20, behavior: "instant" });
+    selectedPart = null;
+    $2("#part-detail").hidden = true;
+    $2("#part-buttons").innerHTML = l.inspect.map((id) => `<button data-part="${id}" aria-pressed="false" aria-controls="part-detail">${shortNames[id]}</button>`).join("");
+    $$("[data-part]").forEach((b) => b.addEventListener("click", () => inspect(b.dataset.part)));
+    scene?.setStep(l.scene);
+    scene?.bench.setTuning(lab.state.c);
+    drawWiring();
+    updateCaption();
+    if (l.id === "envelope") lab.setMode("detector");
+    else if (l.id === "resonance") lab.setMode("resonance");
+    if (tab === "signal") lab.draw();
+    if (historyMode !== "none") {
+      const url = new URL(location.href);
+      url.searchParams.set("step", l.id);
+      try {
+        history[historyMode === "replace" ? "replaceState" : "pushState"]({}, "", url);
+      } catch {
       }
     }
-    const prev = $("#prevStep");
-    const next = $("#nextStep");
-    if (prev) prev.disabled = i === 0;
-    if (next) {
-      const span = next.querySelector("span");
-      if (span) span.textContent = i === STEPS.length - 1 ? "Finish" : "Next";
-    }
-    const dots = $("#panelDots");
-    if (dots) {
-      dots.innerHTML = STEPS.map((_, j) => `<span class="${j === i ? "is-active" : ""}"></span>`).join("");
-    }
-    $$("#dockTrack [data-step]").forEach((btn, j) => {
-      const active = j === i;
-      btn.classList.toggle("is-active", active);
-      btn.setAttribute("aria-selected", String(active));
-    });
-    const dockTrack = $("#dockTrack");
-    const activeCard = dockTrack?.querySelector(".dock-card.is-active");
-    if (dockTrack && activeCard) {
-      const target = activeCard.offsetLeft - dockTrack.clientWidth / 2 + activeCard.offsetWidth / 2;
-      dockTrack.scrollTo({ left: Math.max(0, target), behavior: reduced ? "auto" : "smooth" });
-    }
-    const dockCount = $("#dockCount");
-    if (dockCount) dockCount.textContent = `${pad2(i + 1)} / ${pad2(STEPS.length)}`;
-    const panelScroll = $("#panelScroll");
-    if (panelScroll && focusPanel) panelScroll.scrollTop = 0;
-    closeInspector();
-    let details = $("#componentDetails");
-    if (!details) {
-      details = document.createElement("div");
-      details.id = "componentDetails";
-      details.className = "component-details";
-      $("#focusCard")?.after(details);
-    }
-    const ids = i === 0 ? ["spool", "pipe", "capacitor"] : i <= 3 ? ["coil", "capacitor"] : i === 6 ? ["loop", "generator", "coil"] : i === 7 ? ["scope", "probe", "capacitor"] : i === 8 ? ["dmm", "diode", "ceramic"] : ["diode", "resistor", "ceramic", "board"];
-    details.innerHTML = "<span>Inspect in 3D</span>" + ids.map((id) => `<button type="button" data-inspect="${id}">${{ ceramic: "3.3 nF", resistor: "15 k\u03A9", diode: "1N60P" }[id] || id}</button>`).join("");
-    details.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => openInspector(button.dataset.inspect)));
-  }
-  function setStep(i, options = {}) {
-    const next = clamp2(i, 0, STEPS.length - 1);
-    const changed = next !== stepIndex;
-    stepIndex = next;
-    renderStep(next, { focusPanel: changed });
-    if (scene) scene.setStep(next, { instant: !!options.instant });
-    const pause = $("#pauseAnimation");
-    if (pause) {
-      pause.textContent = "Pause";
-      pause.setAttribute("aria-pressed", "false");
-    }
-    tuning = 129.5;
-    applyTuning(tuning);
-    if (scene && !options.instant && !reduced) scene.bench.animation.elapsed = 0;
-    if (changed) {
-      const bench = $("#build");
-      if (bench && bench.getBoundingClientRect().top < 65) bench.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "start" });
+    if (scroll) {
+      $2(".lesson-workspace").scrollIntoView({ block: "start" });
+      $2("#lesson-title").tabIndex = -1;
+      $2("#lesson-title").focus({ preventScroll: true });
     }
   }
-  function openInspector(id) {
-    const part = PARTS[id];
-    if (!part) return;
-    const inspector = $("#inspector");
-    if (!inspector) return;
-    $("#inspectorTag").textContent = part.tag;
-    $("#inspectorTitle").textContent = part.title;
-    $("#inspectorSpec").textContent = part.spec;
-    $("#inspectorBody").textContent = part.body;
-    $("#inspectorTip").textContent = part.tip;
-    inspector.hidden = false;
-    scene?.focusPart(id);
-    $("#componentDetails")?.after(inspector);
-    inspector.scrollIntoView({ block: "nearest", behavior: reduced ? "auto" : "smooth" });
+  function updateCaption() {
+    const l = LESSONS[index];
+    $2("#figure-caption").textContent = tab === "assembly" ? `${l.note}. Use the timeline to inspect assembly; select a part for a close-up.` : tab === "wiring" ? "Trace each electrical node. The highlighted connections correspond to the written build steps." : "Change one parameter at a time. Curves are calculated from the stated assumptions; the lab record is reserved for actual measurements.";
   }
-  function closeInspector() {
-    const inspector = $("#inspector");
-    if (inspector) inspector.hidden = true;
+  function drawWiring() {
+    $2("#wiring-drawing").innerHTML = wiringSVG(LESSONS[index].scene);
+    highlightNode(node);
+    $2("#wiring-description").textContent = wiringDescription(LESSONS[index].scene, node);
   }
-  function frequencyFor(capPF, L = currentL) {
-    return 1 / (2 * Math.PI * Math.sqrt(L * 1e-6 * capPF * 1e-12));
-  }
-  function freqParts(f) {
-    if (f >= 1e6) return { value: (f / 1e6).toFixed(3), unit: "MHz" };
-    return { value: (f / 1e3).toFixed(1), unit: "kHz" };
-  }
-  function applyTuning(pF, source = null) {
-    tuning = clamp2(Number(pF) || 20, 20, 280);
-    const panelRange = $("#tuneRange");
-    const calcRange = $("#tuneCalcC");
-    if (panelRange) panelRange.value = String(tuning);
-    if (calcRange) calcRange.value = String(tuning);
-    const panelCap = $("#tuneCap");
-    if (panelCap) panelCap.textContent = `${formatCap(tuning)} pF`;
-    const calcCap = $("#tuneCalcCOut");
-    if (calcCap) calcCap.textContent = `${formatCap(tuning)} pF`;
-    if (scene) {
-      scene.bench.animation.elapsed = scene.bench.animation.duration;
-      scene.setTuning(tuning);
-    }
-    updateTuneReadout();
-    updateTuneChart();
-  }
-  function formatCap(c) {
-    return Number.isInteger(c) ? String(c) : c.toFixed(1);
-  }
-  function updateTuneReadout() {
-    const f = frequencyFor(tuning);
-    const p = freqParts(f);
-    const freq = $("#tuneFreq");
-    if (freq) freq.textContent = `${p.value} ${p.unit}`;
-    const calcFreq = $("#tuneCalcFreq");
-    if (calcFreq) calcFreq.innerHTML = `${p.value} <small>${p.unit}</small>`;
-    const note = $("#tuneCalcNote");
-    if (note) {
-      const delta = (f - 819e3) / 819e3;
-      let where = "the 819 kHz test signal is at the peak";
-      if (delta > 0.012) where = "the peak sits above the 819 kHz test signal";
-      else if (delta < -0.012) where = "the peak sits below the 819 kHz test signal";
-      note.textContent = `at ${formatCap(tuning)} pF \xB7 ${where}`;
-    }
-  }
-  function tuneChartGeometry() {
-    const svg = $("#tankChart");
-    if (!svg) return;
-    const x0 = 44;
-    const x1 = 384;
-    const y0 = 20;
-    const y1 = 160;
-    const fMin = 4e5;
-    const fMax = 24e5;
-    const lx = (f) => x0 + (clamp2(f, fMin, fMax) - fMin) / (fMax - fMin) * (x1 - x0);
-    const f0 = frequencyFor(tuning);
-    const Q = 40;
-    let d = "";
-    for (let i = 0; i <= 260; i++) {
-      const f = fMin + (fMax - fMin) * i / 260;
-      const u = f / f0;
-      const mag = 1 / Math.sqrt(1 + Math.pow(Q * (u - 1 / u), 2));
-      const x = x0 + i / 260 * (x1 - x0);
-      const y = y1 - mag * (y1 - y0);
-      d += `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${y.toFixed(1)} `;
-    }
-    const curve = $("#tankCurve");
-    if (curve) curve.setAttribute("d", d.trim());
-    const genX = lx(819e3);
-    const genU = 819e3 / f0;
-    const genMag = 1 / Math.sqrt(1 + Math.pow(Q * (genU - 1 / genU), 2));
-    const genY = y1 - genMag * (y1 - y0);
-    const genLine = $("#genLine");
-    if (genLine) {
-      genLine.setAttribute("x1", genX);
-      genLine.setAttribute("x2", genX);
-    }
-    const genDot = $("#genDot");
-    if (genDot) {
-      genDot.setAttribute("cx", genX);
-      genDot.setAttribute("cy", genY);
-    }
-    const genLabel = $("#genLabel");
-    if (genLabel) {
-      genLabel.setAttribute("x", Math.min(genX + 6, 330));
-      genLabel.textContent = "819 kHz";
-    }
-    const peakX = lx(f0);
-    const peakLine = $("#peakLine");
-    if (peakLine) {
-      peakLine.setAttribute("x1", peakX);
-      peakLine.setAttribute("x2", peakX);
-    }
-    const peakLabel = $("#peakLabel");
-    if (peakLabel) {
-      peakLabel.setAttribute("x", clamp2(peakX, 52, 374));
-      peakLabel.textContent = "f\u2080";
-    }
-  }
-  function updateTuneChart() {
-    tuneChartGeometry();
-  }
-  function initCalculators() {
-    const turns = $("#coilTurns");
-    const dia = $("#coilDia");
-    const len = $("#coilLen");
-    if (!turns || !dia || !len) return;
-    const updateCoil = () => {
-      const n = Number(turns.value);
-      const d = Number(dia.value);
-      const l = Number(len.value);
-      currentL = d * d * n * n / (457 * d + 1016 * l);
-      const wire = n * Math.PI * d / 1e3;
-      $("#coilTurnsOut").textContent = String(n);
-      $("#coilDiaOut").textContent = `${d} mm`;
-      $("#coilLenOut").textContent = `${l} mm`;
-      $("#coilL").innerHTML = `${currentL.toFixed(1)} <small>\xB5H</small>`;
-      $("#coilWire").innerHTML = `${wire.toFixed(2)} <small>m</small>`;
-      $("#coilWork").textContent = `L \u2248 (${d}\xB2 \xD7 ${n}\xB2) / (457\xD7${d} + 1016\xD7${l}) = ${(d * d * n * n).toLocaleString("en-US")} / ${(457 * d + 1016 * l).toLocaleString("en-US")} = ${currentL.toFixed(1)} \xB5H`;
-      updateTuneReadout();
-      updateTuneChart();
-    };
-    [turns, dia, len].forEach((el) => el.addEventListener("input", updateCoil));
-    const calcRange = $("#tuneCalcC");
-    if (calcRange) {
-      calcRange.addEventListener("input", () => applyTuning(calcRange.value, "calc"));
-    }
-    $$(".preset-row button").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        applyTuning(Number(btn.dataset.c), "preset");
-        const el = $("#tuneCalcC");
-        if (el) el.focus({ preventScroll: true });
-      });
-    });
-    const panelRange = $("#tuneRange");
-    if (panelRange) {
-      panelRange.addEventListener("input", () => applyTuning(panelRange.value, "panel"));
-    }
-    updateCoil();
-    applyTuning(tuning);
-  }
-  function initTables() {
-    const t5Ids = ["t5Low", "t5High", "t5F0", "t5Flow", "t5Fhigh"];
-    const saved5 = store.get("radio.t5", {});
-    t5Ids.forEach((id) => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      if (saved5[id] != null) el.value = saved5[id];
-      el.addEventListener("input", () => {
-        const data = {};
-        t5Ids.forEach((k) => {
-          const f = document.getElementById(k);
-          if (f && f.value !== "") data[k] = f.value;
-        });
-        store.set("radio.t5", data);
-        updateQ();
-      });
-    });
-    function updateQ() {
-      const f0 = Number(document.getElementById("t5F0")?.value);
-      const flow = Number(document.getElementById("t5Flow")?.value);
-      const fhigh = Number(document.getElementById("t5Fhigh")?.value);
-      const out = document.getElementById("qResult");
-      if (!out) return;
-      if (!Number.isFinite(f0) || !Number.isFinite(flow) || !Number.isFinite(fhigh) || fhigh <= flow || f0 <= 0) {
-        out.textContent = "\u2014";
-        return;
-      }
-      out.textContent = (f0 / (fhigh - flow)).toFixed(1);
-    }
-    updateQ();
-    const t6 = $$("[data-t6]");
-    const saved6 = store.get("radio.t6", {});
-    t6.forEach((el) => {
-      const key = el.dataset.t6;
-      if (saved6[key] != null) el.value = saved6[key];
-      el.addEventListener("input", () => {
-        const data = {};
-        $$("[data-t6]").forEach((f) => {
-          if (f.value !== "") data[f.dataset.t6] = f.value;
-        });
-        store.set("radio.t6", data);
-      });
-    });
-    const reset = $("#resetTables");
-    if (reset) {
-      reset.addEventListener("click", () => {
-        t5Ids.forEach((id) => {
-          const el = document.getElementById(id);
-          if (el) el.value = "";
-        });
-        t6.forEach((el) => el.value = "");
-        store.remove("radio.t5");
-        store.remove("radio.t6");
-        updateQ();
-      });
-    }
-  }
-  function initChecklist() {
-    const checks = $$("#kitChecks input[type=checkbox]");
-    if (!checks.length) return;
-    const saved = store.get("radio.checks", []);
-    const set = new Set(Array.isArray(saved) ? saved : []);
-    checks.forEach((el) => {
-      el.checked = set.has(el.dataset.check);
-      el.addEventListener("change", () => {
-        const active = checks.filter((c) => c.checked).map((c) => c.dataset.check);
-        store.set("radio.checks", active);
-        update();
-      });
-    });
-    function update() {
-      const count = checks.filter((c) => c.checked).length;
-      const strong = $("#kitProgress");
-      const bar = $("#kitProgressBar");
-      if (strong) strong.textContent = `${count} / ${checks.length}`;
-      if (bar) bar.style.width = `${count / checks.length * 100}%`;
-    }
-    const reset = $("#resetChecklist");
-    if (reset) {
-      reset.addEventListener("click", () => {
-        checks.forEach((c) => c.checked = false);
-        store.remove("radio.checks");
-        update();
-      });
-    }
-    update();
-  }
-  function initViewbar() {
-    const buttons = $$("#viewbar [data-view]");
-    let labelsOn = true;
-    buttons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const view = btn.dataset.view;
-        if (view === "reset") {
-          scene?.resetView();
-          return;
-        }
-        if (view === "in" || view === "out") {
-          scene?.zoom(view === "in" ? 0.82 : 1.22);
-          return;
-        }
-        if (view === "labels") {
-          labelsOn = !labelsOn;
-          btn.classList.toggle("is-on", labelsOn);
-          btn.setAttribute("aria-pressed", String(labelsOn));
-          scene?.setLabels(labelsOn);
-          return;
-        }
-        if (view === "schematic") {
-          toggleSchematic(btn);
-          return;
-        }
-        if (view === "signal") {
-          const on = !btn.classList.contains("is-on");
-          btn.classList.toggle("is-on", on);
-          btn.setAttribute("aria-pressed", String(on));
-          scene?.setSignal(on);
-        }
-      });
-    });
-    const pop = $("#schematicPop");
-    const close = $("#closeSchematic");
-    close?.addEventListener("click", () => {
-      if (pop) pop.hidden = true;
-      const btn = $('[data-view="schematic"]');
-      btn?.classList.remove("is-on");
-      btn?.setAttribute("aria-pressed", "false");
-    });
-    document.addEventListener("click", (e) => {
-      if (!pop || pop.hidden) return;
-      if (pop.contains(e.target)) return;
-      if (e.target.closest?.('[data-view="schematic"]')) return;
-      pop.hidden = true;
-      const btn = $('[data-view="schematic"]');
-      btn?.classList.remove("is-on");
-      btn?.setAttribute("aria-pressed", "false");
-    });
-    function toggleSchematic(btn) {
-      if (!pop) return;
-      const willOpen = pop.hidden;
-      pop.hidden = !willOpen;
-      btn.classList.toggle("is-on", willOpen);
-      btn.setAttribute("aria-pressed", String(willOpen));
-      if (willOpen) closeInspector();
-    }
-  }
-  function initNav() {
-    const toggle = $(".nav-toggle");
-    const menu = $("#mainnav-mobile");
-    toggle?.addEventListener("click", () => {
-      const open = !toggle.getAttribute("aria-expanded") || toggle.getAttribute("aria-expanded") === "false";
-      toggle.setAttribute("aria-expanded", String(open));
-      if (menu) menu.hidden = !open;
-    });
-    $$("#mainnav-mobile a").forEach(
-      (a) => a.addEventListener("click", () => {
-        if (menu) menu.hidden = true;
-        toggle?.setAttribute("aria-expanded", "false");
-      })
-    );
-    const ids = ["build", "circuit", "math", "bench", "kit"];
-    const sections = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    let queued = false;
-    const update = () => {
-      queued = false;
-      const probe = window.scrollY + 150;
-      let active = "build";
-      for (const s of sections) {
-        if (s.offsetTop <= probe) active = s.id;
-      }
-      if (active === "build-notes" || active === "trouble") active = "bench";
-      $$(".mainnav a, .rail-btn").forEach((a) => {
-        const href = a.getAttribute("href");
-        a.classList.toggle("is-active", href === `#${active}`);
-      });
-    };
-    window.addEventListener(
-      "scroll",
-      () => {
-        if (!queued) {
-          queued = true;
-          requestAnimationFrame(update);
-        }
-      },
-      { passive: true }
-    );
-    update();
-  }
-  function init() {
-    const annotations = $("#callouts");
-    $("#stepTasks")?.parentElement.after(annotations);
-    buildDock();
-    initCalculators();
-    initTables();
-    initChecklist();
-    initViewbar();
-    initNav();
-    $("#replayAnimation")?.addEventListener("click", () => setStep(stepIndex));
-    $("#pauseAnimation")?.addEventListener("click", () => {
-      const paused = scene?.togglePause() || false;
-      $("#pauseAnimation").textContent = paused ? "Resume" : "Pause";
-      $("#pauseAnimation").setAttribute("aria-pressed", String(paused));
-    });
-    $("#dockTrack")?.addEventListener("keydown", (e) => {
-      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
-      e.preventDefault();
-      const i = e.key === "Home" ? 0 : e.key === "End" ? STEPS.length - 1 : clamp2(stepIndex + (e.key === "ArrowRight" ? 1 : -1), 0, STEPS.length - 1);
-      setStep(i);
-      $("#dockTrack [data-step='" + i + "']")?.focus();
-    });
-    $("#prevStep")?.addEventListener("click", () => setStep(stepIndex - 1));
-    $("#nextStep")?.addEventListener("click", () => {
-      if (stepIndex >= STEPS.length - 1) {
-        document.getElementById("circuit")?.scrollIntoView({ behavior: reduced ? "auto" : "smooth" });
-      } else {
-        setStep(stepIndex + 1);
-      }
-    });
-    $("#focusOpen")?.addEventListener("click", () => openInspector(STEPS[stepIndex].focus.part));
-    $("#closeInspector")?.addEventListener("click", () => {
-      closeInspector();
+  function inspect(id) {
+    if (!PARTS[id]) return;
+    const close = selectedPart === id;
+    selectedPart = close ? null : id;
+    $$("[data-part]").forEach((b) => b.setAttribute("aria-pressed", !close && b.dataset.part === id));
+    $2("#part-detail").hidden = close;
+    if (close) {
       scene?.resetView();
-    });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        closeInspector();
-        const pop = $("#schematicPop");
-        if (pop) pop.hidden = true;
-        const menu = $("#mainnav-mobile");
-        if (menu) menu.hidden = true;
-        $(".nav-toggle")?.setAttribute("aria-expanded", "false");
-        return;
-      }
-      const tag = (e.target.tagName || "").toLowerCase();
-      if (["input", "textarea", "select", "button"].includes(tag)) return;
-      const workbench = document.querySelector(".workbench");
-      const nearBench = workbench && workbench.getBoundingClientRect().bottom > 80;
-      if (!nearBench) return;
-      if (e.key === "ArrowRight") {
-        e.preventDefault();
-        if (stepIndex < STEPS.length - 1) setStep(stepIndex + 1);
-      } else if (e.key === "ArrowLeft") {
-        e.preventDefault();
-        if (stepIndex > 0) setStep(stepIndex - 1);
-      }
-    });
-    const requested = new URLSearchParams(location.search).get("step");
-    stepIndex = Math.max(0, STEPS.findIndex((s) => s.id === requested));
-    renderStep(stepIndex);
-    initScene();
-    const loading = $("#stageLoading");
-    if (loading) {
-      window.setTimeout(() => {
-        if (!scene) loading.classList.add("is-hidden");
-      }, 15e3);
+      return;
     }
+    const title = document.createElement("h3"), body = document.createElement("p");
+    title.textContent = PARTS[id][0];
+    body.textContent = PARTS[id][1];
+    $2("#part-detail").replaceChildren(title, body);
+    if (tab === "assembly") scene?.focusPart(id);
   }
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    init();
+  function selectTab(name) {
+    tab = name;
+    $$("[data-tab]").forEach((b) => {
+      const active = b.dataset.tab === name;
+      b.setAttribute("aria-selected", active);
+      b.tabIndex = active ? 0 : -1;
+      document.getElementById(b.getAttribute("aria-controls")).hidden = !active;
+    });
+    $2("#assembly-timeline").hidden = name !== "assembly" || sceneFailed;
+    $2(".part-inspection").hidden = name === "signal";
+    $2("#part-detail").hidden = true;
+    selectedPart = null;
+    $$("[data-part]").forEach((b) => b.setAttribute("aria-pressed", "false"));
+    scene?.setEnabled(name === "assembly");
+    if (name === "signal") lab.draw();
+    updateCaption();
   }
+  function updateProgress(p, playing) {
+    $2("#assembly-progress").value = p * 100;
+    $2("#assembly-position").textContent = `${Math.round(p * 100)}%`;
+    $2("#play-assembly").textContent = playing ? "\u2161 Pause" : p >= 1 ? "\u25B6 Replay" : "\u25B6 Play";
+    $2("#play-assembly").setAttribute("aria-pressed", String(playing));
+  }
+  renderNav();
+  var initial = () => Math.max(0, LESSONS.findIndex((l) => l.id === new URLSearchParams(location.search).get("step")));
+  setStep(initial(), { historyMode: "replace" });
+  $$("[data-tab]").forEach((b) => b.addEventListener("click", () => selectTab(b.dataset.tab)));
+  $2(".view-tabs").addEventListener("keydown", (e) => {
+    if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) return;
+    e.preventDefault();
+    const tabs = $$("[data-tab]"), current = tabs.indexOf(document.activeElement);
+    const next = e.key === "Home" ? 0 : e.key === "End" ? 2 : (current + (e.key === "ArrowRight" ? 1 : 2)) % 3;
+    tabs[next].focus();
+    selectTab(tabs[next].dataset.tab);
+  });
+  $$("[data-node]").forEach((b) => b.addEventListener("click", () => {
+    node = b.dataset.node;
+    $$("[data-node]").forEach((el) => el.setAttribute("aria-pressed", el === b));
+    drawWiring();
+  }));
+  $$("[data-plot]").forEach((b) => b.addEventListener("click", () => lab.setMode(b.dataset.plot)));
+  $2("#prev-step").addEventListener("click", () => setStep(index - 1, { scroll: true }));
+  $2("#next-step").addEventListener("click", () => {
+    if (index === LESSONS.length - 1) $2("#record").scrollIntoView();
+    else setStep(index + 1, { scroll: true });
+  });
+  $2("#assembly-progress").addEventListener("input", (e) => scene?.scrub(+e.target.value / 100));
+  $2("#play-assembly").addEventListener("click", () => scene?.togglePlay());
+  $$("[data-camera]").forEach((b) => b.addEventListener("click", () => {
+    const action = b.dataset.camera;
+    if (action === "labels") {
+      const on = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", on);
+      scene?.setLabels(on);
+    } else if (action === "in" || action === "out") scene?.zoom(action === "in" ? 0.8 : 1.25);
+    else {
+      scene?.resetView(action === "top");
+      selectedPart = null;
+      $2("#part-detail").hidden = true;
+      $$("[data-part]").forEach((el) => el.setAttribute("aria-pressed", "false"));
+    }
+  }));
+  $2("[data-open-wiring]").addEventListener("click", () => selectTab("wiring"));
+  window.addEventListener("popstate", () => setStep(initial(), { historyMode: "none" }));
+  document.fonts.ready.then(() => {
+    try {
+      scene = new RadioScene($2("#scene-canvas"), { onPart: inspect, onReady: () => {
+        $2("#scene-loading").hidden = true;
+      }, onProgress: updateProgress });
+      scene.setStep(LESSONS[index].scene);
+      scene.setEnabled(tab === "assembly");
+      if (new URLSearchParams(location.search).has("debug")) window.__radio = { get scene() {
+        return scene;
+      }, lab, lessons: LESSONS, setStep, selectTab };
+    } catch (error) {
+      sceneFailed = true;
+      console.error("Assembly unavailable:", error);
+      $2("#scene-loading").hidden = true;
+      $2("#scene-error").hidden = false;
+      $2("#assembly-timeline").hidden = true;
+      $$("[data-camera]").forEach((b) => b.disabled = true);
+    }
+  });
 })();
 /**
  * @license

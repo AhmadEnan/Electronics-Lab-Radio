@@ -1,0 +1,253 @@
+{
+  "date": "2026-11-03T09:28:45.007Z",
+  "passed": 57,
+  "total": 57,
+  "checks": [
+    {
+      "name": "Eight build steps",
+      "pass": true
+    },
+    {
+      "name": "Circuit image loads",
+      "pass": true
+    },
+    {
+      "name": "No horizontal overflow at 390",
+      "pass": true
+    },
+    {
+      "name": "Visible canvas at 390",
+      "pass": true
+    },
+    {
+      "name": "No horizontal overflow at 768",
+      "pass": true
+    },
+    {
+      "name": "Visible canvas at 768",
+      "pass": true
+    },
+    {
+      "name": "No horizontal overflow at 992",
+      "pass": true
+    },
+    {
+      "name": "Visible canvas at 992",
+      "pass": true
+    },
+    {
+      "name": "No horizontal overflow at 1200",
+      "pass": true
+    },
+    {
+      "name": "Visible canvas at 1200",
+      "pass": true
+    },
+    {
+      "name": "No horizontal overflow at 1440",
+      "pass": true
+    },
+    {
+      "name": "Visible canvas at 1440",
+      "pass": true
+    },
+    {
+      "name": "No horizontal overflow at 1728",
+      "pass": true
+    },
+    {
+      "name": "Visible canvas at 1728",
+      "pass": true
+    },
+    {
+      "name": "No horizontal overflow at 1920",
+      "pass": true
+    },
+    {
+      "name": "Visible canvas at 1920",
+      "pass": true
+    },
+    {
+      "name": "Step 1 content and geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 1 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 2 content and geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 2 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 3 content and geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 3 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 4 content and geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 4 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 5 content and geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 5 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 6 content and geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 6 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 7 content and geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 7 scrub",
+      "pass": true
+    },
+    {
+      "name": "Step 8 content and geometry",
+      "pass": true
+    },
+    {
+      "name": "Step 8 scrub",
+      "pass": true
+    },
+    {
+      "name": "Capacitor has seven tabs",
+      "pass": true
+    },
+    {
+      "name": "75-turn coil geometry retained",
+      "pass": true
+    },
+    {
+      "name": "Both coil leads terminate on capacitor tabs",
+      "pass": true,
+      "detail": {
+        "terminalCount": 7,
+        "coilSegments": 4800,
+        "amCoil": 2.673771110915334e-15,
+        "commonCoil": 3.210061615366513e-15,
+        "amBoard": 0,
+        "commonBoard": 0,
+        "sourceSeparate": true,
+        "shell": {
+          "width": 1,
+          "height": 1,
+          "depth": 1,
+          "widthSegments": 11,
+          "heightSegments": 11,
+          "depthSegments": 11
+        }
+      }
+    },
+    {
+      "name": "Receiver links use those same terminals",
+      "pass": true
+    },
+    {
+      "name": "Generator leads remain separate from receiver return",
+      "pass": true
+    },
+    {
+      "name": "Wiring highlight dims other nodes",
+      "pass": true
+    },
+    {
+      "name": "Probe loading lowers resonance",
+      "pass": true
+    },
+    {
+      "name": "AM model produces finite output",
+      "pass": true
+    },
+    {
+      "name": "Signal controls fit 390",
+      "pass": true
+    },
+    {
+      "name": "Signal controls fit 768",
+      "pass": true
+    },
+    {
+      "name": "Signal controls fit 992",
+      "pass": true
+    },
+    {
+      "name": "Signal controls fit 1440",
+      "pass": true
+    },
+    {
+      "name": "No animation frames while idle",
+      "pass": true
+    },
+    {
+      "name": "Explicit replay advances assembly",
+      "pass": true
+    },
+    {
+      "name": "Pause holds progress",
+      "pass": true
+    },
+    {
+      "name": "No frames while off-screen",
+      "pass": true
+    },
+    {
+      "name": "Reduced motion stops playback",
+      "pass": true
+    },
+    {
+      "name": "Reduced motion lands in complete state",
+      "pass": true
+    },
+    {
+      "name": "Keyboard rotates 3D",
+      "pass": true
+    },
+    {
+      "name": "Keyboard focus ring visible",
+      "pass": true
+    },
+    {
+      "name": "Tab keyboard navigation opens wiring",
+      "pass": true
+    },
+    {
+      "name": "Back restores prior lesson",
+      "pass": true
+    },
+    {
+      "name": "No-WebGL fallback keeps written guide",
+      "pass": true
+    },
+    {
+      "name": "No-WebGL wiring view works",
+      "pass": true
+    },
+    {
+      "name": "No runtime or resource errors",
+      "pass": true,
+      "detail": []
+    }
+  ]
+}
