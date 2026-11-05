@@ -21,8 +21,25 @@
 <article class="instructions" id="instructions" aria-labelledby="lesson-title"><div class="instruction-heading"><p class="eyebrow" id="lesson-number"></p><h2 id="lesson-title"></h2><p class="intro" id="lesson-intro"></p></div><p class="parts-list" id="lesson-parts"></p><ol id="lesson-steps"></ol><details class="explanation" open><summary>Why it works</summary><p id="lesson-why"></p></details><div class="check-block"><h3>Before you continue</h3><p id="lesson-check"></p></div><p class="caution" id="lesson-caution"></p><div class="lesson-pagination"><button id="prev-step">← Previous</button><span id="page-count"></span><button id="next-step">Next →</button></div></article></div></div>
 <section class="circuit-section" id="circuit"><div class="section-heading"><p class="eyebrow">Reference / M1</p><h2>The complete circuit</h2><p>Follow the nodes, not the physical positions of the parts.</p></div><div class="circuit-layout"><figure class="circuit-figure"><img src="assets/circuit.svg" width="900" height="380" alt="M1 circuit: a generator drives an isolated five-turn loop beside the 75-turn coil. Coil and tuning capacitor connect in parallel between TP1 and GND. A 1N60P diode, band towards TP3, joins TP1 to TP3. The 15 kΩ resistor and 3.3 nF capacitor connect TP3 to GND in parallel."><figcaption>Adapted from Figure 3, ELEG103 LAB2. The source loop couples magnetically to the tank; the detector shares the tank’s ground.</figcaption></figure><dl class="node-key"><div><dt>TP1 <span>Radio frequency</span></dt><dd>One end of the coil, one AM terminal and the diode anode. Probe here to find resonance.</dd></div><div><dt>TP3 <span>Detected output</span></dt><dd>Diode cathode (band), resistor and 3.3 nF capacitor. Measure DC here for a steady sine.</dd></div><div><dt>GND <span>Common return</span></dt><dd>The other end of the coil, the other AM terminal and both load returns.</dd></div></dl></div></section>
 <section class="record-section" id="record">
-<div class="section-heading"><p class="eyebrow">Field notes / M1</p><h2>Our build record</h2><p>Measured resonance and detector readings from the bench. Build notes and evidence will be added as they are documented.</p></div>
-<div class="record-grid"><div><span class="record-index">01</span><h3>Build & difficulties</h3><p>No team observations added yet.</p><small>What failed, what we changed, and why.</small></div><div><span class="record-index">02</span><h3>Measured output</h3><p>Recorded below from the bench.</p><small>Resonance and bandwidth (Table 5); TP1 peak and TP3 DC (Table 6).</small></div><div><span class="record-index">03</span><h3>Evidence</h3><p>No bench photos added yet.</p><small>Wiring, instrument settings and scope captures.</small></div></div>
+<div class="section-heading"><p class="eyebrow">Field notes / M1</p><h2>Our build record</h2><p>Measured resonance and detector readings from the bench. The notes below record what did not go to plan; the photographs are the evidence we kept.</p></div>
+<div class="record-grid">
+<div><span class="record-index">01</span><h3>Build & difficulties</h3><p>Two unresolved problems: the lab scopes disagreed, and our readings missed the predictions.</p><small>Recorded in full below.</small></div>
+<div><span class="record-index">02</span><h3>Measured output</h3><p>Recorded below from the bench.</p><small>Resonance and bandwidth (Table 5); TP1 peak and TP3 DC (Table 6).</small></div>
+<div><span class="record-index">03</span><h3>Evidence</h3><p>Six photographs from the build and the scope.</p><small>Select any image to open it at full size.</small></div>
+</div>
+<div class="difficulty-block" id="difficulties">
+<div class="difficulty-heading"><p class="eyebrow">Build notes / M1</p><h3>What gave us trouble</h3><p>Two observations from the bench. Neither is resolved yet.</p></div>
+<ul class="difficulty-list">
+<li>
+<span class="difficulty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="1.2"/><rect x="5.2" y="7" width="9.6" height="7" rx=".4"/><path d="M6.4 10.5c.9-1.8 1.8-1.8 2.7 0s1.8 1.8 2.7 0 1.8-1.8 2.2-.9"/><circle cx="18.4" cy="8" r=".9"/><circle cx="18.4" cy="12" r=".9"/><path d="M16.6 16.2h4.2"/></svg></span>
+<div><strong>The scopes disagreed.</strong><p>The same circuit produced different results on different oscilloscopes in the lab. At TP3, one scope showed a rectified signal while another showed it non-rectified, with no change to the circuit itself.</p></div>
+</li>
+<li>
+<span class="difficulty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20V4M3 20h18"/><path d="M6 16l4.2-4.4 3.1 2.8L21 6"/><path d="M16.4 6H21v4.6"/><path d="M6 9.5h4.5" stroke-dasharray="1.5 2.5"/></svg></span>
+<div><strong>The readings missed the prediction.</strong><p>Our measured values deviated from the expected results by a non-negligible margin. We do not yet have an explanation for the gap, so we have kept the readings as observed rather than correcting them.</p></div>
+</li>
+</ul>
+</div>
 <div class="m1-record">
 <div class="record-table record-table--wide record-table--values">
 <h3>Table 5 · The tank at TP1</h3>
@@ -50,6 +67,35 @@
 </table>
 </div>
 <p class="table-note">TP1 measured as a peak on the scope; TP3 measured as DC on the multimeter.</p>
+</div>
+</div>
+<div class="evidence-block" id="evidence">
+<div class="evidence-heading"><div><p class="eyebrow">Evidence / M1</p><h3>From the bench</h3></div><p>Six photographs from the build and the measurement sessions. Select any image to open it at full size.</p></div>
+<div class="evidence-gallery">
+<figure class="evidence-item evidence-item--wide">
+<a class="evidence-image" href="assets/evidence/m1-01-bench-wide.jpeg" target="_blank" rel="noopener"><img src="assets/evidence/m1-01-bench-wide.jpeg" width="1600" height="658" loading="lazy" decoding="async" alt="Wide bench view: the 75-turn coil at left, the breadboard detector in the centre, and a USB-powered source board beside a laptop at right."></a>
+<figcaption><span class="evidence-index">E.01</span><div class="evidence-copy"><strong>The bench, mid-build</strong><p>The 75-turn coil on its former, the breadboard detector and the USB-powered source board, with the laptop alongside. The long test leads are part of the bench layout.</p></div></figcaption>
+</figure>
+<figure class="evidence-item">
+<a class="evidence-image" href="assets/evidence/m1-02-overhead.jpg" target="_blank" rel="noopener"><img src="assets/evidence/m1-02-overhead.jpg" width="1280" height="960" loading="lazy" decoding="async" alt="Overhead bench view: the coil in the foreground, the breadboard detector with a scope probe, and a red multimeter and phone at the top."></a>
+<figcaption><span class="evidence-index">E.02</span><div class="evidence-copy"><strong>Overhead check</strong><p>An overhead view of the same bench, with the probe, meter and phone in frame.</p></div></figcaption>
+</figure>
+<figure class="evidence-item">
+<a class="evidence-image" href="assets/evidence/m1-03-scope-carrier.jpg" target="_blank" rel="noopener"><img src="assets/evidence/m1-03-scope-carrier.jpg" width="1800" height="1350" loading="lazy" decoding="async" alt="OWON SDS1102 oscilloscope showing a clean yellow sine on CH1 with readouts of 1.117 volts peak-to-peak and 2.000 kilohertz."></a>
+<figcaption><span class="evidence-index">E.03</span><div class="evidence-copy"><strong>Carrier on the scope</strong><p>A clean 1.117 Vpp sine at 2.000 kHz on the OWON SDS1102: CH1, 500 mV/div, 500 µs/div. This is an audio-frequency proof of concept, not the 873 kHz tank measurement.</p></div></figcaption>
+</figure>
+<figure class="evidence-item evidence-item--wide">
+<a class="evidence-image" href="assets/evidence/m1-04-scope-detector.jpg" target="_blank" rel="noopener"><img src="assets/evidence/m1-04-scope-detector.jpg" width="1120" height="616" loading="lazy" decoding="async" alt="OWON oscilloscope with two traces: a noisy yellow carrier on CH1 and a rectified blue output on CH2."></a>
+<figcaption><span class="evidence-index">E.04</span><div class="evidence-copy"><strong>Carrier and detector together</strong><p>CH1 (yellow) is the noisy carrier; CH2 (blue) is the detector output. At 2 kHz the 50 µs RC is much shorter than the 500 µs period, so the output follows each peak and droops between them.</p></div></figcaption>
+</figure>
+<figure class="evidence-item evidence-item--portrait">
+<a class="evidence-image" href="assets/evidence/m1-05-hand-probe.jpg" target="_blank" rel="noopener"><img src="assets/evidence/m1-05-hand-probe.jpg" width="1000" height="1600" loading="lazy" decoding="async" alt="Hands probing the detector on the breadboard while the oscilloscope above shows a yellow sine."></a>
+<figcaption><span class="evidence-index">E.05</span><div class="evidence-copy"><strong>Probing by hand</strong><p>Hands on the board during a detector check, with the carrier steady on CH1. Contact and probe pressure are part of the measurement here.</p></div></figcaption>
+</figure>
+<figure class="evidence-item evidence-item--portrait">
+<a class="evidence-image" href="assets/evidence/m1-06-repeat-capture.jpg" target="_blank" rel="noopener"><img src="assets/evidence/m1-06-repeat-capture.jpg" width="739" height="1394" loading="lazy" decoding="async" alt="Phone photo of the oscilloscope showing a yellow sine above hands working on the breadboard."></a>
+<figcaption><span class="evidence-index">E.06</span><div class="evidence-copy"><strong>A repeat capture</strong><p>A second capture of the same check, taken on a phone. The trace is clean in this frame; across the lab’s oscilloscopes, the same circuit did not always look the same.</p></div></figcaption>
+</figure>
 </div>
 </div>
 <p class="capture-note"><strong>For the current step</strong><span id="record-prompt"></span></p></section></main>
